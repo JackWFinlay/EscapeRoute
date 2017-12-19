@@ -15,7 +15,7 @@ namespace JackWFinlay.EscapeRoute
         /// </summary>
         public EscapeRoute()
         {
-
+            _escapeRouteConfiguration = new EscapeRouteConfiguration();
         }
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace JackWFinlay.EscapeRoute
         /// <returns>A JSON friendly <see cref="String"/>.</returns>
         public async Task<String> ParseStringAsync(String inputString)
         {
-            return await ReadStringAsync(inputString);
+            return await ReadString(inputString);
         }
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace JackWFinlay.EscapeRoute
         /// <returns>A JSON friendly <see cref="String"/>.</returns>
         public async Task<String> ParseFileAsync(String fileLocation)
         {
-            return await ReadFileAsync(fileLocation);
+            return await ReadFile(fileLocation);
         }
 
         private void ApplyConfiguration(EscapeRouteConfiguration escapeRouteConfiguration)
@@ -49,7 +49,7 @@ namespace JackWFinlay.EscapeRoute
             this._escapeRouteConfiguration = escapeRouteConfiguration;
         }
 
-        private async Task<String> ReadStringAsync(String inputString)
+        private async Task<String> ReadString(String inputString)
         {
             StringBuilder stringBuilder = new StringBuilder();
             String[] parts = inputString.Split('\n');
@@ -60,10 +60,10 @@ namespace JackWFinlay.EscapeRoute
                 stringBuilder.Append(Escape(part));
             }
 
-            return stringBuilder.ToString();
+            return await Task.FromResult(stringBuilder.ToString());
         }
 
-        private async Task<String> ReadFileAsync(String fileLocation)
+        private async Task<String> ReadFile(String fileLocation)
         {
             StringBuilder stringBuilder = new StringBuilder();
             string line;
@@ -76,7 +76,7 @@ namespace JackWFinlay.EscapeRoute
                     stringBuilder.Append(Escape(line));
                 }
             }
-            return stringBuilder.ToString();
+            return await Task.FromResult(stringBuilder.ToString());
         }
 
         // Replace each escapable character with it's escaped string.
@@ -140,6 +140,9 @@ namespace JackWFinlay.EscapeRoute
             {
                 escaped = escaped.TrimEnd();
             }
+
+            escaped = escaped.Replace("\"", @"\""");
+            escaped = escaped.Replace("\'", @"\'");
 
             return escaped;
         }

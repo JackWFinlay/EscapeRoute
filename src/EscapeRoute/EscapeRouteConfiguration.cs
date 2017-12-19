@@ -6,7 +6,7 @@ namespace JackWFinlay.EscapeRoute
         internal const NewLineBehavior DefaultNewLineBehaviour = NewLineBehavior.Strip;
         internal const CarriageReturnBehaviour DefaultCarriageReturnBehaviour = CarriageReturnBehaviour.Strip;
         internal const BackspaceBehaviour DefaultBackspaceBehaviour = BackspaceBehaviour.Strip;
-        internal const TrimBehaviour DefaultTrimBehaviour = TrimBehaviour.None;
+        internal const TrimBehaviour DefaultTrimBehaviour = TrimBehaviour.Both;
 
         private TabBehaviour? _tabBehaviour;
         private NewLineBehavior? _newLineBehaviour;
