@@ -4,7 +4,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EscapeRoute
+namespace JackWFinlay.EscapeRoute
 {
     class Program
     {
@@ -52,98 +52,6 @@ namespace EscapeRoute
                     await ReadFile();
                 });
             });
-        }
-
-        // private static List<string> ParseArgs(string[] args)
-        // {
-        //     List<string> argList = new List<string>();
-
-        //     // Loop through all args and add them to List
-        //     foreach (string arg in args)
-        //     {
-        //         argList.Add(arg);
-        //     }
-
-        //     return argList;
-        // }
-
-        private async static Task<string> ReadFile()
-        {
-            StringBuilder stringBuilder = new StringBuilder();
-            string line;
-
-            using (StreamReader streamReader = new StreamReader(_fileLocationArgument.Value))
-            {
-                while ((line = streamReader.ReadLine()) != null)
-                {
-                    // Escape the contents of the line and add it to the string being built.
-                    stringBuilder.Append(Escape(line));
-                }
-            }
-            return "";
-        }
-
-        // Replace each escapable character with it's escaped string.
-        private static string Escape(string rawString)
-        {
-            string escaped = rawString;
-
-            // Remove tabs if '-T' flag is present in args.
-            if (_argsList.Contains("-T"))
-            {
-                escaped = escaped.Replace("\t", "");
-            }
-            // Replace tabs with \t.
-            else if (_argsList.Contains("-t"))
-            {
-                escaped = escaped.Replace("\t", @"\t");
-            }
-
-            // Remove new line characters.
-            if (_argsList.Contains("-N"))
-            {
-                escaped = escaped.Replace("\n", "");
-            }
-            // Replace new line characters with \n.
-            else if (_argsList.Contains("-n"))
-            {
-                escaped = escaped.Replace("\n", @"\n");
-            }
-
-            // Remove carriage return characters.
-            if (_argsList.Contains("-R"))
-            {
-                escaped = escaped.Replace("\r", "");
-            }
-            // Replace carriage return characters with \r.
-            else if (_argsList.Contains("-r"))
-            {
-                escaped = escaped.Replace("\r", @"\r");
-            }
-
-            // Remove backspace return characters.
-            if (_argsList.Contains("-B"))
-            {
-                escaped = escaped.Replace("\b", "");
-            }
-            // Replace backspace characters with \b.
-            else if (_argsList.Contains("-b"))
-            {
-                escaped = escaped.Replace("\b", @"\b");
-            }
-
-            // Trim spaces at begining of string.
-            if (_argsList.Contains("-S"))
-            {
-                escaped = escaped.TrimStart();;
-            }
-            // Trim spaces at end of string.
-            else if (_argsList.Contains("-s"))
-            {
-                escaped = escaped.TrimEnd();
-            }
-
-            return escaped;
         }
     }
 }
