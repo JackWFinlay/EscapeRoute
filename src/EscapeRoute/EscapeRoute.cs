@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace JackWFinlay.EscapeRoute
 {
-    public class EscapeRoute
+    public class EscapeRoute : IEscapeRoute
     {
         private EscapeRouteConfiguration _escapeRouteConfiguration;
 
@@ -27,21 +27,39 @@ namespace JackWFinlay.EscapeRoute
         }
 
         /// <summary>
-        /// Parses a <see cref="String"/> into a JSON friendly string.
+        /// Parses a <see cref="String"/> into a JSON friendly string synchronously.
+        /// <param name="inputString">The string to parse.</param>
+        /// <returns>A JSON friendly <see cref="String"/>.</returns>
+        public String ParseString(string inputString)
+        {
+            return ReadString(inputString);
+        }
+
+        /// <summary>
+        /// Parses a <see cref="String"/> into a JSON friendly string asynchronously.
         /// <param name="inputString">The string to parse.</param>
         /// <returns>A JSON friendly <see cref="String"/>.</returns>
         public async Task<String> ParseStringAsync(String inputString)
         {
-            return await ReadString(inputString);
+            return await Task.Run(() => ReadString(inputString));
         }
 
         /// <summary>
-        /// Parses a file into a JSON friendly string.
+        /// Parses a file into a JSON friendly string synchronously.
+        /// <param name="fileLocation">The string to parse.</param>
+        /// <returns>A JSON friendly <see cref="String"/>.</returns>
+        public String ParseFile(string fileLocation)
+        {
+            return ReadFile(fileLocation);
+        }
+
+        /// <summary>
+        /// Parses a file into a JSON friendly string asynchronously.
         /// <param name="fileLocation">The string to parse.</param>
         /// <returns>A JSON friendly <see cref="String"/>.</returns>
         public async Task<String> ParseFileAsync(String fileLocation)
         {
-            return await ReadFile(fileLocation);
+            return await Task.Run(() => ReadFile(fileLocation));
         }
 
         private void ApplyConfiguration(EscapeRouteConfiguration escapeRouteConfiguration)
@@ -49,7 +67,7 @@ namespace JackWFinlay.EscapeRoute
             this._escapeRouteConfiguration = escapeRouteConfiguration;
         }
 
-        private async Task<String> ReadString(String inputString)
+        private String ReadString(String inputString)
         {
             StringBuilder stringBuilder = new StringBuilder();
             String[] parts = inputString.Split('\n');
@@ -60,27 +78,33 @@ namespace JackWFinlay.EscapeRoute
                 stringBuilder.Append(Escape(part));
             }
 
-            return await Task.FromResult(stringBuilder.ToString());
+            return stringBuilder.ToString();
         }
 
-        private async Task<String> ReadFile(String fileLocation)
+        private String ReadFile(String fileLocation)
         {
             StringBuilder stringBuilder = new StringBuilder();
             string line;
 
-            using (StreamReader streamReader = new StreamReader(fileLocation))
-            {
-                while ((line = streamReader.ReadLine()) != null)
+            try {
+                using (StreamReader streamReader = new StreamReader(fileLocation))
                 {
-                    // Escape the contents of the line and add it to the string being built.
-                    stringBuilder.Append(Escape(line));
+                    while ((line = streamReader.ReadLine()) != null)
+                    {
+                        // Escape the contents of the line and add it to the string being built.
+                        stringBuilder.Append(Escape(line));
+                    }
                 }
+                return stringBuilder.ToString();
             }
-            return await Task.FromResult(stringBuilder.ToString());
+            catch (Exception exception)
+            {
+                throw exception;
+            }
         }
 
         // Replace each escapable character with it's escaped string.
-        private string Escape(string rawString)
+        private String Escape(string rawString)
         {
             string escaped = rawString;
 
