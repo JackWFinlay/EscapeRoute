@@ -7,12 +7,18 @@ namespace JackWFinlay.EscapeRoute
         internal const CarriageReturnBehaviour DefaultCarriageReturnBehaviour = CarriageReturnBehaviour.Strip;
         internal const BackspaceBehaviour DefaultBackspaceBehaviour = BackspaceBehaviour.Strip;
         internal const TrimBehaviour DefaultTrimBehaviour = TrimBehaviour.Both;
+        internal const FormFeedBehaviour DefaultFormFeedBehaviour = FormFeedBehaviour.Strip;
+        internal const BackslashBehaviour DefaultBackslashBehaviour = BackslashBehaviour.Escape;
+        internal const UnicodeBehaviour DefaultUnicodeBehaviour = UnicodeBehaviour.Escape;
 
         private TabBehaviour? _tabBehaviour;
         private NewLineBehaviour? _newLineBehaviour;
         private CarriageReturnBehaviour? _carriageReturnBehaviour;
         private BackspaceBehaviour? _backspaceBehaviour;
         private TrimBehaviour? _trimBehaviour;
+        private FormFeedBehaviour? _formFeedBehaviour;
+        private BackslashBehaviour? _backslashBehaviour;
+        private UnicodeBehaviour? _unicodeBehaviour;
 
         /// <summary>
         /// Gets or sets how tab \t characters are handled.
@@ -62,6 +68,28 @@ namespace JackWFinlay.EscapeRoute
         {
             get => _trimBehaviour ?? DefaultTrimBehaviour;
             set => _trimBehaviour = value;
+        }
+
+        /// <summary>
+        /// Gets or sets how form feed \f characters are handled.
+        /// </summary>
+        /// <value>Form feed behaviour</value>
+        public FormFeedBehaviour FormFeedBehaviour {
+            get => _formFeedBehaviour ?? DefaultFormFeedBehaviour;
+            set => _formFeedBehaviour = value;
+        }
+
+        /// <summary>
+        /// Gets or sets how backslash \\ characters are handled.
+        /// </summary>
+        /// <value>Backslash behaviour</value>
+        public BackslashBehaviour BackslashBehaviour {
+            get => _backslashBehaviour ?? DefaultBackslashBehaviour;
+            set => _backslashBehaviour = value;
+        }
+        public UnicodeBehaviour UnicodeBehaviour {
+            get => _unicodeBehaviour ?? DefaultUnicodeBehaviour;
+            set => _unicodeBehaviour = value;
         }
     }
 }

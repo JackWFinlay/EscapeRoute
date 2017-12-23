@@ -73,6 +73,7 @@ namespace JackWFinlay.EscapeRoute
             StringBuilder stringBuilder = new StringBuilder();
             String[] parts = inputString.Split('\n');
 
+            // Sets newLine variable to whatever is expected. \n if behaviour is escape.
             String newLine = "";
             if (_escapeRouteConfiguration.NewLineBehaviour == NewLineBehaviour.Escape)
             {
@@ -82,7 +83,7 @@ namespace JackWFinlay.EscapeRoute
             // Append first line without \n literal
             stringBuilder.Append(Escape(parts[0]));
 
-            // For the rest of the lines in the string.
+            // For the rest of the lines in the string. Ignores first index, [0].
             for (var i = 1; i < parts.Length; i++)
             {
                 // Escape the contents of the line and add it to the string being built.
@@ -100,6 +101,7 @@ namespace JackWFinlay.EscapeRoute
             try {
                 using (StreamReader streamReader = new StreamReader(fileLocation))
                 {
+                    // Sets newLine variable to whatever is expected. \n if behaviour is escape.
                     String newLine = "";
                     if (_escapeRouteConfiguration.NewLineBehaviour == NewLineBehaviour.Escape)
                     {
@@ -134,7 +136,31 @@ namespace JackWFinlay.EscapeRoute
         {
             string escaped = rawString;
 
-            // Remove tabs if '-T' flag is present in args.
+            // Remove backslash characters.
+            if (_escapeRouteConfiguration.BackslashBehaviour == BackslashBehaviour.Strip)
+            {
+                escaped = escaped.Replace("\\", "");
+            }
+            // Replace backslash with \\.
+            else if (_escapeRouteConfiguration.BackslashBehaviour == BackslashBehaviour.Escape)
+            {
+                Regex regex = new Regex("\\\\");
+                escaped = regex.Replace(escaped, @"\\");
+            }
+
+            // Remove form feed characters.
+            if (_escapeRouteConfiguration.FormFeedBehaviour == FormFeedBehaviour.Strip)
+            {
+                escaped = escaped.Replace("\f", "");
+            }
+            // Replace form feed with \f.
+            else if (_escapeRouteConfiguration.FormFeedBehaviour == FormFeedBehaviour.Escape)
+            {
+                Regex regex = new Regex("\f");
+                escaped = regex.Replace(escaped, @"\f");
+            }
+
+            // Remove tabs \t.
             if (_escapeRouteConfiguration.TabBehaviour == TabBehaviour.Strip)
             {
                 escaped = escaped.Replace("\t", "");
@@ -164,7 +190,7 @@ namespace JackWFinlay.EscapeRoute
                 escaped = regex.Replace(escaped, @"\r");
             }
 
-            // Remove backspace return characters.
+            // Remove backspace characters.
             if (_escapeRouteConfiguration.BackspaceBehaviour == BackspaceBehaviour.Strip)
             {
                 escaped = escaped.Replace("\b", "");
@@ -174,6 +200,20 @@ namespace JackWFinlay.EscapeRoute
             {
                 Regex regex = new Regex("\b");
                 escaped = regex.Replace(escaped, @"\b");
+            }
+
+            // Remove unicode \uXXXX characters.
+            if (_escapeRouteConfiguration.UnicodeBehaviour == UnicodeBehaviour.Strip)
+            {
+                // [^\x00-\x7F] matches any non-ASCII character.
+                Regex regex = new Regex(@"[^\x00-\x7F]");
+                escaped = regex.Replace(escaped, "");
+            }
+            // Replace unicode characters with \uXXXX.
+            else if (_escapeRouteConfiguration.UnicodeBehaviour == UnicodeBehaviour.Escape)
+            {
+                // https://stackoverflow.com/a/25349901
+                escaped = Regex.Replace(escaped, @"[^\x00-\x7F]", c => string.Format(@"\u{0:x4}", (int)c.Value[0]));
             }
 
             // Trim spaces at begining of string.
