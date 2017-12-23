@@ -3,13 +3,13 @@ namespace JackWFinlay.EscapeRoute
     public class EscapeRouteConfiguration
     {
         internal const TabBehaviour DefaultTabBehaviour = TabBehaviour.Strip;
-        internal const NewLineBehavior DefaultNewLineBehaviour = NewLineBehavior.Strip;
+        internal const NewLineBehaviour DefaultNewLineBehaviour = NewLineBehaviour.Strip;
         internal const CarriageReturnBehaviour DefaultCarriageReturnBehaviour = CarriageReturnBehaviour.Strip;
         internal const BackspaceBehaviour DefaultBackspaceBehaviour = BackspaceBehaviour.Strip;
         internal const TrimBehaviour DefaultTrimBehaviour = TrimBehaviour.Both;
 
         private TabBehaviour? _tabBehaviour;
-        private NewLineBehavior? _newLineBehaviour;
+        private NewLineBehaviour? _newLineBehaviour;
         private CarriageReturnBehaviour? _carriageReturnBehaviour;
         private BackspaceBehaviour? _backspaceBehaviour;
         private TrimBehaviour? _trimBehaviour;
@@ -28,7 +28,7 @@ namespace JackWFinlay.EscapeRoute
         /// Gets or sets how new line \n characters are handled.
         /// </summary>
         /// <value>New line behaviour</value>
-        public NewLineBehavior NewLineBehaviour
+        public NewLineBehaviour NewLineBehaviour
         {
             get => _newLineBehaviour ?? DefaultNewLineBehaviour;
             set => _newLineBehaviour = value;

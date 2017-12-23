@@ -1,33 +1,3 @@
-{
-  "node": "Document",
-  "child": [
-    {
-      "node": "Comment",
-      "text": "<!DOCTYPE html>"
-    },
-    {
-      "node": "Element",
-      "tag": "html",
-      "child": [
-        {
-          "node": "Element",
-          "tag": "body",
-          "child": [
-            {
-              "node": "Element",
-              "tag": "p"
-            },
-            {
-              "node": "Text",
-              "text": "test"
-            },
-            {
-              "node": "Element",
-              "tag": "p"
-            }
-          ]
-        }
-      ]
-    }
-  ]
-}
+The quick 
+	brown fox jumps 
+	over the lazy dog.

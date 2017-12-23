@@ -3,7 +3,7 @@ namespace JackWFinlay.EscapeRoute
     /// <summary>
     /// Specifies handling of new line \n characters.
     /// </summary>
-    public enum NewLineBehavior
+    public enum NewLineBehaviour
     {
         /// <summary>
         /// Strips new line \n characters.

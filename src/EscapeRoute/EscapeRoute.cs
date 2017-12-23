@@ -1,8 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.CodeDom;
 
 namespace JackWFinlay.EscapeRoute
 {
@@ -72,10 +73,20 @@ namespace JackWFinlay.EscapeRoute
             StringBuilder stringBuilder = new StringBuilder();
             String[] parts = inputString.Split('\n');
 
-            foreach (String part in parts)
+            String newLine = "";
+            if (_escapeRouteConfiguration.NewLineBehaviour == NewLineBehaviour.Escape)
+            {
+                newLine = @"\n";
+            }
+
+            // Append first line without \n literal
+            stringBuilder.Append(Escape(parts[0]));
+
+            // For the rest of the lines in the string.
+            for (var i = 1; i < parts.Length; i++)
             {
                 // Escape the contents of the line and add it to the string being built.
-                stringBuilder.Append(Escape(part));
+                stringBuilder.Append(newLine + Escape(parts[i]));
             }
 
             return stringBuilder.ToString();
@@ -89,10 +100,21 @@ namespace JackWFinlay.EscapeRoute
             try {
                 using (StreamReader streamReader = new StreamReader(fileLocation))
                 {
+                    String newLine = "";
+                    if (_escapeRouteConfiguration.NewLineBehaviour == NewLineBehaviour.Escape)
+                    {
+                        newLine = @"\n";
+                    }
+
+                    // Read first line and apppend without \n literal.
+                    line = streamReader.ReadLine();
+                    stringBuilder.Append(Escape(line));
+
+                    // Read rest of the lines, prepending newLine value.
                     while ((line = streamReader.ReadLine()) != null)
                     {
                         // Escape the contents of the line and add it to the string being built.
-                        stringBuilder.Append(Escape(line));
+                        stringBuilder.Append(newLine + Escape(line));
                     }
                 }
                 return stringBuilder.ToString();
@@ -103,7 +125,11 @@ namespace JackWFinlay.EscapeRoute
             }
         }
 
-        // Replace each escapable character with it's escaped string.
+        /// <summary>
+        /// Replace each escapable character with it's escaped string.
+        /// </summary>
+        /// <param><see cref="String"/> rawString</param>
+        /// <returns>Escaped and trimmed <see cref="String"/><returns>
         private String Escape(string rawString)
         {
             string escaped = rawString;
@@ -116,18 +142,14 @@ namespace JackWFinlay.EscapeRoute
             // Replace tabs with \t.
             else if (_escapeRouteConfiguration.TabBehaviour == TabBehaviour.Escape)
             {
-                escaped = escaped.Replace("\t", @"\t");
+                Regex regex = new Regex("\t");
+                escaped = regex.Replace(escaped, @"\t");
             }
 
-            // Remove new line characters.
-            if (_escapeRouteConfiguration.NewLineBehaviour == NewLineBehavior.Strip)
+            // Remove new line characters. To escape, the \n literal is prepended in calling methods.
+            if (_escapeRouteConfiguration.NewLineBehaviour == NewLineBehaviour.Strip)
             {
                 escaped = escaped.Replace("\n", "");
-            }
-            // Replace new line characters with \n.
-            else if (_escapeRouteConfiguration.NewLineBehaviour == NewLineBehavior.Escape)
-            {
-                escaped = escaped.Replace("\n", @"\n");
             }
 
             // Remove carriage return characters.
@@ -138,7 +160,8 @@ namespace JackWFinlay.EscapeRoute
             // Replace carriage return characters with \r.
             else if (_escapeRouteConfiguration.CarriageReturnBehaviour == CarriageReturnBehaviour.Escape)
             {
-                escaped = escaped.Replace("\r", @"\r");
+                Regex regex = new Regex("\r");
+                escaped = regex.Replace(escaped, @"\r");
             }
 
             // Remove backspace return characters.
@@ -149,7 +172,8 @@ namespace JackWFinlay.EscapeRoute
             // Replace backspace characters with \b.
             else if (_escapeRouteConfiguration.BackspaceBehaviour == BackspaceBehaviour.Escape)
             {
-                escaped = escaped.Replace("\b", @"\b");
+                Regex regex = new Regex("\b");
+                escaped = regex.Replace(escaped, @"\b");
             }
 
             // Trim spaces at begining of string.
