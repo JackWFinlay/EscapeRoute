@@ -1,4 +1,6 @@
 # EscapeRoute
+[![Build Status](https://travis-ci.org/JackWFinlay/EscapeRoute.svg?branch=master)](https://travis-ci.org/JackWFinlay/EscapeRoute)
+
 Selectively trim and escape text files into JSON friendly strings.
 
 Currently suports the following behaviours/special characters (***Default***):
