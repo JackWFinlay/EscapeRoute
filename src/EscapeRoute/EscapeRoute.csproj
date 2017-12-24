@@ -3,6 +3,7 @@
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <Description>Convert strings and files into JSON friendly strings.</Description>
     <Copyright>Copyright Jack Witbrock Finlay 2017</Copyright>
+    <Title>JackWFinlay.EscapeRoute</Title>
     <AssemblyTitle>JackWFinlay.EscapeRoute</AssemblyTitle>
     <Authors>Jack Witbrock Finlay</Authors>
     <PackageId>EscapeRoute</PackageId>
@@ -15,5 +16,6 @@
     <RepositoryUrl>https://github.com/JackWFinlay/EscapeRoute</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <VersionPrefix>0.0.1</VersionPrefix>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 </Project>
