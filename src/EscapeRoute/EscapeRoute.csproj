@@ -2,6 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <Description>Convert strings and files into JSON friendly strings.</Description>
+    <Summary>Convert strings and files into JSON friendly strings.</Summary>
     <Copyright>Copyright Jack Witbrock Finlay 2017</Copyright>
     <Title>JackWFinlay.EscapeRoute</Title>
     <AssemblyTitle>JackWFinlay.EscapeRoute</AssemblyTitle>
