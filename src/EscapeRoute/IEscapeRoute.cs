@@ -1,16 +1,15 @@
-using System;
 using System.Threading.Tasks;
 
 namespace JackWFinlay.EscapeRoute
 {
     public interface IEscapeRoute
     {
-        String ParseString(String inputString);
+        string ParseString(string inputString);
 
-        String ParseFile(String fileLocation);
+        string ParseFile(string fileLocation);
 
-        Task<String> ParseStringAsync(String inputString);
+        Task<string> ParseStringAsync(string inputString);
 
-        Task<String> ParseFileAsync(String fileLocation);
+        Task<string> ParseFileAsync(string fileLocation);
     }
 }

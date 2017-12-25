@@ -3,7 +3,6 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.CodeDom;
 
 namespace JackWFinlay.EscapeRoute
 {
@@ -29,52 +28,56 @@ namespace JackWFinlay.EscapeRoute
 
         /// <summary>
         /// Parses a <see cref="String"/> into a JSON friendly string synchronously.
+        /// </summary>
         /// <param name="inputString">The string to parse.</param>
         /// <returns>A JSON friendly <see cref="String"/>.</returns>
-        public String ParseString(string inputString)
+        public string ParseString(string inputString)
         {
             return ReadString(inputString);
         }
 
         /// <summary>
         /// Parses a <see cref="String"/> into a JSON friendly string asynchronously.
+        /// </summary>
         /// <param name="inputString">The string to parse.</param>
         /// <returns>A JSON friendly <see cref="String"/>.</returns>
-        public async Task<String> ParseStringAsync(String inputString)
+        public async Task<string> ParseStringAsync(string inputString)
         {
             return await Task.Run(() => ReadString(inputString));
         }
 
         /// <summary>
         /// Parses a file into a JSON friendly string synchronously.
+        /// </summary>
         /// <param name="fileLocation">The string to parse.</param>
         /// <returns>A JSON friendly <see cref="String"/>.</returns>
-        public String ParseFile(string fileLocation)
+        public string ParseFile(string fileLocation)
         {
             return ReadFile(fileLocation);
         }
 
         /// <summary>
         /// Parses a file into a JSON friendly string asynchronously.
+        /// </summary>
         /// <param name="fileLocation">The string to parse.</param>
         /// <returns>A JSON friendly <see cref="String"/>.</returns>
-        public async Task<String> ParseFileAsync(String fileLocation)
+        public async Task<string> ParseFileAsync(string fileLocation)
         {
             return await Task.Run(() => ReadFile(fileLocation));
         }
 
         private void ApplyConfiguration(EscapeRouteConfiguration escapeRouteConfiguration)
         {
-            this._escapeRouteConfiguration = escapeRouteConfiguration;
+            _escapeRouteConfiguration = escapeRouteConfiguration;
         }
 
-        private String ReadString(String inputString)
+        private string ReadString(string inputString)
         {
             StringBuilder stringBuilder = new StringBuilder();
-            String[] parts = inputString.Split('\n');
+            string[] parts = inputString.Split('\n');
 
             // Sets newLine variable to whatever is expected. \n if behaviour is escape.
-            String newLine = "";
+            string newLine = "";
             if (_escapeRouteConfiguration.NewLineBehaviour == NewLineBehaviour.Escape)
             {
                 newLine = @"\n";
@@ -93,46 +96,39 @@ namespace JackWFinlay.EscapeRoute
             return stringBuilder.ToString();
         }
 
-        private String ReadFile(String fileLocation)
+        private string ReadFile(string fileLocation)
         {
             StringBuilder stringBuilder = new StringBuilder();
-            string line;
 
-            try {
-                using (StreamReader streamReader = new StreamReader(fileLocation))
-                {
-                    // Sets newLine variable to whatever is expected. \n if behaviour is escape.
-                    String newLine = "";
-                    if (_escapeRouteConfiguration.NewLineBehaviour == NewLineBehaviour.Escape)
-                    {
-                        newLine = @"\n";
-                    }
-
-                    // Read first line and apppend without \n literal.
-                    line = streamReader.ReadLine();
-                    stringBuilder.Append(Escape(line));
-
-                    // Read rest of the lines, prepending newLine value.
-                    while ((line = streamReader.ReadLine()) != null)
-                    {
-                        // Escape the contents of the line and add it to the string being built.
-                        stringBuilder.Append(newLine + Escape(line));
-                    }
-                }
-                return stringBuilder.ToString();
-            }
-            catch (Exception exception)
+            using (StreamReader streamReader = new StreamReader(fileLocation))
             {
-                throw exception;
+                // Sets newLine variable to whatever is expected. \n if behaviour is escape.
+                string newLine = "";
+                if (_escapeRouteConfiguration.NewLineBehaviour == NewLineBehaviour.Escape)
+                {
+                    newLine = @"\n";
+                }
+
+                // Read first line and apppend without \n literal.
+                string line = streamReader.ReadLine();
+                stringBuilder.Append(Escape(line));
+
+                // Read rest of the lines, prepending newLine value.
+                while ((line = streamReader.ReadLine()) != null)
+                {
+                    // Escape the contents of the line and add it to the string being built.
+                    stringBuilder.Append(newLine + Escape(line));
+                }
             }
+            return stringBuilder.ToString();
         }
 
         /// <summary>
         /// Replace each escapable character with it's escaped string.
         /// </summary>
-        /// <param><see cref="String"/> rawString</param>
-        /// <returns>Escaped and trimmed <see cref="String"/><returns>
-        private String Escape(string rawString)
+        /// <param name="rawString"><see cref="String"/> Raw String</param>
+        /// <returns>Escaped and trimmed <see cref="String"/></returns>
+        private string Escape(string rawString)
         {
             string escaped = rawString;
 
@@ -220,7 +216,7 @@ namespace JackWFinlay.EscapeRoute
             if (_escapeRouteConfiguration.TrimBehaviour == TrimBehaviour.Start ||
                 _escapeRouteConfiguration.TrimBehaviour == TrimBehaviour.Both )
             {
-                escaped = escaped.TrimStart();;
+                escaped = escaped.TrimStart();
             }
             // Trim spaces at end of string.
             else if (_escapeRouteConfiguration.TrimBehaviour == TrimBehaviour.End ||
