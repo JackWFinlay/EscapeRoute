@@ -36,10 +36,6 @@ Currently suports the following behaviours/special characters (***Default***):
    - Start
    - End
    - ***Both***
-   
-
-## Notes
-> A mistake was made where part of the namespace clashes with the `EscapeRoute` class name, so uses of the `EscapeRoute` class name are required to explicitly be called as `EscapeRoute.EscapeRoute()`. As this is still a pre-release version, there may be a change to either the class name or namespacing. If you have any suggestions, please open an issue before making the change and pull request.
 
 ## Usage
 Use the namespace `JackWFinlay.EscapeRoute`:
@@ -63,7 +59,7 @@ namespace Example
         public void TestDefaultBehaviourFromFile()
         {
             String fileLocation = $"{workspaceFolder}/test-files/test1.txt";
-            IEscapeRoute escapeRoute = new EscapeRoute.EscapeRoute();
+            IEscapeRoute escapeRoute = new EscapeRoute();
             String expected = "The quick brown fox jumps over the lazy dog.";
             String result = escapeRoute.ParseFile(fileLocation);
             
@@ -93,7 +89,7 @@ namespace Example
                 BackspaceBehaviour = BackspaceBehaviour.Escape,
                 TrimBehaviour = TrimBehaviour.None
             };
-            IEscapeRoute escapeRoute = new EscapeRoute.EscapeRoute(config);
+            IEscapeRoute escapeRoute = new EscapeRoute(config);
             String expected = @"The quick \r\n\t\bbrown fox jumps \r\n\t\bover the lazy dog.";
             String result = await escapeRoute.ParseStringAsync(inputString1);
 
@@ -124,7 +120,7 @@ namespace Example
         {
             // Escape is default behaviour for Unicode characters,
             // no configuration required.
-            IEscapeRoute escapeRoute = new EscapeRoute.EscapeRoute();
+            IEscapeRoute escapeRoute = new EscapeRoute();
             String expected = @"( \u0361\u00b0 \u035c\u0296 \u0361\u00b0)";
             String result = await escapeRoute.ParseStringAsync(unicodeString1);
             
