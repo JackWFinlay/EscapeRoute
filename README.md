@@ -138,4 +138,4 @@ namespace Example
 ## License
 MIT
 
-See [license.md](license.md) for details.
+See [LICENSE](LICENSE) for details.
