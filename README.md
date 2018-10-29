@@ -76,7 +76,7 @@ namespace Example
 {
     public class ExampleProgram
     {
-        internal readonly static String inputString1 = 
+        internal readonly static String _inputString1 = 
             "The quick \r\n\t\bbrown fox jumps \r\n\t\bover the lazy dog.";
 
         public async void TestEscapeAllBehaviourFromStringAsync()
@@ -91,7 +91,7 @@ namespace Example
             };
             IEscapeRoute escapeRoute = new EscapeRoute(config);
             String expected = @"The quick \r\n\t\bbrown fox jumps \r\n\t\bover the lazy dog.";
-            String result = await escapeRoute.ParseStringAsync(inputString1);
+            String result = await escapeRoute.ParseStringAsync(_inputString1);
 
             Console.WriteLine(result); 
             // "The quick \r\n\t\bbrown fox jumps \r\n\t\bover the lazy dog."
@@ -114,7 +114,7 @@ namespace Example
 {
     public class ExampleUnicodeProgram
     {
-        internal readonly static String unicodeString1 = "( ͡° ͜ʖ ͡°)";
+        internal readonly static String _unicodeString1 = "( ͡° ͜ʖ ͡°)";
 
         public async void TestEscapeUnicodeFromStringAsync()
         {
@@ -122,7 +122,7 @@ namespace Example
             // no configuration required.
             IEscapeRoute escapeRoute = new EscapeRoute();
             String expected = @"( \u0361\u00b0 \u035c\u0296 \u0361\u00b0)";
-            String result = await escapeRoute.ParseStringAsync(unicodeString1);
+            String result = await escapeRoute.ParseStringAsync(_unicodeString1);
             
             Console.WriteLine(result); 
             // "( \u0361\u00b0 \u035c\u0296 \u0361\u00b0)"
