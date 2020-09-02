@@ -3,25 +3,27 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using EscapeRoute.Abstractions.Enums;
+using EscapeRoute.Abstractions.Interfaces;
 
-namespace JackWFinlay.EscapeRoute
+namespace EscapeRoute
 {
-    public class EscapeRoute : IEscapeRoute
+    public class EscapeRouter : IEscapeRoute
     {
-        private EscapeRouteConfiguration _escapeRouteConfiguration;
+        private EscapeRouteConfiguration _configuration;
 
         /// <summary>
-        /// Creates a new <see cref="EscapeRoute"/> object.
+        /// Creates a new <see cref="EscapeRouter"/> object.
         /// </summary>
-        public EscapeRoute()
+        public EscapeRouter()
         {
-            _escapeRouteConfiguration = new EscapeRouteConfiguration();
+            _configuration = new EscapeRouteConfiguration();
         }
 
         /// <summary>
-        /// Creates a new <see cref="EscapeRoute"/> object.
+        /// Creates a new <see cref="EscapeRouter"/> object.
         /// </summary>
-        public EscapeRoute(EscapeRouteConfiguration escapeRouteConfiguration)
+        public EscapeRouter(EscapeRouteConfiguration escapeRouteConfiguration)
         {
             ApplyConfiguration(escapeRouteConfiguration);
         }
@@ -33,7 +35,7 @@ namespace JackWFinlay.EscapeRoute
         /// <returns>A JSON friendly <see cref="String"/>.</returns>
         public string ParseString(string inputString)
         {
-            return ReadString(inputString);
+            return ReadString(inputString).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -43,7 +45,7 @@ namespace JackWFinlay.EscapeRoute
         /// <returns>A JSON friendly <see cref="String"/>.</returns>
         public async Task<string> ParseStringAsync(string inputString)
         {
-            return await Task.Run(() => ReadString(inputString));
+            return await ReadString(inputString);
         }
 
         /// <summary>
@@ -53,7 +55,7 @@ namespace JackWFinlay.EscapeRoute
         /// <returns>A JSON friendly <see cref="String"/>.</returns>
         public string ParseFile(string fileLocation)
         {
-            return ReadFile(fileLocation);
+            return ReadFile(fileLocation).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -63,40 +65,40 @@ namespace JackWFinlay.EscapeRoute
         /// <returns>A JSON friendly <see cref="String"/>.</returns>
         public async Task<string> ParseFileAsync(string fileLocation)
         {
-            return await Task.Run(() => ReadFile(fileLocation));
+            return await ReadFile(fileLocation);
         }
 
         private void ApplyConfiguration(EscapeRouteConfiguration escapeRouteConfiguration)
         {
-            _escapeRouteConfiguration = escapeRouteConfiguration;
+            _configuration = escapeRouteConfiguration;
         }
 
-        private string ReadString(string inputString)
+        private async Task<string> ReadString(string inputString)
         {
             StringBuilder stringBuilder = new StringBuilder();
             string[] parts = inputString.Split('\n');
 
             // Sets newLine variable to whatever is expected. \n if behaviour is escape.
             string newLine = "";
-            if (_escapeRouteConfiguration.NewLineBehaviour == NewLineBehaviour.Escape)
+            if (_configuration.NewLineBehavior == NewLineBehavior.Escape)
             {
                 newLine = @"\n";
             }
 
             // Append first line without \n literal
-            stringBuilder.Append(Escape(parts[0]));
+            stringBuilder.Append(await Escape(parts[0]));
 
             // For the rest of the lines in the string. Ignores first index, [0].
             for (var i = 1; i < parts.Length; i++)
             {
                 // Escape the contents of the line and add it to the string being built.
-                stringBuilder.Append(newLine + Escape(parts[i]));
+                stringBuilder.Append(newLine + await Escape(parts[i]));
             }
 
             return stringBuilder.ToString();
         }
 
-        private string ReadFile(string fileLocation)
+        private async Task<string> ReadFile(string fileLocation)
         {
             StringBuilder stringBuilder = new StringBuilder();
 
@@ -104,20 +106,20 @@ namespace JackWFinlay.EscapeRoute
             {
                 // Sets newLine variable to whatever is expected. \n if behaviour is escape.
                 string newLine = "";
-                if (_escapeRouteConfiguration.NewLineBehaviour == NewLineBehaviour.Escape)
+                if (_configuration.NewLineBehavior == NewLineBehavior.Escape)
                 {
                     newLine = @"\n";
                 }
 
-                // Read first line and apppend without \n literal.
+                // Read first line and append without \n literal.
                 string line = streamReader.ReadLine();
-                stringBuilder.Append(Escape(line));
+                stringBuilder.Append(await Escape(line));
 
                 // Read rest of the lines, prepending newLine value.
                 while ((line = streamReader.ReadLine()) != null)
                 {
                     // Escape the contents of the line and add it to the string being built.
-                    stringBuilder.Append(newLine + Escape(line));
+                    stringBuilder.Append(newLine + await Escape(line));
                 }
             }
             return stringBuilder.ToString();
@@ -128,99 +130,74 @@ namespace JackWFinlay.EscapeRoute
         /// </summary>
         /// <param name="rawString"><see cref="String"/> Raw String</param>
         /// <returns>Escaped and trimmed <see cref="String"/></returns>
-        private string Escape(string rawString)
+        private async Task<string> Escape(string rawString)
         {
             string escaped = rawString;
 
-            // Remove backslash characters.
-            if (_escapeRouteConfiguration.BackslashBehaviour == BackslashBehaviour.Strip)
-            {
-                escaped = escaped.Replace("\\", "");
-            }
-            // Replace backslash with \\.
-            else if (_escapeRouteConfiguration.BackslashBehaviour == BackslashBehaviour.Escape)
-            {
-                Regex regex = new Regex("\\\\");
-                escaped = regex.Replace(escaped, @"\\");
-            }
+            // Handle backslash ('\') characters.
+            escaped = await _configuration.BackslashBehaviorHandler
+                                          .EscapeAsync(escaped, _configuration.BackslashBehavior);
 
             // Remove form feed characters.
-            if (_escapeRouteConfiguration.FormFeedBehaviour == FormFeedBehaviour.Strip)
+            if (_configuration.FormFeedBehavior == FormFeedBehavior.Strip)
             {
                 escaped = escaped.Replace("\f", "");
             }
             // Replace form feed with \f.
-            else if (_escapeRouteConfiguration.FormFeedBehaviour == FormFeedBehaviour.Escape)
+            else if (_configuration.FormFeedBehavior == FormFeedBehavior.Escape)
             {
                 Regex regex = new Regex("\f");
                 escaped = regex.Replace(escaped, @"\f");
             }
 
             // Remove tabs \t.
-            if (_escapeRouteConfiguration.TabBehaviour == TabBehaviour.Strip)
+            if (_configuration.TabBehavior == TabBehavior.Strip)
             {
                 escaped = escaped.Replace("\t", "");
             }
             // Replace tabs with \t.
-            else if (_escapeRouteConfiguration.TabBehaviour == TabBehaviour.Escape)
+            else if (_configuration.TabBehavior == TabBehavior.Escape)
             {
                 Regex regex = new Regex("\t");
                 escaped = regex.Replace(escaped, @"\t");
             }
 
             // Remove new line characters. To escape, the \n literal is prepended in calling methods.
-            if (_escapeRouteConfiguration.NewLineBehaviour == NewLineBehaviour.Strip)
+            if (_configuration.NewLineBehavior == NewLineBehavior.Strip)
             {
                 escaped = escaped.Replace("\n", "");
             }
 
-            // Remove carriage return characters.
-            if (_escapeRouteConfiguration.CarriageReturnBehaviour == CarriageReturnBehaviour.Strip)
-            {
-                escaped = escaped.Replace("\r", "");
-            }
-            // Replace carriage return characters with \r.
-            else if (_escapeRouteConfiguration.CarriageReturnBehaviour == CarriageReturnBehaviour.Escape)
-            {
-                Regex regex = new Regex("\r");
-                escaped = regex.Replace(escaped, @"\r");
-            }
+            escaped = await _configuration.CarriageReturnBehaviorHandler
+                                          .EscapeAsync(escaped, _configuration.CarriageReturnBehavior);
 
-            // Remove backspace characters.
-            if (_escapeRouteConfiguration.BackspaceBehaviour == BackspaceBehaviour.Strip)
-            {
-                escaped = escaped.Replace("\b", "");
-            }
-            // Replace backspace characters with \b.
-            else if (_escapeRouteConfiguration.BackspaceBehaviour == BackspaceBehaviour.Escape)
-            {
-                Regex regex = new Regex("\b");
-                escaped = regex.Replace(escaped, @"\b");
-            }
+            // Handle backspace ('\b') characters.
+            escaped = await _configuration.BackspaceBehaviorHandler
+                                          .EscapeAsync(escaped, _configuration.BackspaceBehavior);
 
             // Remove unicode \uXXXX characters.
-            if (_escapeRouteConfiguration.UnicodeBehaviour == UnicodeBehaviour.Strip)
+            if (_configuration.UnicodeBehavior == UnicodeBehavior.Strip)
             {
                 // [^\x00-\x7F] matches any non-ASCII character.
                 Regex regex = new Regex(@"[^\x00-\x7F]");
                 escaped = regex.Replace(escaped, "");
             }
             // Replace unicode characters with \uXXXX.
-            else if (_escapeRouteConfiguration.UnicodeBehaviour == UnicodeBehaviour.Escape)
+            else if (_configuration.UnicodeBehavior == UnicodeBehavior.Escape)
             {
                 // https://stackoverflow.com/a/25349901
                 escaped = Regex.Replace(escaped, @"[^\x00-\x7F]", c => string.Format(@"\u{0:x4}", (int)c.Value[0]));
             }
 
-            // Trim spaces at begining of string.
-            if (_escapeRouteConfiguration.TrimBehaviour == TrimBehaviour.Start ||
-                _escapeRouteConfiguration.TrimBehaviour == TrimBehaviour.Both )
+            // Trim spaces at beginning of string.
+            if (_configuration.TrimBehavior == TrimBehavior.Start ||
+                _configuration.TrimBehavior == TrimBehavior.Both )
             {
                 escaped = escaped.TrimStart();
             }
             // Trim spaces at end of string.
-            else if (_escapeRouteConfiguration.TrimBehaviour == TrimBehaviour.End ||
-                    _escapeRouteConfiguration.TrimBehaviour == TrimBehaviour.Both )
+            else if (_configuration.TrimBehavior == TrimBehavior.End ||
+                    _configuration.TrimBehavior == TrimBehavior.Both )
             {
                 escaped = escaped.TrimEnd();
             }
@@ -230,5 +207,7 @@ namespace JackWFinlay.EscapeRoute
 
             return escaped;
         }
+
+        
     }
 }

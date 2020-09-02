@@ -1,9 +1,9 @@
-namespace JackWFinlay.EscapeRoute
+namespace EscapeRoute.Abstractions.Enums
 {
     /// <summary>
     /// Specifies handling of carriage return \r characters.
     /// </summary>
-    public enum CarriageReturnBehaviour
+    public enum CarriageReturnBehavior
     {
         /// <summary>
         /// Strips carriage return \r characters.

@@ -1,9 +1,9 @@
-namespace JackWFinlay.EscapeRoute
+namespace EscapeRoute.Abstractions.Enums
 {
     /// <summary>
     /// Specifies handling of backslash \\ characters.
     /// </summary>
-    public enum BackslashBehaviour
+    public enum BackslashBehavior
     {
         /// <summary>
         /// Strips backslash \\ characters.

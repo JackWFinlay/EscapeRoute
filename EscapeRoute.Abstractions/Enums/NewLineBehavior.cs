@@ -1,9 +1,9 @@
-namespace JackWFinlay.EscapeRoute
+namespace EscapeRoute.Abstractions.Enums
 {
     /// <summary>
     /// Specifies handling of new line \n characters.
     /// </summary>
-    public enum NewLineBehaviour
+    public enum NewLineBehavior
     {
         /// <summary>
         /// Strips new line \n characters.
