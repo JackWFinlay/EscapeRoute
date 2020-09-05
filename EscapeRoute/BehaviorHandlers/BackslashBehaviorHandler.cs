@@ -10,31 +10,19 @@ namespace EscapeRoute.BehaviorHandlers
     {
         public Task<string> EscapeAsync(string raw, BackslashBehavior behavior)
         {
-            var escaped = HandleBackslashBehavior(raw, behavior);
+            var escaped = HandleBehavior(raw, behavior);
             return Task.FromResult(escaped);
         }
         
-        private static string HandleBackslashBehavior(string raw, BackslashBehavior behavior)
+        private static string HandleBehavior(string raw, BackslashBehavior behavior)
         {
-            string escaped = null;
-            
-            switch (behavior)
+            var escaped = behavior switch
             {
-                case BackslashBehavior.Escape:
-                {
-                    // Replace backslash with \\.
-                    Regex regex = new Regex("\\\\");
-                    escaped = regex.Replace(raw, @"\\");
-                    break;
-                }
-                case BackslashBehavior.Strip:
-                default:
-                {
-                    // Remove backslash characters.
-                    escaped = raw.Replace("\\", "");
-                    break;
-                }
-            }
+                // Replace backslash with \\.
+                BackslashBehavior.Escape => Regex.Replace(raw, "\\\\", @"\\"),
+                BackslashBehavior.Strip => raw.Replace("\\", ""),
+                _ => throw new ArgumentException($"Not a valid {nameof(BackslashBehavior)}", nameof(behavior))
+            };
 
             return escaped;
         }

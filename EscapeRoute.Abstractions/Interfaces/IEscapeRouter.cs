@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 
 namespace EscapeRoute.Abstractions.Interfaces
 {
-    public interface IEscapeRoute
+    public interface IEscapeRouter
     {
         string ParseString(string inputString);
 

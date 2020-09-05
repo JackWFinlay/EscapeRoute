@@ -10,7 +10,7 @@ using EscapeRoute.Extensions;
 
 namespace EscapeRoute
 {
-    public class EscapeRouter : IEscapeRoute
+    public class EscapeRouter : IEscapeRouter
     {
         private EscapeRouteConfiguration _configuration;
 
@@ -103,7 +103,7 @@ namespace EscapeRoute
 
             var escapedLines = await Task.WhenAll(escapeTaskList);
 
-            var newLineString = GetNewLineString(_configuration.NewLineType);
+            var newLineString = _configuration.NewLineType.GetNewLineString();
 
             var escaped = string.Join(newLineString, escapedLines);
 
@@ -127,67 +127,30 @@ namespace EscapeRoute
             escaped = await _configuration.FormFeedBehaviorHandler
                                           .EscapeAsync(escaped, _configuration.FormFeedBehavior);
 
-            // Remove tabs \t.
-            if (_configuration.TabBehavior == TabBehavior.Strip)
-            {
-                escaped = escaped.Replace("\t", "");
-            }
-            // Replace tabs with \t.
-            else if (_configuration.TabBehavior == TabBehavior.Escape)
-            {
-                Regex regex = new Regex("\t");
-                escaped = regex.Replace(escaped, @"\t");
-            }
+            // Handle tabs \t.
+            escaped = await _configuration.TabBehaviorHandler
+                                          .EscapeAsync(escaped, _configuration.TabBehavior);
 
             // Handle backspace ('\b') characters.
             escaped = await _configuration.BackspaceBehaviorHandler
                                           .EscapeAsync(escaped, _configuration.BackspaceBehavior);
 
-            // Remove unicode \uXXXX characters.
-            if (_configuration.UnicodeBehavior == UnicodeBehavior.Strip)
-            {
-                // [^\x00-\x7F] matches any non-ASCII character.
-                Regex regex = new Regex(@"[^\x00-\x7F]");
-                escaped = regex.Replace(escaped, "");
-            }
-            // Replace unicode characters with \uXXXX.
-            else if (_configuration.UnicodeBehavior == UnicodeBehavior.Escape)
-            {
-                // https://stackoverflow.com/a/25349901
-                escaped = Regex.Replace(escaped, @"[^\x00-\x7F]", c => string.Format(@"\u{0:x4}", (int)c.Value[0]));
-            }
+            // Handle unicode \uXXXX characters.
+            escaped = await _configuration.UnicodeBehaviorHandler
+                                          .EscapeAsync(escaped, _configuration.UnicodeBehavior);
 
-            // Trim spaces at beginning of string.
-            if (_configuration.TrimBehavior == TrimBehavior.Start ||
-                _configuration.TrimBehavior == TrimBehavior.Both )
-            {
-                escaped = escaped.TrimStart();
-            }
-            // Trim spaces at end of string.
-            else if (_configuration.TrimBehavior == TrimBehavior.End ||
-                    _configuration.TrimBehavior == TrimBehavior.Both )
-            {
-                escaped = escaped.TrimEnd();
-            }
+            // Handle trimming.
+            escaped = await _configuration.TrimBehaviorHandler
+                                          .EscapeAsync(escaped, _configuration.TrimBehavior);
 
-            escaped = escaped.Replace("\"", @"\""");
+            escaped = await _configuration.DoubleQuoteBehaviorHandler
+                                          .EscapeAsync(escaped, _configuration.DoubleQuoteBehavior);
+            
             escaped = escaped.Replace("\'", @"\'");
 
             return escaped;
         }
 
-        private static string GetNewLineString(NewLineType newLineType)
-        {
-            var delimiter = newLineType switch
-            {
-                NewLineType.None => "",
-                NewLineType.Space => " ",
-                NewLineType.Unix => @"\n",
-                NewLineType.Windows => @"\r\n",
-                _ => throw new ArgumentException($"Not a valid {nameof(NewLineType)}", nameof(newLineType))
-            };
-
-            return delimiter;
-        }
+        
     }
 }

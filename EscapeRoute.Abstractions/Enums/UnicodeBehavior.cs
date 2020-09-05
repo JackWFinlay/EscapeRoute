@@ -1,7 +1,7 @@
 namespace EscapeRoute.Abstractions.Enums
 {
     /// <summary>
-    /// Specifies handling of unicode \uXXXX characters.
+    /// Specifies handling of unicode \uXXXX characters (non-ASCII).
     /// </summary>
     public enum UnicodeBehavior
     {

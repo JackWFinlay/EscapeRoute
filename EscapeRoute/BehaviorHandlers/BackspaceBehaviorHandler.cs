@@ -10,31 +10,19 @@ namespace EscapeRoute.BehaviorHandlers
     {
         public Task<string> EscapeAsync(string raw, BackspaceBehavior behavior)
         {
-            var escaped = HandleBackspaceBehavior(raw, behavior);
+            var escaped = HandleBehavior(raw, behavior);
             return Task.FromResult(escaped);
         }
         
-        private static string HandleBackspaceBehavior(string raw, BackspaceBehavior behavior)
+        private static string HandleBehavior(string raw, BackspaceBehavior behavior)
         {
-            string escaped = null;
-
-            switch (behavior)
+            var escaped = behavior switch
             {
-                case BackspaceBehavior.Escape:
-                {    
-                    // Replace backspace characters with \b.
-                    Regex regex = new Regex("\b");
-                    escaped = regex.Replace(raw, @"\b");
-                    break;
-                }
-                case BackspaceBehavior.Strip:
-                default:
-                {
-                    // Remove backspace characters.
-                    escaped = raw.Replace("\b", "");
-                    break;
-                }
-            }
+                // Replace backspace characters with \b.
+                BackspaceBehavior.Escape => Regex.Replace(raw, "\b", @"\b"),
+                BackspaceBehavior.Strip => raw.Replace("\b", ""),
+                _ => throw new ArgumentException($"Not a valid {nameof(BackspaceBehavior)}", nameof(behavior))
+            };
 
             return escaped;
         }

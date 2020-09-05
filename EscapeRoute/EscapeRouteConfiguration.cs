@@ -8,40 +8,39 @@ namespace EscapeRoute
     public class EscapeRouteConfiguration
     {
         private const TabBehavior _defaultTabBehavior = TabBehavior.Strip;
-        private const NewLineBehavior _defaultNewLineBehavior = NewLineBehavior.Strip;
-        private const CarriageReturnBehavior _defaultCarriageReturnBehavior = CarriageReturnBehavior.Strip;
         private const BackspaceBehavior _defaultBackspaceBehavior = BackspaceBehavior.Strip;
         private const TrimBehavior _defaultTrimBehavior = TrimBehavior.Both;
         private const FormFeedBehavior _defaultFormFeedBehavior = FormFeedBehavior.Strip;
         private const BackslashBehavior _defaultBackslashBehavior = BackslashBehavior.Escape;
         private const UnicodeBehavior _defaultUnicodeBehavior = UnicodeBehavior.Escape;
-        private const NewLineType _defaultNewLineType = NewLineType.None;
-        
+        private const NewLineType _defaultNewLineType = NewLineType.Space;
+        private const DoubleQuoteBehavior _defaultDoubleQuoteBehavior = DoubleQuoteBehavior.Double;
+
         private readonly Lazy<BackslashBehaviorHandler> _defaultBackslashBehaviorHandler = new Lazy<BackslashBehaviorHandler>();
         private readonly Lazy<BackspaceBehaviorHandler> _defaultBackspaceBehaviorHandler = new Lazy<BackspaceBehaviorHandler>();
-        private readonly Lazy<CarriageReturnBehaviorHandler> _defaultCarriageReturnBehaviorHandler = new Lazy<CarriageReturnBehaviorHandler>();
         private readonly Lazy<FormFeedBehaviorHandler> _defaultFormFeedBehaviorHandler = new Lazy<FormFeedBehaviorHandler>();
-        private readonly Lazy<NewLineBehaviorHandler> _defaultNewLineBehaviorhandler = new Lazy<NewLineBehaviorHandler>();
-        // private readonly Lazy<BackslashBehaviorHandler> _defaultBackslashBehaviorHandler = new Lazy<BackslashBehaviorHandler>();
-        // private readonly Lazy<BackslashBehaviorHandler> _defaultBackslashBehaviorHandler = new Lazy<BackslashBehaviorHandler>();
-        // private readonly Lazy<BackslashBehaviorHandler> _defaultBackslashBehaviorHandler = new Lazy<BackslashBehaviorHandler>();
+        private readonly Lazy<TabBehaviorHandler> _defaultTabBehaviorHandler = new Lazy<TabBehaviorHandler>();
+        private readonly Lazy<UnicodeBehaviorHandler> _defaultUnicodeBehaviorHandler = new Lazy<UnicodeBehaviorHandler>();
+        private readonly Lazy<TrimBehaviorHandler> _defaultTrimBehaviorHandler = new Lazy<TrimBehaviorHandler>();
+        private readonly Lazy<DoubleQuoteBehaviorHandler> _defaultDoubleQuoteBehaviorHandler = new Lazy<DoubleQuoteBehaviorHandler>();
 
         private TabBehavior? _tabBehavior;
-        private NewLineBehavior? _newLineBehavior;
-        private CarriageReturnBehavior? _carriageReturnBehavior;
         private BackspaceBehavior? _backspaceBehavior;
         private TrimBehavior? _trimBehavior;
         private FormFeedBehavior? _formFeedBehavior;
         private BackslashBehavior? _backslashBehavior;
         private UnicodeBehavior? _unicodeBehavior;
         private NewLineType? _newLineType;
+        private DoubleQuoteBehavior? _doubleQuoteBehavior;
 
         private IEscapeRouteBehaviorHandler<BackslashBehavior> _backslashBehaviorHandler;
         private IEscapeRouteBehaviorHandler<BackspaceBehavior> _backspaceBehaviorHandler;
-        private IEscapeRouteBehaviorHandler<CarriageReturnBehavior> _carriageReturnBehaviorHandler;
         private IEscapeRouteBehaviorHandler<FormFeedBehavior> _formFeedBehaviorHandler;
-        private IEscapeRouteBehaviorHandler<NewLineBehavior> _newLineBehaviorHandler;
-
+        private IEscapeRouteBehaviorHandler<TabBehavior> _tabBehaviorHandler;
+        private IEscapeRouteBehaviorHandler<UnicodeBehavior> _unicodeBehaviorHandler;
+        private IEscapeRouteBehaviorHandler<TrimBehavior> _trimBehaviorHandler;
+        private IEscapeRouteBehaviorHandler<DoubleQuoteBehavior> _doubleQuoteBehaviorHandler;
+        
 
         /// <summary>
         /// Gets or sets how tab \t characters are handled.
@@ -53,40 +52,12 @@ namespace EscapeRoute
         }
 
         /// <summary>
-        /// Gets or sets how new line \n characters are handled.
+        /// Gets or sets the handler for handling tab \t characters.
         /// </summary>
-        /// <value>New line behaviour</value>
-        public NewLineBehavior NewLineBehavior
+        public IEscapeRouteBehaviorHandler<TabBehavior> TabBehaviorHandler
         {
-            get => _newLineBehavior ?? _defaultNewLineBehavior;
-            set => _newLineBehavior = value;
-        }
-
-        /// <summary>
-        /// Gets or sets the handler for handling new line \n characters.
-        /// </summary>
-        public IEscapeRouteBehaviorHandler<NewLineBehavior> NewLineBehaviorHandler
-        {
-            get => _newLineBehaviorHandler ?? _defaultNewLineBehaviorhandler.Value;
-            set => _newLineBehaviorHandler = value;
-        }
-
-        /// <summary>
-        /// Gets or sets how carriage return \r characters are handled.
-        /// </summary>
-        public CarriageReturnBehavior CarriageReturnBehavior
-        {
-            get => _carriageReturnBehavior ?? _defaultCarriageReturnBehavior;
-            set => _carriageReturnBehavior = value;
-        }
-
-        /// <summary>
-        /// Gets or sets the handler for handling carriage return \r characters.
-        /// </summary>
-        public IEscapeRouteBehaviorHandler<CarriageReturnBehavior> CarriageReturnBehaviorHandler
-        {
-            get => _carriageReturnBehaviorHandler ?? _defaultCarriageReturnBehaviorHandler.Value;
-            set => _carriageReturnBehaviorHandler = value;
+            get => _tabBehaviorHandler ?? _defaultTabBehaviorHandler.Value;
+            set => _tabBehaviorHandler = value;
         }
 
         /// <summary>
@@ -115,6 +86,15 @@ namespace EscapeRoute
         {
             get => _trimBehavior ?? _defaultTrimBehavior;
             set => _trimBehavior = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the handler for handling trimming of lines.
+        /// </summary>
+        public IEscapeRouteBehaviorHandler<TrimBehavior> TrimBehaviorHandler
+        {
+            get => _trimBehaviorHandler ?? _defaultTrimBehaviorHandler.Value;
+            set => _trimBehaviorHandler = value;
         }
 
         /// <summary>
@@ -162,12 +142,39 @@ namespace EscapeRoute
         }
 
         /// <summary>
+        /// Gets or sets the handler for handling non-ASCII characters.
+        /// </summary>
+        public IEscapeRouteBehaviorHandler<UnicodeBehavior> UnicodeBehaviorHandler
+        {
+            get => _unicodeBehaviorHandler ?? _defaultUnicodeBehaviorHandler.Value;
+            set => _unicodeBehaviorHandler = value;
+        }
+
+        /// <summary>
         /// Gets or sets the new line type for the output.
         /// </summary>
         public NewLineType NewLineType
         {
             get => _newLineType ?? _defaultNewLineType;
             set => _newLineType = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the double quote behavior.
+        /// </summary>
+        public DoubleQuoteBehavior DoubleQuoteBehavior
+        {
+            get => _doubleQuoteBehavior ?? _defaultDoubleQuoteBehavior;
+            set => _doubleQuoteBehavior = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the behavior handler for double quote characters.
+        /// </summary>
+        public IEscapeRouteBehaviorHandler<DoubleQuoteBehavior> DoubleQuoteBehaviorHandler
+        {
+            get => _doubleQuoteBehaviorHandler ?? _defaultDoubleQuoteBehaviorHandler.Value;
+            set => _doubleQuoteBehaviorHandler = value;
         }
     }
 }

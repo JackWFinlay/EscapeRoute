@@ -1,7 +1,7 @@
 namespace EscapeRoute.Abstractions.Enums
 {
     /// <summary>
-    /// Specifies trim behavior.
+    /// Specifies trim behavior. Operates per line of text.
     /// </summary>
     public enum TrimBehavior
     {

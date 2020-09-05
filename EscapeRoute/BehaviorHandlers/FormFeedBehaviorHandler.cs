@@ -10,29 +10,18 @@ namespace EscapeRoute.BehaviorHandlers
     {
         public Task<string> EscapeAsync(string raw, FormFeedBehavior behavior)
         {
-            var escaped = HandleCarriageReturnBehavior(raw, behavior);
+            var escaped = HandleBehavior(raw, behavior);
             return Task.FromResult(escaped);
         }
         
-        private static string HandleCarriageReturnBehavior(string raw, FormFeedBehavior behavior)
+        private static string HandleBehavior(string raw, FormFeedBehavior behavior)
         {
-            string escaped = null;
-
-            switch (behavior)
+            var escaped = behavior switch
             {
-                case FormFeedBehavior.Escape:
-                {
-                    // Replace form feed characters with \f.
-                    Regex regex = new Regex("\f");
-                    escaped = regex.Replace(raw, @"\f");
-                    break;
-                }
-                case FormFeedBehavior.Strip:
-                default:
-                    // Remove form feed characters.
-                    escaped = raw.Replace("\f", "");
-                    break;
-            }
+                FormFeedBehavior.Escape => Regex.Replace(raw, "\f",@"\f"),
+                FormFeedBehavior.Strip => raw.Replace("\f", ""),
+                _ => throw new ArgumentException($"Not a valid {nameof(FormFeedBehavior)}", nameof(behavior))
+            };
 
             return escaped;
         }

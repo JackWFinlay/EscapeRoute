@@ -9,12 +9,11 @@ Currently suports the following behaviours/special characters (***Default***):
  - Tab (\t):
    - ***Strip***
    - Escape
- - New line (\n):
-   - ***Strip***
-   - Escape
- - Carriage return (\r):
-   - ***Strip***
-   - Escape
+ - New line (\n | \r\n):
+   - None
+   - ***Space***
+   - Unix (\n)
+   - Windows (\r\n)
  - Backspace (\b):
    - ***Strip***
    - Escape
@@ -27,10 +26,12 @@ Currently suports the following behaviours/special characters (***Default***):
  - Unicode (\uXXXX):
    - Strip
    - ***Escape***
- - Single quotes '' (\\\'):
-   - ***Escape***
- - Double quotes "" (\\\"):
-   - ***Escape***
+ - Single quotes '':
+   - ***Single***
+   - Double
+ - Double quotes "":
+   - ***Double***
+   - Single
  - Trim
    - None
    - Start
@@ -38,19 +39,19 @@ Currently suports the following behaviours/special characters (***Default***):
    - ***Both***
 
 ## Usage
-Use the namespace `JackWFinlay.EscapeRoute`:
+Use the namespace `EscapeRoute`:
 
 ```C#
-using JackWFinlay.EscapeRoute;
+using EscapeRoute;
 ```
 
 EscapeRoute allows the use of Files or Strings to load in the data to be escaped and trimmed. These can be called synchronously or asynchronously. 
 
 E.g. `ParseFile` and `ParseStringAsync`
 
-test file: [test1.txt](test/EscapeRoute.Test/test-files/test1.txt)
+test file: [test1.txt](EscapeRoute.Test/test-files/test1.txt)
 ```C#
-using JackWFinlay.EscapeRoute;
+using EscapeRoute;
 
 namespace Example
 {
@@ -59,9 +60,9 @@ namespace Example
         public void TestDefaultBehaviourFromFile()
         {
             String fileLocation = $"{workspaceFolder}/test-files/test1.txt";
-            IEscapeRoute escapeRoute = new EscapeRoute();
+            IEscapeRoute escapeRouter = new EscapeRouter();
             String expected = "The quick brown fox jumps over the lazy dog.";
-            String result = escapeRoute.ParseFile(fileLocation);
+            String result = escapeRouter.ParseFile(fileLocation);
             
             String areEqual = expected.Equals(result) ? "" : " not";
             Console.WriteLine($"The strings are{areEqual} equal"); 
@@ -72,11 +73,13 @@ namespace Example
 ```
 EscapeRoute allows configuration using a `EscapeRouteConfiguration` object, which is passed to the EscapeRoute constructor:
 ```C#
+using EscapeRoute;
+
 namespace Example
 {
     public class ExampleProgram
     {
-        internal readonly static String inputString1 = 
+        private static const String inputString1 = 
             "The quick \r\n\t\bbrown fox jumps \r\n\t\bover the lazy dog.";
 
         public async void TestEscapeAllBehaviourFromStringAsync()
@@ -84,14 +87,13 @@ namespace Example
             EscapeRouteConfiguration config = new EscapeRouteConfiguration
             {
                 TabBehaviour = TabBehaviour.Escape,
-                NewLineBehaviour = NewLineBehaviour.Escape,
-                CarriageReturnBehaviour = CarriageReturnBehaviour.Escape,
                 BackspaceBehaviour = BackspaceBehaviour.Escape,
-                TrimBehaviour = TrimBehaviour.None
+                TrimBehaviour = TrimBehaviour.None,
+                NewLineType = NewLineType.Windows
             };
-            IEscapeRoute escapeRoute = new EscapeRoute(config);
+            IEscapeRouter escapeRouter = new EscapeRouter(config);
             String expected = @"The quick \r\n\t\bbrown fox jumps \r\n\t\bover the lazy dog.";
-            String result = await escapeRoute.ParseStringAsync(inputString1);
+            String result = await escapeRouter.ParseStringAsync(inputString1);
 
             Console.WriteLine(result); 
             // "The quick \r\n\t\bbrown fox jumps \r\n\t\bover the lazy dog."
@@ -110,19 +112,21 @@ EscapeRoute supports the translation of Unicode characters to the JSON escape fo
 E.g. `ʖ` = `\u0296`
 
 ```C#
+using EscapeRoute;
+
 namespace Example
 {
     public class ExampleUnicodeProgram
     {
-        internal readonly static String unicodeString1 = "( ͡° ͜ʖ ͡°)";
+        private static const String unicodeString1 = "( ͡° ͜ʖ ͡°)";
 
         public async void TestEscapeUnicodeFromStringAsync()
         {
             // Escape is default behaviour for Unicode characters,
             // no configuration required.
-            IEscapeRoute escapeRoute = new EscapeRoute();
+            IEscapeRouter escapeRouter = new EscapeRouter();
             String expected = @"( \u0361\u00b0 \u035c\u0296 \u0361\u00b0)";
-            String result = await escapeRoute.ParseStringAsync(unicodeString1);
+            String result = await escapeRouter.ParseStringAsync(unicodeString1);
             
             Console.WriteLine(result); 
             // "( \u0361\u00b0 \u035c\u0296 \u0361\u00b0)"
@@ -138,4 +142,4 @@ namespace Example
 ## License
 MIT
 
-See [license.md](license.md) for details.
+See [LICENSE](LICENSE) for details.
