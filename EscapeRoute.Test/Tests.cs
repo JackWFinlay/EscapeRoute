@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using EscapeRoute.Abstractions.Enums;
 using EscapeRoute.Abstractions.Interfaces;
 using Xunit;
@@ -32,7 +33,26 @@ namespace EscapeRoute.Test
         }
 
         [Fact]
-        public void TestEscapeAllBehaviourFromFile()
+        public void TestEscapeAllBehaviourNewLineSpaceFromFile()
+        {
+            string fileLocation = $"{_workspaceFolder}/test-files/test1.txt";
+            EscapeRouteConfiguration config = new EscapeRouteConfiguration
+            {
+                TabBehavior = TabBehavior.Escape,
+                NewLineBehavior = NewLineBehavior.Escape,
+                CarriageReturnBehavior = CarriageReturnBehavior.Escape,
+                BackspaceBehavior = BackspaceBehavior.Escape,
+                TrimBehavior = TrimBehavior.None,
+                NewLineType = NewLineType.Space
+            };
+            IEscapeRoute escapeRoute = new EscapeRouter(config);
+            string expected = @"\\The quick  \tbrown fox jumps  \tover the lazy dog.";
+            string result = escapeRoute.ParseFile(fileLocation);
+            Assert.Equal(expected, result);
+        }
+        
+        [Fact]
+        public void TestEscapeAllBehaviourNewLineNoneFromFile()
         {
             string fileLocation = $"{_workspaceFolder}/test-files/test1.txt";
             EscapeRouteConfiguration config = new EscapeRouteConfiguration
@@ -42,15 +62,72 @@ namespace EscapeRoute.Test
                 CarriageReturnBehavior = CarriageReturnBehavior.Escape,
                 BackspaceBehavior = BackspaceBehavior.Escape,
                 TrimBehavior = TrimBehavior.None
+            };
+            IEscapeRoute escapeRoute = new EscapeRouter(config);
+            string expected = @"\\The quick \tbrown fox jumps \tover the lazy dog.";
+            string result = escapeRoute.ParseFile(fileLocation);
+            Assert.Equal(expected, result);
+        }
+        
+        [Fact]
+        public void TestEscapeAllBehaviourNewLineUnixFromFile()
+        {
+            string fileLocation = $"{_workspaceFolder}/test-files/test1.txt";
+            EscapeRouteConfiguration config = new EscapeRouteConfiguration
+            {
+                TabBehavior = TabBehavior.Escape,
+                NewLineBehavior = NewLineBehavior.Escape,
+                CarriageReturnBehavior = CarriageReturnBehavior.Escape,
+                BackspaceBehavior = BackspaceBehavior.Escape,
+                TrimBehavior = TrimBehavior.None,
+                NewLineType = NewLineType.Unix
             };
             IEscapeRoute escapeRoute = new EscapeRouter(config);
             string expected = @"\\The quick \n\tbrown fox jumps \n\tover the lazy dog.";
             string result = escapeRoute.ParseFile(fileLocation);
             Assert.Equal(expected, result);
         }
+        
+        [Fact]
+        public void TestEscapeAllBehaviourNewLineWindowsFromFile()
+        {
+            string fileLocation = $"{_workspaceFolder}/test-files/test1.txt";
+            EscapeRouteConfiguration config = new EscapeRouteConfiguration
+            {
+                TabBehavior = TabBehavior.Escape,
+                NewLineBehavior = NewLineBehavior.Escape,
+                CarriageReturnBehavior = CarriageReturnBehavior.Escape,
+                BackspaceBehavior = BackspaceBehavior.Escape,
+                TrimBehavior = TrimBehavior.None,
+                NewLineType = NewLineType.Windows
+            };
+            IEscapeRoute escapeRoute = new EscapeRouter(config);
+            string expected = @"\\The quick \r\n\tbrown fox jumps \r\n\tover the lazy dog.";
+            string result = escapeRoute.ParseFile(fileLocation);
+            Assert.Equal(expected, result);
+        }
 
         [Fact]
-        public async void TestEscapeAllBehaviourFromFileAsync()
+        public async Task TestEscapeAllBehaviourNewLineSpaceFromFileAsync()
+        {
+            string fileLocation = $"{_workspaceFolder}/test-files/test1.txt";
+            EscapeRouteConfiguration config = new EscapeRouteConfiguration
+            {
+                TabBehavior = TabBehavior.Escape,
+                NewLineBehavior = NewLineBehavior.Escape,
+                CarriageReturnBehavior = CarriageReturnBehavior.Escape,
+                BackspaceBehavior = BackspaceBehavior.Escape,
+                TrimBehavior = TrimBehavior.None,
+                NewLineType = NewLineType.Space
+            };
+            IEscapeRoute escapeRoute = new EscapeRouter(config);
+            string expected = @"\\The quick  \tbrown fox jumps  \tover the lazy dog.";
+            string result = await escapeRoute.ParseFileAsync(fileLocation);
+            Assert.Equal(expected, result);
+        }
+        
+        [Fact]
+        public async Task TestEscapeAllBehaviourNewLineNoneFromFileAsync()
         {
             string fileLocation = $"{_workspaceFolder}/test-files/test1.txt";
             EscapeRouteConfiguration config = new EscapeRouteConfiguration
@@ -62,7 +139,45 @@ namespace EscapeRoute.Test
                 TrimBehavior = TrimBehavior.None
             };
             IEscapeRoute escapeRoute = new EscapeRouter(config);
+            string expected = @"\\The quick \tbrown fox jumps \tover the lazy dog.";
+            string result = await escapeRoute.ParseFileAsync(fileLocation);
+            Assert.Equal(expected, result);
+        }
+        
+        [Fact]
+        public async Task TestEscapeAllBehaviourNewLineUnixFromFileAsync()
+        {
+            string fileLocation = $"{_workspaceFolder}/test-files/test1.txt";
+            EscapeRouteConfiguration config = new EscapeRouteConfiguration
+            {
+                TabBehavior = TabBehavior.Escape,
+                NewLineBehavior = NewLineBehavior.Escape,
+                CarriageReturnBehavior = CarriageReturnBehavior.Escape,
+                BackspaceBehavior = BackspaceBehavior.Escape,
+                TrimBehavior = TrimBehavior.None,
+                NewLineType = NewLineType.Unix
+            };
+            IEscapeRoute escapeRoute = new EscapeRouter(config);
             string expected = @"\\The quick \n\tbrown fox jumps \n\tover the lazy dog.";
+            string result = await escapeRoute.ParseFileAsync(fileLocation);
+            Assert.Equal(expected, result);
+        }
+        
+        [Fact]
+        public async Task TestEscapeAllBehaviourNewLineWindowsFromFileAsync()
+        {
+            string fileLocation = $"{_workspaceFolder}/test-files/test1.txt";
+            EscapeRouteConfiguration config = new EscapeRouteConfiguration
+            {
+                TabBehavior = TabBehavior.Escape,
+                NewLineBehavior = NewLineBehavior.Escape,
+                CarriageReturnBehavior = CarriageReturnBehavior.Escape,
+                BackspaceBehavior = BackspaceBehavior.Escape,
+                TrimBehavior = TrimBehavior.None,
+                NewLineType = NewLineType.Windows
+            };
+            IEscapeRoute escapeRoute = new EscapeRouter(config);
+            string expected = @"\\The quick \r\n\tbrown fox jumps \r\n\tover the lazy dog.";
             string result = await escapeRoute.ParseFileAsync(fileLocation);
             Assert.Equal(expected, result);
         }
@@ -132,7 +247,7 @@ namespace EscapeRoute.Test
         }
 
         [Fact]
-        public async void TestUnicodeFromFileAsyncStrip()
+        public async Task TestUnicodeFromFileAsyncStrip()
         {
             string fileLocation = $"{_workspaceFolder}/test-files/unicode1.txt";
             EscapeRouteConfiguration config = new EscapeRouteConfiguration
@@ -164,7 +279,7 @@ namespace EscapeRoute.Test
         }
 
         [Fact]
-        public async void TestDefaultBehaviourFromStringAsync()
+        public async Task TestDefaultBehaviourFromStringAsync()
         {
             IEscapeRoute escapeRoute = new EscapeRouter();
             string expected = "The quick brown fox jumps over the lazy dog.";
@@ -173,7 +288,7 @@ namespace EscapeRoute.Test
         }
 
         [Fact]
-        public void TestEscapeAllBehaviourFromString()
+        public void TestEscapeAllBehaviourNewLineNoneFromString()
         {
             EscapeRouteConfiguration config = new EscapeRouteConfiguration
             {
@@ -181,16 +296,35 @@ namespace EscapeRoute.Test
                 NewLineBehavior = NewLineBehavior.Escape,
                 CarriageReturnBehavior = CarriageReturnBehavior.Escape,
                 BackspaceBehavior = BackspaceBehavior.Escape,
-                TrimBehavior = TrimBehavior.None
+                TrimBehavior = TrimBehavior.None,
+                NewLineType = NewLineType.None
             };
             IEscapeRoute escapeRoute = new EscapeRouter(config);
-            string expected = @"The quick \r\n\t\bbrown fox jumps \r\n\t\bover the lazy dog.";
+            string expected = @"The quick \t\bbrown fox jumps \t\bover the lazy dog.";
+            string result = escapeRoute.ParseString(inputString1);
+            Assert.Equal(expected, result);
+        }
+        
+        [Fact]
+        public void TestEscapeAllBehaviourNewLineSpaceFromString()
+        {
+            EscapeRouteConfiguration config = new EscapeRouteConfiguration
+            {
+                TabBehavior = TabBehavior.Escape,
+                NewLineBehavior = NewLineBehavior.Escape,
+                CarriageReturnBehavior = CarriageReturnBehavior.Escape,
+                BackspaceBehavior = BackspaceBehavior.Escape,
+                TrimBehavior = TrimBehavior.None,
+                NewLineType = NewLineType.Space
+            };
+            IEscapeRoute escapeRoute = new EscapeRouter(config);
+            string expected = @"The quick  \t\bbrown fox jumps  \t\bover the lazy dog.";
             string result = escapeRoute.ParseString(inputString1);
             Assert.Equal(expected, result);
         }
 
         [Fact]
-        public async void TestEscapeAllBehaviourFromStringAsync()
+        public async Task TestEscapeAllBehaviourWindowsFromStringAsync()
         {
             EscapeRouteConfiguration config = new EscapeRouteConfiguration
             {
@@ -198,10 +332,29 @@ namespace EscapeRoute.Test
                 NewLineBehavior = NewLineBehavior.Escape,
                 CarriageReturnBehavior = CarriageReturnBehavior.Escape,
                 BackspaceBehavior = BackspaceBehavior.Escape,
-                TrimBehavior = TrimBehavior.None
+                TrimBehavior = TrimBehavior.None,
+                NewLineType = NewLineType.Windows
             };
             IEscapeRoute escapeRoute = new EscapeRouter(config);
             string expected = @"The quick \r\n\t\bbrown fox jumps \r\n\t\bover the lazy dog.";
+            string result = await escapeRoute.ParseStringAsync(inputString1);
+            Assert.Equal(expected, result);
+        }
+        
+        [Fact]
+        public async Task TestEscapeAllBehaviourUnixFromStringAsync()
+        {
+            EscapeRouteConfiguration config = new EscapeRouteConfiguration
+            {
+                TabBehavior = TabBehavior.Escape,
+                NewLineBehavior = NewLineBehavior.Escape,
+                CarriageReturnBehavior = CarriageReturnBehavior.Escape,
+                BackspaceBehavior = BackspaceBehavior.Escape,
+                TrimBehavior = TrimBehavior.None,
+                NewLineType = NewLineType.Unix
+            };
+            IEscapeRoute escapeRoute = new EscapeRouter(config);
+            string expected = @"The quick \n\t\bbrown fox jumps \n\t\bover the lazy dog.";
             string result = await escapeRoute.ParseStringAsync(inputString1);
             Assert.Equal(expected, result);
         }
@@ -218,7 +371,7 @@ namespace EscapeRoute.Test
         }
 
         [Fact]
-        public async void TestUnicodeFromStringAsyncDefault()
+        public async Task TestUnicodeFromStringAsyncDefault()
         {
             IEscapeRoute escapeRoute = new EscapeRouter();
             string expected = @"( \u0361\u00b0 \u035c\u0296 \u0361\u00b0)";
@@ -240,7 +393,7 @@ namespace EscapeRoute.Test
         }
 
         [Fact]
-        public async void TestUnicodeFromStringAsyncExplicitEscape()
+        public async Task TestUnicodeFromStringAsyncExplicitEscape()
         {
             EscapeRouteConfiguration config = new EscapeRouteConfiguration
             {
@@ -266,7 +419,7 @@ namespace EscapeRoute.Test
         }
 
         [Fact]
-        public async void TestUnicodeFromStringAsyncStrip()
+        public async Task TestUnicodeFromStringAsyncStrip()
         {
             EscapeRouteConfiguration config = new EscapeRouteConfiguration
             {

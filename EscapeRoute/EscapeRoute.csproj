@@ -18,6 +18,7 @@
     <RepositoryType>git</RepositoryType>
     <VersionPrefix>0.0.1</VersionPrefix>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <LangVersion>8</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\EscapeRoute.Abstractions\EscapeRoute.Abstractions.csproj" />

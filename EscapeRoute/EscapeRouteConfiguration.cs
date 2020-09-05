@@ -1,5 +1,6 @@
 using System;
 using EscapeRoute.Abstractions.Enums;
+using EscapeRoute.Abstractions.Interfaces;
 using EscapeRoute.BehaviorHandlers;
 
 namespace EscapeRoute
@@ -14,12 +15,13 @@ namespace EscapeRoute
         private const FormFeedBehavior _defaultFormFeedBehavior = FormFeedBehavior.Strip;
         private const BackslashBehavior _defaultBackslashBehavior = BackslashBehavior.Escape;
         private const UnicodeBehavior _defaultUnicodeBehavior = UnicodeBehavior.Escape;
+        private const NewLineType _defaultNewLineType = NewLineType.None;
         
         private readonly Lazy<BackslashBehaviorHandler> _defaultBackslashBehaviorHandler = new Lazy<BackslashBehaviorHandler>();
         private readonly Lazy<BackspaceBehaviorHandler> _defaultBackspaceBehaviorHandler = new Lazy<BackspaceBehaviorHandler>();
         private readonly Lazy<CarriageReturnBehaviorHandler> _defaultCarriageReturnBehaviorHandler = new Lazy<CarriageReturnBehaviorHandler>();
-        // private readonly Lazy<BackslashBehaviorHandler> _defaultBackslashBehaviorHandler = new Lazy<BackslashBehaviorHandler>();
-        // private readonly Lazy<BackslashBehaviorHandler> _defaultBackslashBehaviorHandler = new Lazy<BackslashBehaviorHandler>();
+        private readonly Lazy<FormFeedBehaviorHandler> _defaultFormFeedBehaviorHandler = new Lazy<FormFeedBehaviorHandler>();
+        private readonly Lazy<NewLineBehaviorHandler> _defaultNewLineBehaviorhandler = new Lazy<NewLineBehaviorHandler>();
         // private readonly Lazy<BackslashBehaviorHandler> _defaultBackslashBehaviorHandler = new Lazy<BackslashBehaviorHandler>();
         // private readonly Lazy<BackslashBehaviorHandler> _defaultBackslashBehaviorHandler = new Lazy<BackslashBehaviorHandler>();
         // private readonly Lazy<BackslashBehaviorHandler> _defaultBackslashBehaviorHandler = new Lazy<BackslashBehaviorHandler>();
@@ -32,10 +34,14 @@ namespace EscapeRoute
         private FormFeedBehavior? _formFeedBehavior;
         private BackslashBehavior? _backslashBehavior;
         private UnicodeBehavior? _unicodeBehavior;
+        private NewLineType? _newLineType;
 
-        private BackslashBehaviorHandler _backslashBehaviorHandler;
-        private BackspaceBehaviorHandler _backspaceBehaviorHandler;
-        private CarriageReturnBehaviorHandler _carriageReturnBehaviorHandler;
+        private IEscapeRouteBehaviorHandler<BackslashBehavior> _backslashBehaviorHandler;
+        private IEscapeRouteBehaviorHandler<BackspaceBehavior> _backspaceBehaviorHandler;
+        private IEscapeRouteBehaviorHandler<CarriageReturnBehavior> _carriageReturnBehaviorHandler;
+        private IEscapeRouteBehaviorHandler<FormFeedBehavior> _formFeedBehaviorHandler;
+        private IEscapeRouteBehaviorHandler<NewLineBehavior> _newLineBehaviorHandler;
+
 
         /// <summary>
         /// Gets or sets how tab \t characters are handled.
@@ -57,6 +63,15 @@ namespace EscapeRoute
         }
 
         /// <summary>
+        /// Gets or sets the handler for handling new line \n characters.
+        /// </summary>
+        public IEscapeRouteBehaviorHandler<NewLineBehavior> NewLineBehaviorHandler
+        {
+            get => _newLineBehaviorHandler ?? _defaultNewLineBehaviorhandler.Value;
+            set => _newLineBehaviorHandler = value;
+        }
+
+        /// <summary>
         /// Gets or sets how carriage return \r characters are handled.
         /// </summary>
         public CarriageReturnBehavior CarriageReturnBehavior
@@ -65,7 +80,10 @@ namespace EscapeRoute
             set => _carriageReturnBehavior = value;
         }
 
-        public CarriageReturnBehaviorHandler CarriageReturnBehaviorHandler
+        /// <summary>
+        /// Gets or sets the handler for handling carriage return \r characters.
+        /// </summary>
+        public IEscapeRouteBehaviorHandler<CarriageReturnBehavior> CarriageReturnBehaviorHandler
         {
             get => _carriageReturnBehaviorHandler ?? _defaultCarriageReturnBehaviorHandler.Value;
             set => _carriageReturnBehaviorHandler = value;
@@ -84,7 +102,7 @@ namespace EscapeRoute
         /// <summary>
         /// Gets or sets the handler for how backspace \b characters are handled.
         /// </summary>
-        public BackspaceBehaviorHandler BackspaceBehaviorHandler
+        public IEscapeRouteBehaviorHandler<BackspaceBehavior> BackspaceBehaviorHandler
         {
             get => _backspaceBehaviorHandler ?? _defaultBackspaceBehaviorHandler.Value;
             set => _backspaceBehaviorHandler = value;
@@ -108,6 +126,15 @@ namespace EscapeRoute
         }
 
         /// <summary>
+        /// Gets or sets the handler for handling form feed \f characters.
+        /// </summary>
+        public IEscapeRouteBehaviorHandler<FormFeedBehavior> FormFeedBehaviorHandler
+        {
+            get => _formFeedBehaviorHandler ?? _defaultFormFeedBehaviorHandler.Value;
+            set => _formFeedBehaviorHandler = value;
+        }
+
+        /// <summary>
         /// Gets or sets how backslash \\ characters are handled.
         /// </summary>
         public BackslashBehavior BackslashBehavior
@@ -119,7 +146,7 @@ namespace EscapeRoute
         /// <summary>
         /// Gets or sets the handler for handling backslash // characters.
         /// </summary>
-        public BackslashBehaviorHandler BackslashBehaviorHandler
+        public IEscapeRouteBehaviorHandler<BackslashBehavior> BackslashBehaviorHandler
         {
             get => _backslashBehaviorHandler ?? _defaultBackslashBehaviorHandler.Value;
             set => _backslashBehaviorHandler = value;
@@ -128,9 +155,19 @@ namespace EscapeRoute
         /// <summary>
         /// Gets or sets how Unicode characters are handled.
         /// </summary>
-        public UnicodeBehavior UnicodeBehavior {
+        public UnicodeBehavior UnicodeBehavior 
+        {
             get => _unicodeBehavior ?? _defaultUnicodeBehavior;
             set => _unicodeBehavior = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the new line type for the output.
+        /// </summary>
+        public NewLineType NewLineType
+        {
+            get => _newLineType ?? _defaultNewLineType;
+            set => _newLineType = value;
         }
     }
 }

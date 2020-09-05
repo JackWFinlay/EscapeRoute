@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using EscapeRoute.Abstractions.Enums;
 using EscapeRoute.Abstractions.Interfaces;
+using EscapeRoute.Extensions;
 
 namespace EscapeRoute
 {
@@ -35,7 +37,7 @@ namespace EscapeRoute
         /// <returns>A JSON friendly <see cref="String"/>.</returns>
         public string ParseString(string inputString)
         {
-            return ReadString(inputString).GetAwaiter().GetResult();
+            return ReadStringAsync(inputString).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -45,7 +47,7 @@ namespace EscapeRoute
         /// <returns>A JSON friendly <see cref="String"/>.</returns>
         public async Task<string> ParseStringAsync(string inputString)
         {
-            return await ReadString(inputString);
+            return await ReadStringAsync(inputString);
         }
 
         /// <summary>
@@ -55,7 +57,7 @@ namespace EscapeRoute
         /// <returns>A JSON friendly <see cref="String"/>.</returns>
         public string ParseFile(string fileLocation)
         {
-            return ReadFile(fileLocation).GetAwaiter().GetResult();
+            return ReadFileAsync(fileLocation).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -65,7 +67,7 @@ namespace EscapeRoute
         /// <returns>A JSON friendly <see cref="String"/>.</returns>
         public async Task<string> ParseFileAsync(string fileLocation)
         {
-            return await ReadFile(fileLocation);
+            return await ReadFileAsync(fileLocation);
         }
 
         private void ApplyConfiguration(EscapeRouteConfiguration escapeRouteConfiguration)
@@ -73,56 +75,39 @@ namespace EscapeRoute
             _configuration = escapeRouteConfiguration;
         }
 
-        private async Task<string> ReadString(string inputString)
+        private async Task<string> ReadStringAsync(string inputString)
         {
-            StringBuilder stringBuilder = new StringBuilder();
-            string[] parts = inputString.Split('\n');
-
-            // Sets newLine variable to whatever is expected. \n if behaviour is escape.
-            string newLine = "";
-            if (_configuration.NewLineBehavior == NewLineBehavior.Escape)
-            {
-                newLine = @"\n";
-            }
-
-            // Append first line without \n literal
-            stringBuilder.Append(await Escape(parts[0]));
-
-            // For the rest of the lines in the string. Ignores first index, [0].
-            for (var i = 1; i < parts.Length; i++)
-            {
-                // Escape the contents of the line and add it to the string being built.
-                stringBuilder.Append(newLine + await Escape(parts[i]));
-            }
-
-            return stringBuilder.ToString();
+            using var stringReader = new StringReader(inputString);
+            var escaped = await Escape(stringReader);
+            
+            return escaped;
         }
 
-        private async Task<string> ReadFile(string fileLocation)
+        private async Task<string> ReadFileAsync(string fileLocation)
         {
-            StringBuilder stringBuilder = new StringBuilder();
+            using StreamReader streamReader = new StreamReader(fileLocation);
+            var escaped = await Escape(streamReader);
 
-            using (StreamReader streamReader = new StreamReader(fileLocation))
+            return escaped;
+        }
+
+        private async Task<string> Escape(TextReader textReader)
+        {
+            var escapeTaskList = new List<Task<string>>();
+            var lines = textReader.ToLines();
+
+            foreach (var line in lines)
             {
-                // Sets newLine variable to whatever is expected. \n if behaviour is escape.
-                string newLine = "";
-                if (_configuration.NewLineBehavior == NewLineBehavior.Escape)
-                {
-                    newLine = @"\n";
-                }
-
-                // Read first line and append without \n literal.
-                string line = streamReader.ReadLine();
-                stringBuilder.Append(await Escape(line));
-
-                // Read rest of the lines, prepending newLine value.
-                while ((line = streamReader.ReadLine()) != null)
-                {
-                    // Escape the contents of the line and add it to the string being built.
-                    stringBuilder.Append(newLine + await Escape(line));
-                }
+                escapeTaskList.Add(EscapeLine(line));
             }
-            return stringBuilder.ToString();
+
+            var escapedLines = await Task.WhenAll(escapeTaskList);
+
+            var newLineString = GetNewLineString(_configuration.NewLineType);
+
+            var escaped = string.Join(newLineString, escapedLines);
+
+            return escaped;
         }
 
         /// <summary>
@@ -130,7 +115,7 @@ namespace EscapeRoute
         /// </summary>
         /// <param name="rawString"><see cref="String"/> Raw String</param>
         /// <returns>Escaped and trimmed <see cref="String"/></returns>
-        private async Task<string> Escape(string rawString)
+        private async Task<string> EscapeLine(string rawString)
         {
             string escaped = rawString;
 
@@ -138,17 +123,9 @@ namespace EscapeRoute
             escaped = await _configuration.BackslashBehaviorHandler
                                           .EscapeAsync(escaped, _configuration.BackslashBehavior);
 
-            // Remove form feed characters.
-            if (_configuration.FormFeedBehavior == FormFeedBehavior.Strip)
-            {
-                escaped = escaped.Replace("\f", "");
-            }
-            // Replace form feed with \f.
-            else if (_configuration.FormFeedBehavior == FormFeedBehavior.Escape)
-            {
-                Regex regex = new Regex("\f");
-                escaped = regex.Replace(escaped, @"\f");
-            }
+            // Handle form feed characters.
+            escaped = await _configuration.FormFeedBehaviorHandler
+                                          .EscapeAsync(escaped, _configuration.FormFeedBehavior);
 
             // Remove tabs \t.
             if (_configuration.TabBehavior == TabBehavior.Strip)
@@ -161,15 +138,6 @@ namespace EscapeRoute
                 Regex regex = new Regex("\t");
                 escaped = regex.Replace(escaped, @"\t");
             }
-
-            // Remove new line characters. To escape, the \n literal is prepended in calling methods.
-            if (_configuration.NewLineBehavior == NewLineBehavior.Strip)
-            {
-                escaped = escaped.Replace("\n", "");
-            }
-
-            escaped = await _configuration.CarriageReturnBehaviorHandler
-                                          .EscapeAsync(escaped, _configuration.CarriageReturnBehavior);
 
             // Handle backspace ('\b') characters.
             escaped = await _configuration.BackspaceBehaviorHandler
@@ -208,6 +176,18 @@ namespace EscapeRoute
             return escaped;
         }
 
-        
+        private static string GetNewLineString(NewLineType newLineType)
+        {
+            var delimiter = newLineType switch
+            {
+                NewLineType.None => "",
+                NewLineType.Space => " ",
+                NewLineType.Unix => @"\n",
+                NewLineType.Windows => @"\r\n",
+                _ => throw new ArgumentException($"Not a valid {nameof(NewLineType)}", nameof(newLineType))
+            };
+
+            return delimiter;
+        }
     }
 }
