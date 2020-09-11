@@ -143,10 +143,19 @@ namespace EscapeRoute
             escaped = await _configuration.TrimBehaviorHandler
                                           .EscapeAsync(escaped, _configuration.TrimBehavior);
 
+            // Handle double quotes.
             escaped = await _configuration.DoubleQuoteBehaviorHandler
                                           .EscapeAsync(escaped, _configuration.DoubleQuoteBehavior);
-            
-            escaped = escaped.Replace("\'", @"\'");
+
+            // Handle single quotes.
+            escaped = await _configuration.SingleQuoteBehaviorHandler
+                                          .EscapeAsync(escaped, _configuration.SingleQuoteBehavior);
+
+            // Sequentially run each custom behavior handler (if any).
+            foreach (var customHandler in _configuration.CustomBehaviorHandlers)
+            {
+                escaped = await customHandler.EscapeAsync(escaped);
+            }
 
             return escaped;
         }

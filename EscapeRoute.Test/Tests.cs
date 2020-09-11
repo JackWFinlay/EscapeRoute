@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using EscapeRoute.Abstractions.Enums;
 using EscapeRoute.Abstractions.Interfaces;
@@ -259,7 +261,7 @@ namespace EscapeRoute.Test
         public void TestDefaultBehaviourFromString()
         {
             IEscapeRouter escapeRouter = new EscapeRouter();
-            string expected = "The quick brown fox jumps over the lazy dog.";
+            const string expected = "The quick brown fox jumps over the lazy dog.";
             string result = escapeRouter.ParseString(_inputString1);
             Assert.Equal(expected, result);
         }
@@ -411,6 +413,49 @@ namespace EscapeRoute.Test
 
         #endregion UnicodeFromStringTests
 
+        #region CustomhandlersTests
+        private class ExampleCustomBehaviorHandler : IEscapeRouteCustomBehaviorHandler
+        {
+            public Task<string> EscapeAsync(string raw)
+            {
+                // Replace occurrences of string "dog" with string "cat", in string raw.
+                string escaped = Regex.Replace(raw, "dog", "cat");
+
+                return Task.FromResult(escaped);
+            }
+        }
+        
+        [Fact]
+        public void TestCustomHandlerBehaviourFromString()
+        {
+            EscapeRouteConfiguration config = new EscapeRouteConfiguration()
+            {
+                CustomBehaviorHandlers = new List<IEscapeRouteCustomBehaviorHandler>()
+                {
+                    new ExampleCustomBehaviorHandler()
+                }
+            };
+            IEscapeRouter escapeRouter = new EscapeRouter(config);
+            const string expected = "The quick brown fox jumps over the lazy cat.";
+            string result = escapeRouter.ParseString(_inputString1);
+            Assert.Equal(expected, result);
+        }
+        
+        [Fact]
+        public void TestCustomHandlerBehaviourEmptyListFromString()
+        {
+            EscapeRouteConfiguration config = new EscapeRouteConfiguration()
+            {
+                CustomBehaviorHandlers = new List<IEscapeRouteCustomBehaviorHandler>()
+            };
+            IEscapeRouter escapeRouter = new EscapeRouter(config);
+            const string expected = "The quick brown fox jumps over the lazy dog.";
+            string result = escapeRouter.ParseString(_inputString1);
+            Assert.Equal(expected, result);
+        }
+
+        #endregion CustomhandlersTests
+        
         #endregion FromStringTests
     }
 }

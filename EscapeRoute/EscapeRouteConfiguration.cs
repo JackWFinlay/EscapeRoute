@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using EscapeRoute.Abstractions.Enums;
 using EscapeRoute.Abstractions.Interfaces;
 using EscapeRoute.BehaviorHandlers;
@@ -15,6 +17,7 @@ namespace EscapeRoute
         private const UnicodeBehavior _defaultUnicodeBehavior = UnicodeBehavior.Escape;
         private const NewLineType _defaultNewLineType = NewLineType.Space;
         private const DoubleQuoteBehavior _defaultDoubleQuoteBehavior = DoubleQuoteBehavior.Double;
+        private const SingleQuoteBehavior _defaultSingleQuoteBehavior = SingleQuoteBehavior.Single;
 
         private readonly Lazy<BackslashBehaviorHandler> _defaultBackslashBehaviorHandler = new Lazy<BackslashBehaviorHandler>();
         private readonly Lazy<BackspaceBehaviorHandler> _defaultBackspaceBehaviorHandler = new Lazy<BackspaceBehaviorHandler>();
@@ -23,6 +26,7 @@ namespace EscapeRoute
         private readonly Lazy<UnicodeBehaviorHandler> _defaultUnicodeBehaviorHandler = new Lazy<UnicodeBehaviorHandler>();
         private readonly Lazy<TrimBehaviorHandler> _defaultTrimBehaviorHandler = new Lazy<TrimBehaviorHandler>();
         private readonly Lazy<DoubleQuoteBehaviorHandler> _defaultDoubleQuoteBehaviorHandler = new Lazy<DoubleQuoteBehaviorHandler>();
+        private readonly Lazy<SingleQuoteBehaviorHandler> _defaultSingleQuoteBehaviorHandler = new Lazy<SingleQuoteBehaviorHandler>();
 
         private TabBehavior? _tabBehavior;
         private BackspaceBehavior? _backspaceBehavior;
@@ -32,6 +36,9 @@ namespace EscapeRoute
         private UnicodeBehavior? _unicodeBehavior;
         private NewLineType? _newLineType;
         private DoubleQuoteBehavior? _doubleQuoteBehavior;
+        private SingleQuoteBehavior? _singleQuoteBehavior;
+
+        private IList<IEscapeRouteCustomBehaviorHandler> _customBehaviorHandlers;
 
         private IEscapeRouteBehaviorHandler<BackslashBehavior> _backslashBehaviorHandler;
         private IEscapeRouteBehaviorHandler<BackspaceBehavior> _backspaceBehaviorHandler;
@@ -40,8 +47,8 @@ namespace EscapeRoute
         private IEscapeRouteBehaviorHandler<UnicodeBehavior> _unicodeBehaviorHandler;
         private IEscapeRouteBehaviorHandler<TrimBehavior> _trimBehaviorHandler;
         private IEscapeRouteBehaviorHandler<DoubleQuoteBehavior> _doubleQuoteBehaviorHandler;
+        private IEscapeRouteBehaviorHandler<SingleQuoteBehavior> _singleQuoteBehaviorHandler;
         
-
         /// <summary>
         /// Gets or sets how tab \t characters are handled.
         /// </summary>
@@ -175,6 +182,33 @@ namespace EscapeRoute
         {
             get => _doubleQuoteBehaviorHandler ?? _defaultDoubleQuoteBehaviorHandler.Value;
             set => _doubleQuoteBehaviorHandler = value;
+        }
+        
+        /// <summary>
+        /// Gets or sets the single quote behavior.
+        /// </summary>
+        public SingleQuoteBehavior SingleQuoteBehavior
+        {
+            get => _singleQuoteBehavior ?? _defaultSingleQuoteBehavior;
+            set => _singleQuoteBehavior = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the behavior handler for single quote characters.
+        /// </summary>
+        public IEscapeRouteBehaviorHandler<SingleQuoteBehavior> SingleQuoteBehaviorHandler
+        {
+            get => _singleQuoteBehaviorHandler ?? _defaultSingleQuoteBehaviorHandler.Value;
+            set => _singleQuoteBehaviorHandler = value;
+        }
+
+        /// <summary>
+        /// Gets or sets custom behavior handlers to be run after default handlers.
+        /// </summary>
+        public IList<IEscapeRouteCustomBehaviorHandler> CustomBehaviorHandlers
+        {
+            get => _customBehaviorHandlers ?? new List<IEscapeRouteCustomBehaviorHandler>();
+            set => _customBehaviorHandlers = value;
         }
     }
 }
