@@ -1,14 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
         <Description>Abstractions for the package EscapeRoute.</Description>
         <Summary>Abstractions for the package EscapeRoute.</Summary>
         <Copyright>Copyright Jack Witbrock Finlay 2017-2020</Copyright>
-        <Title>JackWFinlay.EscapeRoute</Title>
-        <AssemblyTitle>JackWFinlay.EscapeRoute</AssemblyTitle>
+        <Title>EscapeRoute.Abstractions</Title>
+        <AssemblyTitle>EscapeRoute.Abstractions</AssemblyTitle>
         <Authors>Jack Witbrock Finlay</Authors>
-        <PackageId>EscapeRoute</PackageId>
+        <PackageId>EscapeRoute.Abstractions</PackageId>
         <PackageLicenseUrl>https://github.com/JackWFinlay/EscapeRoute/blob/master/LICENSE</PackageLicenseUrl>
         <PackageProjectUrl>https://github.com/JackWFinlay/EscapeRoute</PackageProjectUrl>
         <PackageReleaseNotes>Initial version, see project site for details.</PackageReleaseNotes>
@@ -21,5 +20,4 @@
         <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
         <LangVersion>8</LangVersion>
     </PropertyGroup>
-
 </Project>

@@ -4,8 +4,8 @@
     <Description>Convert strings and files into JSON friendly strings.</Description>
     <Summary>Convert strings and files into JSON friendly strings.</Summary>
     <Copyright>Copyright Jack Witbrock Finlay 2017-2020</Copyright>
-    <Title>JackWFinlay.EscapeRoute</Title>
-    <AssemblyTitle>JackWFinlay.EscapeRoute</AssemblyTitle>
+    <Title>EscapeRoute</Title>
+    <AssemblyTitle>EscapeRoute</AssemblyTitle>
     <Authors>Jack Witbrock Finlay</Authors>
     <PackageId>EscapeRoute</PackageId>
     <PackageLicenseUrl>https://github.com/JackWFinlay/EscapeRoute/blob/master/LICENSE</PackageLicenseUrl>
