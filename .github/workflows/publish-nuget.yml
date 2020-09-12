@@ -24,6 +24,8 @@ jobs:
         run: dotnet build --configuration Release --no-restore
       - name: Test
         run: dotnet test --no-restore --verbosity normal
+      - name: Generate nuget package
+        run: dotnet pack --configuration Release -o nupkg
       - name: Publish NuGet package
         run: find . -name '*.nupkg' -type f -print0 | xargs -0 -I pkg dotnet nuget push pkg -k $nuget_api_key -s "https://api.nuget.org/v3/index.json" --skip-duplicate
         env:
