@@ -1,4 +1,5 @@
 # EscapeRoute
+![.NET Core Build and Test](https://github.com/JackWFinlay/EscapeRoute/workflows/.NET%20Core%20Build%20and%20Test/badge.svg)
 [![NuGet](https://img.shields.io/nuget/v/EscapeRoute.svg)](https://www.nuget.org/packages/EscapeRoute)
 
 Selectively trim and escape text files into JSON friendly strings. Supports all JSON escape characters and Unicode characters that can be represented in the form \u(4 digit hex).
