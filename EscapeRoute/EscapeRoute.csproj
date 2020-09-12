@@ -1,22 +1,26 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <Description>Convert strings and files into JSON friendly strings.</Description>
     <Summary>Convert strings and files into JSON friendly strings.</Summary>
-    <Copyright>Copyright Jack Witbrock Finlay 2017</Copyright>
-    <Title>JackWFinlay.EscapeRoute</Title>
-    <AssemblyTitle>JackWFinlay.EscapeRoute</AssemblyTitle>
+    <Copyright>Copyright Jack Witbrock Finlay 2017-2020</Copyright>
+    <Title>EscapeRoute</Title>
+    <AssemblyTitle>EscapeRoute</AssemblyTitle>
     <Authors>Jack Witbrock Finlay</Authors>
     <PackageId>EscapeRoute</PackageId>
     <PackageLicenseUrl>https://github.com/JackWFinlay/EscapeRoute/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/JackWFinlay/EscapeRoute</PackageProjectUrl>
-    <PackageReleaseNotes>Initial version</PackageReleaseNotes>
+    <PackageReleaseNotes>This release makes the project more extensible to consumers, but includes a breaking change, please see project site for details.</PackageReleaseNotes>
     <PackageTags>JSON;Convert;Escape;EscapeRoute;String;Unicode</PackageTags>
     <IncludeSymbols>true</IncludeSymbols>
     <IncludeSource>true</IncludeSource>
     <RepositoryUrl>https://github.com/JackWFinlay/EscapeRoute</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <VersionPrefix>0.0.1</VersionPrefix>
+    <VersionPrefix>0.0.2</VersionPrefix>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <LangVersion>8</LangVersion>
   </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\EscapeRoute.Abstractions\EscapeRoute.Abstractions.csproj" />
+  </ItemGroup>
 </Project>

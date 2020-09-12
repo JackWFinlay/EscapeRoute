@@ -1,8 +1,8 @@
 using System.Threading.Tasks;
 
-namespace JackWFinlay.EscapeRoute
+namespace EscapeRoute.Abstractions.Interfaces
 {
-    public interface IEscapeRoute
+    public interface IEscapeRouter
     {
         string ParseString(string inputString);
 

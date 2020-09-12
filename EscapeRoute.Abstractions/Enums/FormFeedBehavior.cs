@@ -1,9 +1,9 @@
-namespace JackWFinlay.EscapeRoute
+namespace EscapeRoute.Abstractions.Enums
 {
     /// <summary>
     /// Specifies handling of form feed \f characters.
     /// </summary>
-    public enum FormFeedBehaviour
+    public enum FormFeedBehavior
     {
         /// <summary>
         /// Strips form feed \f characters.

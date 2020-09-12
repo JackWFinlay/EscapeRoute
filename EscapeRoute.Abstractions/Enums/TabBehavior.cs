@@ -1,9 +1,9 @@
-namespace JackWFinlay.EscapeRoute
+namespace EscapeRoute.Abstractions.Enums
 {
     /// <summary>
     /// Specifies handling of tab \t characters.
     /// </summary>
-    public enum TabBehaviour
+    public enum TabBehavior
     {
         /// <summary>
         /// Strips tab \t characters.

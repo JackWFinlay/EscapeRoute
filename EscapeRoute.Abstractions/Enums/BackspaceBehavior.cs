@@ -1,9 +1,9 @@
-namespace JackWFinlay.EscapeRoute
+namespace EscapeRoute.Abstractions.Enums
 {
     /// <summary>
     /// Specifies handling of backspace \b characters.
     /// </summary>
-    public enum BackspaceBehaviour
+    public enum BackspaceBehavior
     {
         /// <summary>
         /// Strips backspace \b characters.

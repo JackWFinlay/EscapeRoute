@@ -1,9 +1,9 @@
-namespace JackWFinlay.EscapeRoute
+namespace EscapeRoute.Abstractions.Enums
 {
     /// <summary>
-    /// Specifies trim behaviour.
+    /// Specifies trim behavior. Operates per line of text.
     /// </summary>
-    public enum TrimBehaviour
+    public enum TrimBehavior
     {
         /// <summary>
         /// Trims start of string.
