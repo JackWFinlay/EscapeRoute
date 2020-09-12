@@ -6,7 +6,7 @@ Selectively trim and escape text files into JSON friendly strings. Supports all 
 ## Version 0.0.2 Note
 Please be aware of the following changes for version 0.0.2:
  - Normalization of the type name `*Behavior`, note the American English spelling.
- - Interfaces and Enums are abstracted to the `'`EscapeRoute.Abstractions`'` project. 
+ - Interfaces and Enums are abstracted to the `EscapeRoute.Abstractions` project. 
  These will exist in a separate NuGet package of the same name.
  - NewLine character handling has changed. Please see [Supported Behaviors](#supported-behaviors). 
  This is to cater for the use of a `TextReader`, instead of splitting the file on just `\n` characters, 
@@ -37,7 +37,7 @@ Currently supports the following behaviors/special characters (***Default***):
  - Backslash (\\\\):
    - Strip
    - ***Escape***
- - Unicode (\uXXXX):
+ - Unicode (\u1234):
    - Strip
    - ***Escape***
  - Single quotes '':
@@ -75,12 +75,12 @@ namespace Example
     {
         public void TestDefaultBehaviourFromFile()
         {
-            String fileLocation = $"{workspaceFolder}/test-files/test1.txt";
-            IEscapeRoute escapeRouter = new EscapeRouter();
-            String expected = "The quick brown fox jumps over the lazy dog.";
-            String result = escapeRouter.ParseFile(fileLocation);
+            string fileLocation = $"{workspaceFolder}/test-files/test1.txt";
+            IEscapeRouter escapeRouter = new EscapeRouter();
+            const string expected = "The quick brown fox jumps over the lazy dog.";
+            string result = escapeRouter.ParseFile(fileLocation);
             
-            String areEqual = expected.Equals(result) ? "" : " not";
+            string areEqual = expected.Equals(result) ? "" : " not";
             Console.WriteLine($"The strings are{areEqual} equal"); 
             // "The strings are equal"
         }
@@ -110,13 +110,13 @@ namespace Example
                 NewLineType = NewLineType.Windows
             };
             IEscapeRouter escapeRouter = new EscapeRouter(config);
-            String expected = @"The quick \r\n\t\bbrown fox jumps \r\n\t\bover the lazy dog.";
-            String result = await escapeRouter.ParseStringAsync(inputString1);
+            const string expected = @"The quick \r\n\t\bbrown fox jumps \r\n\t\bover the lazy dog.";
+            string result = await escapeRouter.ParseStringAsync(inputString1);
 
             Console.WriteLine(result); 
             // "The quick \r\n\t\bbrown fox jumps \r\n\t\bover the lazy dog."
             
-            String areEqual = expected.Equals(result) ? "" : " not";
+            string areEqual = expected.Equals(result) ? "" : " not";
             Console.WriteLine($"The strings are{areEqual} equal"); 
             // "The strings are equal"
         }
@@ -125,7 +125,7 @@ namespace Example
 ```
 
 ### Unicode
-EscapeRoute supports the translation of Unicode characters to the JSON escape form `\u(4 hex digits)` 
+EscapeRoute supports the translation of non-ASCII Unicode characters to the JSON escape form `\u(4 hex digits)` 
 
 E.g. `ʖ` = `\u0296`
 
@@ -143,13 +143,13 @@ namespace Example
             // Escape is default behaviour for Unicode characters,
             // no configuration required.
             IEscapeRouter escapeRouter = new EscapeRouter();
-            String expected = @"( \u0361\u00b0 \u035c\u0296 \u0361\u00b0)";
-            String result = await escapeRouter.ParseStringAsync(unicodeString1);
+            string expected = @"( \u0361\u00b0 \u035c\u0296 \u0361\u00b0)";
+            string result = await escapeRouter.ParseStringAsync(unicodeString1);
             
             Console.WriteLine(result); 
             // "( \u0361\u00b0 \u035c\u0296 \u0361\u00b0)"
             
-            String areEqual = expected.Equals(result) ? "" : " not";
+            string areEqual = expected.Equals(result) ? "" : " not";
             Console.WriteLine($"The strings are{areEqual} equal"); 
             // "The strings are equal"
         }
