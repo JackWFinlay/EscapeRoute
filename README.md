@@ -73,7 +73,7 @@ namespace Example
 {
     public class ExampleProgram
     {
-        public void TestDefaultBehaviourFromFile()
+        public void TestDefaultBehaviorFromFile()
         {
             string fileLocation = $"{workspaceFolder}/test-files/test1.txt";
             IEscapeRouter escapeRouter = new EscapeRouter();
@@ -104,9 +104,9 @@ namespace Example
         {
             EscapeRouteConfiguration config = new EscapeRouteConfiguration
             {
-                TabBehaviour = TabBehaviour.Escape,
-                BackspaceBehaviour = BackspaceBehaviour.Escape,
-                TrimBehaviour = TrimBehaviour.None,
+                TabBehavior = TabBehavior.Escape,
+                BackspaceBehavior = BackspaceBehavior.Escape,
+                TrimBehavior = TrimBehavior.None,
                 NewLineType = NewLineType.Windows
             };
             IEscapeRouter escapeRouter = new EscapeRouter(config);
