@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>netstandard2.0</TargetFramework>
+        <TargetFramework>netstandard2.1</TargetFramework>
         <Description>Abstractions for the package EscapeRoute.</Description>
         <Summary>Abstractions for the package EscapeRoute.</Summary>
         <Copyright>Copyright Jack Witbrock Finlay 2017-2020</Copyright>

@@ -7,6 +7,11 @@ namespace EscapeRoute.BehaviorHandlers
 {
     public class TrimBehaviorHandler: IEscapeRouteBehaviorHandler<TrimBehavior>
     {
+        public Task<string> EscapeAsync(string raw, TrimBehavior behavior, IReplacementEngine replacementEngine)
+        {
+            return EscapeAsync(raw, behavior);
+        }
+
         public Task<string> EscapeAsync(string raw, TrimBehavior behavior)
         {
             var escaped = HandleBehavior(raw, behavior);

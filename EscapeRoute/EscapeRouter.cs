@@ -127,35 +127,35 @@ namespace EscapeRoute
 
             // Handle backslash ('\') characters.
             escaped = await _configuration.BackslashBehaviorHandler
-                                          .EscapeAsync(escaped, _configuration.BackslashBehavior);
+                                          .EscapeAsync(escaped, _configuration.BackslashBehavior, _configuration.ReplacementEngine);
 
             // Handle form feed characters.
             escaped = await _configuration.FormFeedBehaviorHandler
-                                          .EscapeAsync(escaped, _configuration.FormFeedBehavior);
+                                          .EscapeAsync(escaped, _configuration.FormFeedBehavior, _configuration.ReplacementEngine);
 
             // Handle tabs \t.
             escaped = await _configuration.TabBehaviorHandler
-                                          .EscapeAsync(escaped, _configuration.TabBehavior);
+                                          .EscapeAsync(escaped, _configuration.TabBehavior, _configuration.ReplacementEngine);
 
             // Handle backspace ('\b') characters.
             escaped = await _configuration.BackspaceBehaviorHandler
-                                          .EscapeAsync(escaped, _configuration.BackspaceBehavior);
+                                          .EscapeAsync(escaped, _configuration.BackspaceBehavior, _configuration.ReplacementEngine);
 
             // Handle unicode \uXXXX characters.
             escaped = await _configuration.UnicodeBehaviorHandler
-                                          .EscapeAsync(escaped, _configuration.UnicodeBehavior);
+                                          .EscapeAsync(escaped, _configuration.UnicodeBehavior, _configuration.ReplacementEngine);
 
             // Handle trimming.
             escaped = await _configuration.TrimBehaviorHandler
-                                          .EscapeAsync(escaped, _configuration.TrimBehavior);
+                                          .EscapeAsync(escaped, _configuration.TrimBehavior, _configuration.ReplacementEngine);
 
             // Handle double quotes.
             escaped = await _configuration.DoubleQuoteBehaviorHandler
-                                          .EscapeAsync(escaped, _configuration.DoubleQuoteBehavior);
+                                          .EscapeAsync(escaped, _configuration.DoubleQuoteBehavior, _configuration.ReplacementEngine);
 
             // Handle single quotes.
             escaped = await _configuration.SingleQuoteBehaviorHandler
-                                          .EscapeAsync(escaped, _configuration.SingleQuoteBehavior);
+                                          .EscapeAsync(escaped, _configuration.SingleQuoteBehavior, _configuration.ReplacementEngine);
 
             // Sequentially run each custom behavior handler (if any).
             foreach (var customHandler in _configuration.CustomBehaviorHandlers)

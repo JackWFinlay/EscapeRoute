@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using EscapeRoute.Abstractions.Enums;
 using EscapeRoute.Abstractions.Interfaces;
 using EscapeRoute.BehaviorHandlers;
+using EscapeRoute.ReplacementEngines;
 
 namespace EscapeRoute
 {
@@ -28,6 +29,8 @@ namespace EscapeRoute
         private readonly Lazy<DoubleQuoteBehaviorHandler> _defaultDoubleQuoteBehaviorHandler = new Lazy<DoubleQuoteBehaviorHandler>();
         private readonly Lazy<SingleQuoteBehaviorHandler> _defaultSingleQuoteBehaviorHandler = new Lazy<SingleQuoteBehaviorHandler>();
 
+        private readonly Lazy<RegexReplacementEngine> _defaultReplacementEngine = new Lazy<RegexReplacementEngine>();
+
         private TabBehavior? _tabBehavior;
         private BackspaceBehavior? _backspaceBehavior;
         private TrimBehavior? _trimBehavior;
@@ -49,6 +52,8 @@ namespace EscapeRoute
         private IEscapeRouteBehaviorHandler<DoubleQuoteBehavior> _doubleQuoteBehaviorHandler;
         private IEscapeRouteBehaviorHandler<SingleQuoteBehavior> _singleQuoteBehaviorHandler;
         
+        private IReplacementEngine _replacementEngine;
+
         /// <summary>
         /// Gets or sets how tab \t characters are handled.
         /// </summary>
@@ -209,6 +214,15 @@ namespace EscapeRoute
         {
             get => _customBehaviorHandlers ?? new List<IEscapeRouteCustomBehaviorHandler>();
             set => _customBehaviorHandlers = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the replacement engine for handling text replacements.
+        /// </summary>
+        public IReplacementEngine ReplacementEngine
+        {
+            get => _replacementEngine ?? _defaultReplacementEngine.Value;
+            set => _replacementEngine = value;
         }
     }
 }
