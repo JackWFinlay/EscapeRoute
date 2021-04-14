@@ -5,6 +5,6 @@ namespace EscapeRoute.Abstractions.Interfaces
 {
     public interface IEscapeRouteCustomBehaviorHandler
     {
-        Task<string> EscapeAsync(string raw);
+        Task<ReadOnlyMemory<char>> EscapeAsync(ReadOnlyMemory<char> raw);
     }
 }

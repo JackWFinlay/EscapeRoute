@@ -6,12 +6,12 @@ using EscapeRoute.Abstractions.Interfaces;
 
 namespace EscapeRoute.ReplacementEngines
 {
-    public class RegexReplacementEngine : IReplacementEngine
-    {
-        public Task<string> ReplaceAsync(string raw, string pattern, string replacement)
-        {
-            var escaped = Regex.Replace(raw, pattern, replacement);
-            return Task.FromResult(escaped);
-        }
-    }
+    // public class RegexReplacementEngine : IReplacementEngine
+    // {
+    //     public Task<ReadOnlyMemory<char>> ReplaceAsync(ReadOnlyMemory<char> raw, string pattern, string replacement)
+    //     {
+    //         var escaped = Regex.Replace(raw.ToString(), pattern, replacement);
+    //         return Task.FromResult(escaped.AsMemory());
+    //     }
+    // }
 }

@@ -18,19 +18,19 @@ namespace EscapeRoute.BehaviorHandlers
             return Task.FromResult(escaped);
         }
 
-        public async Task<string> EscapeAsync(string raw, UnicodeBehavior behavior, IReplacementEngine replacementEngine)
+        public Task<ReadOnlyMemory<char>> EscapeAsync(ReadOnlyMemory<char> raw, UnicodeBehavior behavior, IReplacementEngine replacementEngine)
         {
             var escaped = behavior switch
             {
                 // Replace non-ASCII character with it's equivalent in the form \uXXXX where XXXX is the character code.
                 // https://stackoverflow.com/a/25349901
-                UnicodeBehavior.Escape => Regex.Replace(raw, _pattern, c => $@"\u{(int)c.Value[0]:x4}"),
+                UnicodeBehavior.Escape => Regex.Replace(raw.ToString(), _pattern, c => $@"\u{(int)c.Value[0]:x4}").AsMemory(),
                 // Strip out non-ASCII characters.
-                UnicodeBehavior.Strip => await replacementEngine.ReplaceAsync(raw, _pattern, _stripPattern),
+                UnicodeBehavior.Strip => Regex.Replace(raw.ToString(), _pattern, "").AsMemory(),
                 _ => throw new ArgumentException($"Not a valid {nameof(UnicodeBehavior)}", nameof(behavior))
             };
 
-            return escaped;
+            return Task.FromResult(escaped);
         }
         
         private static string HandleBehavior(string raw, UnicodeBehavior behavior)

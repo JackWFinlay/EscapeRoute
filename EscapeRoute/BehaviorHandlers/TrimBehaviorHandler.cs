@@ -7,9 +7,9 @@ namespace EscapeRoute.BehaviorHandlers
 {
     public class TrimBehaviorHandler: IEscapeRouteBehaviorHandler<TrimBehavior>
     {
-        public Task<string> EscapeAsync(string raw, TrimBehavior behavior, IReplacementEngine replacementEngine)
+        public Task<ReadOnlyMemory<char>> EscapeAsync(ReadOnlyMemory<char> raw, TrimBehavior behavior, IReplacementEngine replacementEngine)
         {
-            return EscapeAsync(raw, behavior);
+            return Task.FromResult(HandleBehavior(raw.ToString(), behavior).AsMemory());
         }
 
         public Task<string> EscapeAsync(string raw, TrimBehavior behavior)

@@ -4,11 +4,12 @@ using System.Collections.Generic;
 using EscapeRoute.Abstractions.Enums;
 using EscapeRoute.Abstractions.Interfaces;
 using EscapeRoute.BehaviorHandlers;
+using EscapeRoute.EscapeHandlers;
 using EscapeRoute.ReplacementEngines;
 
 namespace EscapeRoute
 {
-    public class EscapeRouteConfiguration
+    public class EscapeRouteConfiguration : IEscapeRouteConfiguration
     {
         private const TabBehavior _defaultTabBehavior = TabBehavior.Strip;
         private const BackspaceBehavior _defaultBackspaceBehavior = BackspaceBehavior.Strip;
@@ -20,16 +21,16 @@ namespace EscapeRoute
         private const DoubleQuoteBehavior _defaultDoubleQuoteBehavior = DoubleQuoteBehavior.Double;
         private const SingleQuoteBehavior _defaultSingleQuoteBehavior = SingleQuoteBehavior.Single;
 
-        private readonly Lazy<BackslashBehaviorHandler> _defaultBackslashBehaviorHandler = new Lazy<BackslashBehaviorHandler>();
-        private readonly Lazy<BackspaceBehaviorHandler> _defaultBackspaceBehaviorHandler = new Lazy<BackspaceBehaviorHandler>();
-        private readonly Lazy<FormFeedBehaviorHandler> _defaultFormFeedBehaviorHandler = new Lazy<FormFeedBehaviorHandler>();
-        private readonly Lazy<TabBehaviorHandler> _defaultTabBehaviorHandler = new Lazy<TabBehaviorHandler>();
+        private readonly Lazy<BackslashEscapeHandler> _defaultBackslashEscapeHandler = new Lazy<BackslashEscapeHandler>();
+        private readonly Lazy<BackspaceEscapeHandler> _defaultBackspaceEscapeHandler = new Lazy<BackspaceEscapeHandler>();
+        private readonly Lazy<FormFeedEscapeHandler> _defaultFormFeedEscapeHandler = new Lazy<FormFeedEscapeHandler>();
+        private readonly Lazy<TabEscapeHandler> _defaultTabEscapeHandler = new Lazy<TabEscapeHandler>();
+        private readonly Lazy<DoubleQuoteEscapeHandler> _defaultDoubleQuoteEscapeHandler = new Lazy<DoubleQuoteEscapeHandler>();
+        private readonly Lazy<SingleQuoteEscapeHandler> _defaultSingleQuoteEscapeHandler = new Lazy<SingleQuoteEscapeHandler>();
         private readonly Lazy<UnicodeBehaviorHandler> _defaultUnicodeBehaviorHandler = new Lazy<UnicodeBehaviorHandler>();
         private readonly Lazy<TrimBehaviorHandler> _defaultTrimBehaviorHandler = new Lazy<TrimBehaviorHandler>();
-        private readonly Lazy<DoubleQuoteBehaviorHandler> _defaultDoubleQuoteBehaviorHandler = new Lazy<DoubleQuoteBehaviorHandler>();
-        private readonly Lazy<SingleQuoteBehaviorHandler> _defaultSingleQuoteBehaviorHandler = new Lazy<SingleQuoteBehaviorHandler>();
 
-        private readonly Lazy<RegexReplacementEngine> _defaultReplacementEngine = new Lazy<RegexReplacementEngine>();
+        private readonly Lazy<SpanReplacementEngine> _defaultReplacementEngine = new Lazy<SpanReplacementEngine>();
 
         private TabBehavior? _tabBehavior;
         private BackspaceBehavior? _backspaceBehavior;
@@ -43,15 +44,15 @@ namespace EscapeRoute
 
         private IList<IEscapeRouteCustomBehaviorHandler> _customBehaviorHandlers;
 
-        private IEscapeRouteBehaviorHandler<BackslashBehavior> _backslashBehaviorHandler;
-        private IEscapeRouteBehaviorHandler<BackspaceBehavior> _backspaceBehaviorHandler;
-        private IEscapeRouteBehaviorHandler<FormFeedBehavior> _formFeedBehaviorHandler;
-        private IEscapeRouteBehaviorHandler<TabBehavior> _tabBehaviorHandler;
-        private IEscapeRouteBehaviorHandler<UnicodeBehavior> _unicodeBehaviorHandler;
+        private IEscapeRouteEscapeHandler<BackslashBehavior> _backslashEscapeHandler;
+        private IEscapeRouteEscapeHandler<BackspaceBehavior> _backspaceEscapeHandler;
+        private IEscapeRouteEscapeHandler<FormFeedBehavior> _formFeedEscapeHandler;
+        private IEscapeRouteEscapeHandler<TabBehavior> _tabEscapeHandler;
+        private IEscapeRouteEscapeHandler<DoubleQuoteBehavior> _doubleQuoteEscapeHandler;
+        private IEscapeRouteEscapeHandler<SingleQuoteBehavior> _singleQuoteEscapeHandler;
         private IEscapeRouteBehaviorHandler<TrimBehavior> _trimBehaviorHandler;
-        private IEscapeRouteBehaviorHandler<DoubleQuoteBehavior> _doubleQuoteBehaviorHandler;
-        private IEscapeRouteBehaviorHandler<SingleQuoteBehavior> _singleQuoteBehaviorHandler;
-        
+        private IEscapeRouteBehaviorHandler<UnicodeBehavior> _unicodeBehaviorHandler;
+
         private IReplacementEngine _replacementEngine;
 
         /// <summary>
@@ -66,10 +67,10 @@ namespace EscapeRoute
         /// <summary>
         /// Gets or sets the handler for handling tab \t characters.
         /// </summary>
-        public IEscapeRouteBehaviorHandler<TabBehavior> TabBehaviorHandler
+        public IEscapeRouteEscapeHandler<TabBehavior> TabEscapeHandler
         {
-            get => _tabBehaviorHandler ?? _defaultTabBehaviorHandler.Value;
-            set => _tabBehaviorHandler = value;
+            get => _tabEscapeHandler ?? _defaultTabEscapeHandler.Value;
+            set => _tabEscapeHandler = value;
         }
 
         /// <summary>
@@ -85,10 +86,10 @@ namespace EscapeRoute
         /// <summary>
         /// Gets or sets the handler for how backspace \b characters are handled.
         /// </summary>
-        public IEscapeRouteBehaviorHandler<BackspaceBehavior> BackspaceBehaviorHandler
+        public IEscapeRouteEscapeHandler<BackspaceBehavior> BackspaceEscapeHandler
         {
-            get => _backspaceBehaviorHandler ?? _defaultBackspaceBehaviorHandler.Value;
-            set => _backspaceBehaviorHandler = value;
+            get => _backspaceEscapeHandler ?? _defaultBackspaceEscapeHandler.Value;
+            set => _backspaceEscapeHandler = value;
         }
 
         /// <summary>
@@ -120,10 +121,10 @@ namespace EscapeRoute
         /// <summary>
         /// Gets or sets the handler for handling form feed \f characters.
         /// </summary>
-        public IEscapeRouteBehaviorHandler<FormFeedBehavior> FormFeedBehaviorHandler
+        public IEscapeRouteEscapeHandler<FormFeedBehavior> FormFeedEscapeHandler
         {
-            get => _formFeedBehaviorHandler ?? _defaultFormFeedBehaviorHandler.Value;
-            set => _formFeedBehaviorHandler = value;
+            get => _formFeedEscapeHandler ?? _defaultFormFeedEscapeHandler.Value;
+            set => _formFeedEscapeHandler = value;
         }
 
         /// <summary>
@@ -138,10 +139,10 @@ namespace EscapeRoute
         /// <summary>
         /// Gets or sets the handler for handling backslash // characters.
         /// </summary>
-        public IEscapeRouteBehaviorHandler<BackslashBehavior> BackslashBehaviorHandler
+        public IEscapeRouteEscapeHandler<BackslashBehavior> BackslashEscapeHandler
         {
-            get => _backslashBehaviorHandler ?? _defaultBackslashBehaviorHandler.Value;
-            set => _backslashBehaviorHandler = value;
+            get => _backslashEscapeHandler ?? _defaultBackslashEscapeHandler.Value;
+            set => _backslashEscapeHandler = value;
         }
 
         /// <summary>
@@ -183,10 +184,10 @@ namespace EscapeRoute
         /// <summary>
         /// Gets or sets the behavior handler for double quote characters.
         /// </summary>
-        public IEscapeRouteBehaviorHandler<DoubleQuoteBehavior> DoubleQuoteBehaviorHandler
+        public IEscapeRouteEscapeHandler<DoubleQuoteBehavior> DoubleQuoteEscapeHandler
         {
-            get => _doubleQuoteBehaviorHandler ?? _defaultDoubleQuoteBehaviorHandler.Value;
-            set => _doubleQuoteBehaviorHandler = value;
+            get => _doubleQuoteEscapeHandler ?? _defaultDoubleQuoteEscapeHandler.Value;
+            set => _doubleQuoteEscapeHandler = value;
         }
         
         /// <summary>
@@ -201,10 +202,10 @@ namespace EscapeRoute
         /// <summary>
         /// Gets or sets the behavior handler for single quote characters.
         /// </summary>
-        public IEscapeRouteBehaviorHandler<SingleQuoteBehavior> SingleQuoteBehaviorHandler
+        public IEscapeRouteEscapeHandler<SingleQuoteBehavior> SingleQuoteEscapeHandler
         {
-            get => _singleQuoteBehaviorHandler ?? _defaultSingleQuoteBehaviorHandler.Value;
-            set => _singleQuoteBehaviorHandler = value;
+            get => _singleQuoteEscapeHandler ?? _defaultSingleQuoteEscapeHandler.Value;
+            set => _singleQuoteEscapeHandler = value;
         }
 
         /// <summary>

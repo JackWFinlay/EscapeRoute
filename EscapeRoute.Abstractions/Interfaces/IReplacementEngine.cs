@@ -6,6 +6,6 @@ namespace EscapeRoute.Abstractions.Interfaces
 {
     public interface IReplacementEngine
     {
-        Task<string> ReplaceAsync(string raw, string pattern, string replacement);
+        Task<ReadOnlyMemory<char>> ReplaceAsync(ReadOnlyMemory<char> raw, IEscapeRouteConfiguration config);
     }
 }

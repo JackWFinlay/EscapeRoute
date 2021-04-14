@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using EscapeRoute.Abstractions.Enums;
 using EscapeRoute.Abstractions.Interfaces;
+using EscapeRoute.ReplacementEngines;
 using Xunit;
 
 namespace EscapeRoute.Test
@@ -400,7 +401,7 @@ namespace EscapeRoute.Test
 
         #region FromStringTests
 
-        private const string _inputString1 = "The quick \r\n\t\bbrown fox jumps \r\n\t\bover the lazy dog.";
+        private const string _inputString1 = "The quick \r\n\t\bbrown fox jumps \r\n\t\bover the lazy dog. ( ͡° ͜ʖ ͡°)";
         private const string _unicodeString1 = "( ͡° ͜ʖ ͡°)";
 
         [Obsolete]
@@ -650,12 +651,12 @@ namespace EscapeRoute.Test
         #region CustomhandlersTests
         private class ExampleCustomBehaviorHandler : IEscapeRouteCustomBehaviorHandler
         {
-            public Task<string> EscapeAsync(string raw)
+            public Task<ReadOnlyMemory<char>> EscapeAsync(ReadOnlyMemory<char> raw)
             {
                 // Replace occurrences of string "dog" with string "cat", in string raw.
-                string escaped = Regex.Replace(raw, "dog", "cat");
+                string escaped = Regex.Replace(raw.ToString(), "dog", "cat");
 
-                return Task.FromResult(escaped);
+                return Task.FromResult(escaped.AsMemory());
             }
         }
         
@@ -722,5 +723,18 @@ namespace EscapeRoute.Test
         #endregion CustomhandlersTests
         
         #endregion FromStringTests
+
+        [Fact]
+        public async Task TestSpanReplacementEngine()
+        {
+            EscapeRouteConfiguration config = new EscapeRouteConfiguration()
+            {
+                ReplacementEngine = new SpanReplacementEngine()
+            };
+            IEscapeRouter escapeRouter = new EscapeRouter(config);
+            const string expected = "The quick brown fox jumps over the lazy dog.";
+            string result = await escapeRouter.ParseAsync(_inputString1);
+            Assert.Equal(expected, result);
+        }
     }
 }

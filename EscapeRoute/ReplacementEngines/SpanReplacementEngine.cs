@@ -1,70 +1,141 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using EscapeRoute.Abstractions.Interfaces;
+using EscapeRoute.Extensions;
 
 namespace EscapeRoute.ReplacementEngines
 {
     public class SpanReplacementEngine : IReplacementEngine
     {
-        public Task<string> ReplaceAsync(string raw, string pattern, string replacement)
+        public Task<ReadOnlyMemory<char>> ReplaceAsync(ReadOnlyMemory<char> raw, IEscapeRouteConfiguration config)
         {
-            if (string.IsNullOrWhiteSpace(pattern))
+            if (raw.IsEmpty)
             {
                 return Task.FromResult(raw);
             }
 
-            var patternChar = pattern[0];
-            
-            var rawMemory = raw.AsMemory();
-            
-            var matchIndexes = GetMatches(raw, patternChar);
+            var pattern = GetPattern(config);
 
-            var memoryList = new List<ReadOnlyMemory<char>>();
-            var prevIndex = 0;
-            
-            foreach (var matchIndex in matchIndexes)
+            var matchIndexes = GetMatches(raw, pattern).ToList();
+
+            if (!matchIndexes.Any())
             {
-                var memorySlice = rawMemory.Slice(prevIndex, matchIndex);
-                prevIndex = matchIndex;
-                memoryList.Add(memorySlice);
+                return Task.FromResult(raw);
             }
 
-            var combinedMemory = MemoryConcat(memoryList, replacement);
+            var memoryList = CreateEscapedTextList(raw, matchIndexes, config);
 
-            var result = string.Create(combinedMemory.Length, combinedMemory, (chars, c) =>
+            if (!memoryList.Any())
             {
-                for (var i = 0; i < c.Length; i++)
-                {
-                    //chars[i] = c[i];
-                }
-            });
+                return Task.FromResult(raw);
+            }
 
-            return Task.FromResult(result);
+            var memoryListTotalLength = memoryList.Sum(m => m.Length);
+
+            Memory<char> combinedMemory = new char[memoryListTotalLength];
+            
+            foreach (var mem in memoryList)
+            {
+                mem.CopyTo(combinedMemory);
+            }
+
+            return Task.FromResult((ReadOnlyMemory<char>)combinedMemory);
         }
 
-        private ReadOnlyMemory<char> MemoryConcat(List<ReadOnlyMemory<char>> memoryList, string replacement)
+        private static Dictionary<char, ReadOnlyMemory<char>> CreateReplacementMap(IEscapeRouteConfiguration config)
         {
-            throw new NotImplementedException();
+            return new Dictionary<char, ReadOnlyMemory<char>>()
+            {
+                {config.BackslashEscapeHandler.GetPattern(),
+                    config.BackslashEscapeHandler.GetReplacement(config.BackslashBehavior)},
+                {config.BackspaceEscapeHandler.GetPattern(),
+                    config.BackspaceEscapeHandler.GetReplacement(config.BackspaceBehavior)},
+                {config.DoubleQuoteEscapeHandler.GetPattern(),
+                    config.DoubleQuoteEscapeHandler.GetReplacement(config.DoubleQuoteBehavior)},
+                {config.FormFeedEscapeHandler.GetPattern(),
+                    config.FormFeedEscapeHandler.GetReplacement(config.FormFeedBehavior)},
+                {config.SingleQuoteEscapeHandler.GetPattern(),
+                    config.SingleQuoteEscapeHandler.GetReplacement(config.SingleQuoteBehavior)},
+                {config.TabEscapeHandler.GetPattern(),
+                    config.TabEscapeHandler.GetReplacement(config.TabBehavior)},
+            };
         }
 
-        private static IEnumerable<int> GetMatches(string raw, char pattern)
+        private ReadOnlyMemory<char> GetPattern(IEscapeRouteConfiguration config)
         {
-            var memory = raw.AsMemory();
+            ReadOnlyMemory<char> pattern = new char[]
+            {
+                config.BackslashEscapeHandler.GetPattern(),
+                config.BackspaceEscapeHandler.GetPattern(),
+                config.DoubleQuoteEscapeHandler.GetPattern(),
+                config.FormFeedEscapeHandler.GetPattern(),
+                config.SingleQuoteEscapeHandler.GetPattern(),
+                config.TabEscapeHandler.GetPattern(),
+            };
+
+            return pattern;
+        }
+
+        private static IEnumerable<int> GetMatches(ReadOnlyMemory<char> memory, ReadOnlyMemory<char> pattern)
+        {
 
             while (memory.Length > 0)
             {
-                var index = memory.Span.IndexOf(pattern);
+                var index = memory.Span.IndexOfAny(pattern.Span);
                 
                 if (index == -1)
                 {
+                    yield return memory.Length;
                     yield break;
                 }
-                
-                yield return index;
-                
-                memory = memory.Slice(index);
+                else
+                {
+                    yield return index;
+
+                    memory = memory.Slice(index + 1);
+                }
             }
+        }
+
+        private List<ReadOnlyMemory<char>> CreateEscapedTextList(ReadOnlyMemory<char> raw, 
+            IList<int> matchIndexes, IEscapeRouteConfiguration config)
+        {
+            var memoryList = new List<ReadOnlyMemory<char>>();
+
+            var replacementMap = CreateReplacementMap(config);
+            
+            if (replacementMap.TryGetValue(raw.Slice(matchIndexes[0], 1).ToArray()[0], out var firstMatch))
+            {
+                memoryList.Add(firstMatch);
+            }
+            else
+            {
+                memoryList.Add(raw.Slice(0, matchIndexes[0]));
+            }
+
+            var prevIndex = matchIndexes[0] + 1;
+            
+            foreach (var matchIndex in matchIndexes.Skip(1))
+            {
+                if (prevIndex > raw.Length)
+                {
+                    break;
+                }
+
+                var memorySlice = raw.Slice(prevIndex + matchIndex, (matchIndex - prevIndex) + 1);
+                var patternMatched = raw.Slice(prevIndex + matchIndex, 1).ToArray()[0];
+                replacementMap.TryGetValue(patternMatched, out var replacement);
+                
+                memoryList.Add(replacement);
+                memoryList.Add(memorySlice);
+                prevIndex += (matchIndex + 1);
+
+            }
+
+            return memoryList;
         }
     }
 }
