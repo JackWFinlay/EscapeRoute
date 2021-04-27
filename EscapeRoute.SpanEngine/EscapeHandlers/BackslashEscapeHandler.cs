@@ -1,29 +1,24 @@
 using System;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using EscapeRoute.Abstractions.Enums;
-using EscapeRoute.Abstractions.Interfaces;
+using EscapeRoute.SpanEngine.Abstractions.Interfaces;
 
-namespace EscapeRoute.EscapeHandlers
+namespace EscapeRoute.SpanEngine.EscapeHandlers
 {
     public class BackslashEscapeHandler : IEscapeRouteEscapeHandler<BackslashBehavior>
     {
         private const char _pattern = '\\';
-        private readonly ReadOnlyMemory<char> _replacePattern = new char[] {'\\', '\\'};
+        private readonly ReadOnlyMemory<char> _replacePattern = new[] {'\\', '\\'};
         private readonly ReadOnlyMemory<char> _stripPattern = new char[] {};
+
+        public char GetPattern() => _pattern;
         
-        public char GetPattern()
-        {
-            return _pattern;
-        }
-        
-        public ReadOnlyMemory<char> GetReplacement(BackslashBehavior behavior)
+        public Func<char, ReadOnlyMemory<char>> GetReplacement(BackslashBehavior behavior)
         {
             var escaped = behavior switch
             {
                 // Replace backspace characters with \b.
-                BackslashBehavior.Escape => _replacePattern,
-                BackslashBehavior.Strip => _stripPattern,
+                BackslashBehavior.Escape => new Func<char, ReadOnlyMemory<char>>(c => _replacePattern),
+                BackslashBehavior.Strip => c => _stripPattern,
                 _ => throw new ArgumentException($"Not a valid {nameof(BackslashBehavior)}", nameof(behavior))
             };
 

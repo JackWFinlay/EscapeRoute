@@ -1,8 +1,7 @@
 using System;
-using System.IO;
 using System.Threading.Tasks;
 
-namespace EscapeRoute.Abstractions.Interfaces
+namespace EscapeRoute.SpanEngine.Abstractions.Interfaces
 {
     public interface IReplacementEngine
     {

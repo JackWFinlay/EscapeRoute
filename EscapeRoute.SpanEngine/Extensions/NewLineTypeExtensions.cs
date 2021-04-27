@@ -1,7 +1,7 @@
 using System;
 using EscapeRoute.Abstractions.Enums;
 
-namespace EscapeRoute.Extensions
+namespace EscapeRoute.SpanEngine.Extensions
 {
     public static class NewLineTypeExtensions
     {
@@ -11,8 +11,6 @@ namespace EscapeRoute.Extensions
             {
                 NewLineType.Strip => "",
                 NewLineType.Space => " ",
-                NewLineType.Unix => @"\n",
-                NewLineType.Windows => @"\r\n",
                 NewLineType.Escape => @"\n",
                 _ => throw new ArgumentException($"Not a valid {nameof(NewLineType)}", nameof(newLineType))
             };

@@ -1,9 +1,8 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace EscapeRoute.Extensions
+namespace EscapeRoute.SpanEngine.Extensions
 {
     public static class ListExtensions
     {

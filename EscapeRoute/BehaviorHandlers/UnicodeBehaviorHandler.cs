@@ -10,26 +10,10 @@ namespace EscapeRoute.BehaviorHandlers
     {
         // [^\x00-\x7F] matches any non-ASCII character.
         private const string _pattern = @"[^\x00-\x7F]";
-        private const string _stripPattern = "";
-
+        
         public Task<string> EscapeAsync(string raw, UnicodeBehavior behavior)
         {
             var escaped = HandleBehavior(raw, behavior);
-            return Task.FromResult(escaped);
-        }
-
-        public Task<ReadOnlyMemory<char>> EscapeAsync(ReadOnlyMemory<char> raw, UnicodeBehavior behavior, IReplacementEngine replacementEngine)
-        {
-            var escaped = behavior switch
-            {
-                // Replace non-ASCII character with it's equivalent in the form \uXXXX where XXXX is the character code.
-                // https://stackoverflow.com/a/25349901
-                UnicodeBehavior.Escape => Regex.Replace(raw.ToString(), _pattern, c => $@"\u{(int)c.Value[0]:x4}").AsMemory(),
-                // Strip out non-ASCII characters.
-                UnicodeBehavior.Strip => Regex.Replace(raw.ToString(), _pattern, "").AsMemory(),
-                _ => throw new ArgumentException($"Not a valid {nameof(UnicodeBehavior)}", nameof(behavior))
-            };
-
             return Task.FromResult(escaped);
         }
         

@@ -1,13 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <Description>Convert strings and files into JSON friendly strings.</Description>
     <Summary>Convert strings and files into JSON friendly strings.</Summary>
     <Copyright>Copyright Jack Witbrock Finlay 2017-2021</Copyright>
-    <Title>EscapeRoute</Title>
-    <AssemblyTitle>EscapeRoute</AssemblyTitle>
+    <Title>EscapeRoute.SpanEngine</Title>
+    <AssemblyTitle>EscapeRoute.SpanEngine</AssemblyTitle>
     <Authors>Jack Witbrock Finlay</Authors>
-    <PackageId>EscapeRoute</PackageId>
+    <PackageId>EscapeRoute.SpanEngine</PackageId>
     <PackageLicenseUrl>https://github.com/JackWFinlay/EscapeRoute/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/JackWFinlay/EscapeRoute</PackageProjectUrl>
     <PackageReleaseNotes>See project site for details.</PackageReleaseNotes>
@@ -22,5 +22,6 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\EscapeRoute.Abstractions\EscapeRoute.Abstractions.csproj" />
+    <ProjectReference Include="..\EscapeRoute.SpanEngine.Abstractions\EscapeRoute.SpanEngine.Abstractions.csproj" />
   </ItemGroup>
 </Project>

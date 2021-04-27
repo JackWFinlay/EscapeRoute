@@ -2,11 +2,17 @@ using System;
 using System.Threading.Tasks;
 using EscapeRoute.Abstractions.Enums;
 using EscapeRoute.Abstractions.Interfaces;
+using EscapeRoute.SpanEngine.Abstractions.Interfaces;
 
-namespace EscapeRoute.BehaviorHandlers
+namespace EscapeRoute.SpanEngine.BehaviorHandlers
 {
     public class TrimBehaviorHandler: IEscapeRouteBehaviorHandler<TrimBehavior>
     {
+        public Task<ReadOnlyMemory<char>> EscapeAsync(ReadOnlyMemory<char> raw, TrimBehavior behavior, IReplacementEngine replacementEngine)
+        {
+            return Task.FromResult(HandleBehavior(raw.ToString(), behavior).AsMemory());
+        }
+
         public Task<string> EscapeAsync(string raw, TrimBehavior behavior)
         {
             var escaped = HandleBehavior(raw, behavior);

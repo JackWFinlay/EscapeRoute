@@ -3,8 +3,8 @@
 
 Selectively trim and escape text files into JSON friendly strings. Supports all JSON escape characters and Unicode characters that can be represented in the form \u(4 digit hex).
 
-## Version 0.0.2 Note
-Please be aware of the following changes for version 0.0.2:
+## Version `0.0.2` Notes
+Please be aware of the following changes for version `0.0.2`:
  - Normalization of the type name `*Behavior`, note the American English spelling.
  - Interfaces and Enums are abstracted to the `EscapeRoute.Abstractions` project. 
  These will exist in a separate NuGet package of the same name.
@@ -16,15 +16,31 @@ Please be aware of the following changes for version 0.0.2:
  - An addition of individual `*BehaviorHandler` classes are available to customise handling of individual behaviors,
  if you wish to override the default behavior.
 
+## Version `0.0.3` Notes
+Please be aware of the following changes:
+- Addition of the `EscapeRoute.SpanEngine` project. 
+  This project uses `Span<T>` under the hood to [speed up execution time and lower allocations and GC events](#benchmarks).
+  You can use the NuGet package `EscapeRoute.SpanEngine` in place of the original `EscapeRoute` package,
+  but there are changes to the `EscapeRouteConfiguration` that must be used. 
+  See [EscapeRoute.SpanEngine configuration](#escaperoutespanengine-configuration) for details.
+
+- Addition of the `Escape` value to the `NewLineType` Enum.
+  This is the same as using the value `Unix` in previous versions. 
+  It is there for the `EscapeRoute.SpanEngine` project which uses a different method of substitution.
+   
+- Addition of `CarriageReturnbehavior` and different `NewLineType` default for `EscapeRoute.SpanEngine`.
+  See [EscapeRoute.SpanEngine behaviors](#escaperoutespanengine-behaviors) for details.
 
 ## Supported behaviors
-Currently supports the following behaviors/special characters (***Default***):
+### EscapeRoute
+The original `EscapeRoute` `EscapeRouter` currently supports the following behaviors/special characters (***Default***):
 
  - Tab (\t):
    - ***Strip***
    - Escape
  - New line (\n | \r\n):
    - None
+   - Escape (\n)
    - ***Space***
    - Unix (\n)
    - Windows (\r\n)
@@ -52,6 +68,42 @@ Currently supports the following behaviors/special characters (***Default***):
    - End
    - ***Both***
 
+### EscapeRoute
+The original `EscapeRoute` `EscapeRouter` currently supports the following behaviors/special characters (***Default***):
+
+- Tab (\t):
+    - ***Strip***
+    - Escape
+- Carriage Return (\r):
+    - ***Strip***
+    - Escape
+- New line (\n):
+    - None
+    - ***Escape*** (\n)
+    - Space
+    - Unix (\n)
+    - Windows (\n)
+- Backspace (\b):
+    - ***Strip***
+    - Escape
+- Form feed (\f):
+    - ***Strip***
+    - Escape
+- Backslash (\\\\):
+    - Strip
+    - ***Escape***
+- Unicode (\u1234):
+    - Strip
+    - ***Escape***
+- Single quotes '':
+    - ***Single***
+    - Double
+- Double quotes "":
+    - ***Double***
+    - Single
+    
+Note that for New Line type, the default is different (***Strip***) for `EscapeRoute.SpanEngine`.
+
 ## Usage
 ### Namespace
 Use the namespace `EscapeRoute`:
@@ -60,7 +112,7 @@ Use the namespace `EscapeRoute`:
 using EscapeRoute;
 ```
 
-### Parsing
+### Parsing (EscapeRoute)
 EscapeRoute allows the use of Files or Strings to load in the data to be escaped and trimmed. These can be called synchronously or asynchronously. 
 
 E.g. `ParseFile` and `ParseStringAsync`
@@ -84,6 +136,41 @@ namespace Example
             Console.WriteLine($"The strings are{areEqual} equal"); 
             // "The strings are equal"
         }
+    }
+}
+```
+
+### Parsing (EscapeRoute.SpanEngine, EscapeRoute >= `0.0.3`)
+`EscapeRoute.SpanEngine` uses multiple overloads of the `ParseAsync` method to perform parsing of
+either a `TextReader` or a `string`. You must provide the `TextReader` (`StreamReader`, `StringReader` etc.)
+and load the file yourself.
+
+`EscapeRoute.SpanEngine` doesn't accept file paths - 
+this is also marked obsolete in version `0.0.3` of the vanilla `EscapeRoute`.
+
+test file: [unicode1.txt](EscapeRoute.Test/test-files/unicode1.txt)
+```c#
+using EscapeRoute.SpanEngine;
+
+namespace Example
+{
+    public async void TestUnicodeFromFileAsyncDefaultParse()
+    {
+        string fileLocation = $"{_workspaceFolder}/test-files/unicode1.txt";
+        IEscapeRouter escapeRouter = new EscapeRouter();
+        const string expected = @"( \u0361\u00b0 \u035c\u0296 \u0361\u00b0)";
+        using StreamReader reader = File.OpenText(fileLocation);
+        string result = await escapeRouter.ParseAsync(reader);
+        Assert.Equal(expected, result); // True
+    }
+    
+    public async void TestUnicodeFromStringAsyncDefaultParse()
+    {
+        IEscapeRouter escapeRouter = new EscapeRouter();
+        const string input = "( ͡° ͜ʖ ͡°)";
+        const string expected = @"( \u0361\u00b0 \u035c\u0296 \u0361\u00b0)";
+        string result = await escapeRouter.ParseAsync(input);
+        Assert.Equal(expected, result); // True
     }
 }
 ```
@@ -144,7 +231,7 @@ namespace Example
             // no configuration required.
             IEscapeRouter escapeRouter = new EscapeRouter();
             string expected = @"( \u0361\u00b0 \u035c\u0296 \u0361\u00b0)";
-            string result = await escapeRouter.ParseStringAsync(unicodeString1);
+            string result = await escapeRouter.ParseAsync(unicodeString1);
             
             Console.WriteLine(result); 
             // "( \u0361\u00b0 \u035c\u0296 \u0361\u00b0)"
@@ -157,7 +244,11 @@ namespace Example
 }
 ```
 
+A limitation of this is that characters beyond U+FFFF cannot be escaped properly.
+
 ### Behavior Handlers
+
+#### EscapeRoute
 You can override the default behavior handling of any of the default behaviors 
 by supplying a class using the [`IEscapeRouteBehaviorHandler`](EscapeRoute.Abstractions/Interfaces/IEscapeRouteBehaviorHandler.cs) interface.
 See the [BehaviorHandlers](EscapeRoute/BehaviorHandlers) for examples.
@@ -186,6 +277,30 @@ EscapeRouteConfiguration config = new EscapeRouteConfiguration
     }
 };
 ```
+
+#### EscapeRoute.SpanEngine Configuration
+The configuration for the `EscapeRoute.SpanEngine` `EscapeRouter` is a bit different to that of the basic `EscapeRoute` `EscapeRouter`.
+You can override the default behavior handling of any of the default behaviors
+by supplying a class using the [`IEscapeRouteEscapeHandler`](EscapeRoute.SpanEngine.Abstractions/Interfaces/IEscapeRouteEscapeHandler.cs) interface.
+See the [EscapeHandlers](EscapeRoute.SpanEngine/EscapeHandlers) for examples.
+
+## Benchmarks
+``` ini
+BenchmarkDotNet=v0.12.1, OS=macOS 11.2.1 (20D74) [Darwin 20.3.0]
+Intel Core i5-6267U CPU 2.90GHz (Skylake), 1 CPU, 4 logical and 2 physical cores
+.NET Core SDK=5.0.101
+  [Host]     : .NET Core 5.0.1 (CoreCLR 5.0.120.57516, CoreFX 5.0.120.57516), X64 RyuJIT
+  DefaultJob : .NET Core 5.0.1 (CoreCLR 5.0.120.57516, CoreFX 5.0.120.57516), X64 RyuJIT
+```
+
+|         Method |     Mean |    Error |   StdDev | Ratio |    Gen 0 | Gen 1 | Gen 2 | Allocated |
+|--------------- |---------:|---------:|---------:|------:|---------:|------:|------:|----------:|
+|     ParseAsync | 783.3 μs | 15.35 μs | 14.36 μs |  1.00 | 333.0078 |     - |     - | 681.77 KB |
+| ParseAsyncSpan | 362.9 μs |  2.84 μs |  2.66 μs |  0.46 |  81.0547 |     - |     - | 165.88 KB |
+
+As shown by the results above, the `EscapeRoute.SpanEngine` is more than twice as fast,
+allocates considerably less memory, and performs far less GC events for the same given
+[test data](EscapeRoute.Benchmarks/ReplacementEngine/Constants.cs).
 
 ## License
 MIT

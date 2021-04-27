@@ -1,40 +1,25 @@
 using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
-using EscapeRoute.ReplacementEngines;
+using EscapeRoute.Abstractions.Interfaces;
 
 namespace EscapeRoute.Benchmarks.ReplacementEngine
 {
     [MemoryDiagnoser]
     public class ReplacementEngineBenchmarks
     {
-        private static readonly EscapeRouter _escapeRouter = new EscapeRouter();
-        private static readonly EscapeRouter _spanEscapeRouter = new EscapeRouter(new EscapeRouteConfiguration()
-        {
-            ReplacementEngine = new SpanReplacementEngine()
-        });
+        private static readonly IEscapeRouter BaseEscapeRouter = new EscapeRouter();
+        private static readonly IEscapeRouter SpanEscapeRouter = new EscapeRoute.SpanEngine.EscapeRouter();
 
-        // [Benchmark(Baseline = true)]
-        // public void ParseString()
-        // {
-        //     _escapeRouter.ParseString(Constants.BenchmarkString);
-        // }
-        //
-        //
-        // public async Task ParseStringAsync()
-        // {
-        //     await _escapeRouter.ParseStringAsync(Constants.BenchmarkString);
-        // }
-        
-        [Benchmark]
+        [Benchmark(Baseline = true)]
         public async Task ParseAsync()
         {
-            await _escapeRouter.ParseAsync(Constants.BenchmarkString);
+            await BaseEscapeRouter.ParseAsync(Constants.BenchmarkString);
         }
         
-        [Benchmark(Baseline = true)]
+        [Benchmark]
         public async Task ParseAsyncSpan()
         {
-            await _spanEscapeRouter.ParseAsync(Constants.BenchmarkString);
+            await SpanEscapeRouter.ParseAsync(Constants.BenchmarkString);
         }
     }
 }

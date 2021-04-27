@@ -1,7 +1,6 @@
-using System.Collections.Generic;
 using EscapeRoute.Abstractions.Enums;
 
-namespace EscapeRoute.Abstractions.Interfaces
+namespace EscapeRoute.SpanEngine.Abstractions.Interfaces
 {
     public interface IEscapeRouteConfiguration
     {
@@ -12,9 +11,9 @@ namespace EscapeRoute.Abstractions.Interfaces
         public BackslashBehavior BackslashBehavior { get; set; }
         public NewLineType NewLineType { get; set; }
         public DoubleQuoteBehavior DoubleQuoteBehavior { get; set; }
+        public CarriageReturnBehavior CarriageReturnBehavior { get; set; }
         
         public UnicodeBehavior UnicodeBehavior { get; set; }
-        public TrimBehavior TrimBehavior { get; set; }
         
         public IEscapeRouteEscapeHandler<TabBehavior> TabEscapeHandler { get; set; }
         public IEscapeRouteEscapeHandler<BackspaceBehavior> BackspaceEscapeHandler { get; set; }
@@ -22,10 +21,9 @@ namespace EscapeRoute.Abstractions.Interfaces
         public IEscapeRouteEscapeHandler<BackslashBehavior> BackslashEscapeHandler { get; set; }
         public IEscapeRouteEscapeHandler<DoubleQuoteBehavior> DoubleQuoteEscapeHandler { get; set; }
         public IEscapeRouteEscapeHandler<SingleQuoteBehavior> SingleQuoteEscapeHandler { get; set; }
-        
-        public IEscapeRouteBehaviorHandler<UnicodeBehavior> UnicodeBehaviorHandler { get; set; }
-        public IEscapeRouteBehaviorHandler<TrimBehavior> TrimBehaviorHandler { get; set; }
-        public IList<IEscapeRouteCustomBehaviorHandler> CustomBehaviorHandlers { get; set; }
+        public IEscapeRouteEscapeHandler<NewLineType> NewLineEscapeHandler { get; set; }
+        public IEscapeRouteEscapeHandler<CarriageReturnBehavior> CarriageReturnEscapeHandler { get; set; }
+        public IEscapeRouteEscapeHandler<UnicodeBehavior> UnicodeEscapeHandler { get; set; }
         public IReplacementEngine ReplacementEngine { get; set; }
     }
 }
