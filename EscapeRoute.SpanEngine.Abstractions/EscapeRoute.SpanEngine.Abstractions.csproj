@@ -9,7 +9,7 @@
         <AssemblyTitle>EscapeRoute.Abstractions</AssemblyTitle>
         <Authors>Jack Witbrock Finlay</Authors>
         <PackageId>EscapeRoute.SpanEngine.Abstractions</PackageId>
-        <PackageLicenseUrl>https://github.com/JackWFinlay/EscapeRoute/blob/master/LICENSE</PackageLicenseUrl>
+        <PackageLicense>https://github.com/JackWFinlay/EscapeRoute/blob/master/LICENSE</PackageLicense>
         <PackageProjectUrl>https://github.com/JackWFinlay/EscapeRoute</PackageProjectUrl>
         <PackageReleaseNotes>See project site for details.</PackageReleaseNotes>
         <PackageTags>JSON;Convert;Escape;EscapeRoute;String;Unicode</PackageTags>

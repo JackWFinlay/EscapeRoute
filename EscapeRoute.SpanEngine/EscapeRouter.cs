@@ -72,7 +72,7 @@ namespace EscapeRoute.SpanEngine
         /// <returns>A JSON friendly <see cref="string"/>.</returns>
         public async Task<string> ParseAsync(TextReader textReader) => await EscapeAsync(textReader);
 
-        public async Task<string> ParseAsync(string inputString) => await ReadStringAsync(inputString);
+        public async Task<string> ParseAsync(string inputString) => await EscapeAsync(inputString);
 
         private void ApplyConfiguration(EscapeRouteConfiguration escapeRouteConfiguration)
         {
@@ -81,8 +81,7 @@ namespace EscapeRoute.SpanEngine
 
         private async Task<string> ReadStringAsync(string inputString)
         {
-            using var stringReader = new StringReader(inputString);
-            var escaped = await EscapeAsync(stringReader);
+            var escaped = await EscapeAsync(inputString);
             
             return escaped;
         }
@@ -95,36 +94,30 @@ namespace EscapeRoute.SpanEngine
             return escaped;
         }
 
+        private async Task<string> EscapeAsync(string text)
+        {
+            var escaped = await EscapeAsync(text.AsMemory());
+            
+            return escaped;
+        }
+        
         private async Task<string> EscapeAsync(TextReader textReader)
         {
             var text = await textReader.ReadToEndAsync();
-            
-            var escapedMemory = await EscapeTextAsync(text);
+
+            var escaped = await EscapeAsync(text);
+
+            return escaped;
+        }
+
+        private async Task<string> EscapeAsync(ReadOnlyMemory<char> input)
+        {
+            var escapedMemory = await _configuration.ReplacementEngine.ReplaceAsync(input, _configuration);
 
             var escaped = string.Create(escapedMemory.Length, escapedMemory,
                 (destination, state) => state.Span.CopyTo(destination));
 
             return escaped;
         }
-
-        /// <summary>
-        /// Replace each escapable character with it's escaped string.
-        /// </summary>
-        /// <param name="rawString"><see cref="String"/> Raw String</param>
-        /// <returns>Escaped and trimmed <see cref="String"/></returns>
-        private async Task<ReadOnlyMemory<char>> EscapeTextAsync(string rawString)
-        {
-            var escaped = rawString.AsMemory();
-
-            // Handle trimming.
-            // escaped = await _configuration.TrimBehaviorHandler
-            //    .EscapeAsync(escaped, _configuration.TrimBehavior, _configuration.ReplacementEngine);
-
-            escaped = await _configuration.ReplacementEngine.ReplaceAsync(escaped, _configuration);
-
-            return escaped;
-        }
-
-        
     }
 }

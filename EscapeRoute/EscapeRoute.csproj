@@ -8,7 +8,7 @@
     <AssemblyTitle>EscapeRoute</AssemblyTitle>
     <Authors>Jack Witbrock Finlay</Authors>
     <PackageId>EscapeRoute</PackageId>
-    <PackageLicenseUrl>https://github.com/JackWFinlay/EscapeRoute/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageLicense>https://github.com/JackWFinlay/EscapeRoute/blob/master/LICENSE</PackageLicense>
     <PackageProjectUrl>https://github.com/JackWFinlay/EscapeRoute</PackageProjectUrl>
     <PackageReleaseNotes>See project site for details.</PackageReleaseNotes>
     <PackageTags>JSON;Convert;Escape;EscapeRoute;String;Unicode</PackageTags>
@@ -22,5 +22,11 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\EscapeRoute.Abstractions\EscapeRoute.Abstractions.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="readme.txt">
+      <Pack>true</Pack>
+      <PackagePath>\</PackagePath>
+    </Content>
   </ItemGroup>
 </Project>

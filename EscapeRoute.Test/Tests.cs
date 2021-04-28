@@ -732,5 +732,15 @@ namespace EscapeRoute.Test
             string result = await escapeRouter.ParseAsync(inputString);
             Assert.Equal(expected, result);
         }
+        
+        [Fact]
+        public async Task TestSpanReplacementEngineTextReader()
+        {
+            IEscapeRouter escapeRouter = new SpanEngine.EscapeRouter();
+            const string inputString = "The quick \r\n\t\bbrown fox jumps \r\n\t\bover the lazy dog. ( ͡° ͜ʖ ͡°)";
+            const string expected = @"The quick brown fox jumps over the lazy dog. ( \u0361\u00b0 \u035c\u0296 \u0361\u00b0)";
+            string result = await escapeRouter.ParseAsync(new StringReader(inputString));
+            Assert.Equal(expected, result);
+        }
     }
 }

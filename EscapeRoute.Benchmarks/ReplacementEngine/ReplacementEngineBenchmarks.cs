@@ -1,3 +1,4 @@
+using System.IO;
 using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
 using EscapeRoute.Abstractions.Interfaces;
@@ -17,9 +18,16 @@ namespace EscapeRoute.Benchmarks.ReplacementEngine
         }
         
         [Benchmark]
-        public async Task ParseAsyncSpan()
+        public async Task ParseAsyncSpanString()
         {
             await SpanEscapeRouter.ParseAsync(Constants.BenchmarkString);
+        }
+        
+        [Benchmark]
+        public async Task ParseAsyncSpanTextReader()
+        {
+            var stringReader = new StringReader(Constants.BenchmarkString);
+            await SpanEscapeRouter.ParseAsync(stringReader);
         }
     }
 }

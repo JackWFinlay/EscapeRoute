@@ -30,9 +30,13 @@ Please be aware of the following changes:
    
 - Addition of `CarriageReturnbehavior` and different `NewLineType` default for `EscapeRoute.SpanEngine`.
   See [EscapeRoute.SpanEngine behaviors](#escaperoutespanengine-behaviors) for details.
+  
+- The current characters that `EscapeRoute.SpanEngine` can escape is limited to the same that the original version `EscapeRoute`
+can handle. There are plans to expand this to some of the other special characters, please raise an 
+  [issue](https://github.com/JackWFinlay/EscapeRoute/issues) for any requests.
 
 ## Supported behaviors
-### EscapeRoute
+### EscapeRoute Behaviors
 The original `EscapeRoute` `EscapeRouter` currently supports the following behaviors/special characters (***Default***):
 
  - Tab (\t):
@@ -68,8 +72,8 @@ The original `EscapeRoute` `EscapeRouter` currently supports the following behav
    - End
    - ***Both***
 
-### EscapeRoute
-The original `EscapeRoute` `EscapeRouter` currently supports the following behaviors/special characters (***Default***):
+### EscapeRoute.SpanEngine Behaviors
+The `EscapeRoute.SpanEngine` `EscapeRouter` currently supports the following behaviors/special characters (***Default***):
 
 - Tab (\t):
     - ***Strip***
@@ -81,8 +85,8 @@ The original `EscapeRoute` `EscapeRouter` currently supports the following behav
     - None
     - ***Escape*** (\n)
     - Space
-    - Unix (\n)
-    - Windows (\n)
+    - Unix (\n) - present for compatibility
+    - Windows (\n) - present for compatibility
 - Backspace (\b):
     - ***Strip***
     - Escape
@@ -103,6 +107,8 @@ The original `EscapeRoute` `EscapeRouter` currently supports the following behav
     - Single
     
 Note that for New Line type, the default is different (***Strip***) for `EscapeRoute.SpanEngine`.
+Also note that the trim behaviour is not available for `EscapeRoute.SpanEngine`, this may change in future -
+feel free to request this under [issues](https://github.com/JackWFinlay/EscapeRoute/issues).
 
 ## Usage
 ### Namespace
@@ -112,10 +118,14 @@ Use the namespace `EscapeRoute`:
 using EscapeRoute;
 ```
 
-### Parsing (EscapeRoute)
+### Parsing
+#### EscapeRoute
 EscapeRoute allows the use of Files or Strings to load in the data to be escaped and trimmed. These can be called synchronously or asynchronously. 
 
 E.g. `ParseFile` and `ParseStringAsync`
+
+Note: The `ParseFile`, `ParseFileAsync`, `ParseString`, `ParseStringAsync` methods have been marked obsolete from version `0.0.3`.
+See section [EscapeRoute.SpanEngine](#escaperoutespanengine-and-escaperoute--003) below.
 
 test file: [test1.txt](EscapeRoute.Test/test-files/test1.txt)
 ```C#
@@ -140,7 +150,7 @@ namespace Example
 }
 ```
 
-### Parsing (EscapeRoute.SpanEngine, EscapeRoute >= `0.0.3`)
+#### EscapeRoute.SpanEngine and EscapeRoute >= `0.0.3`)
 `EscapeRoute.SpanEngine` uses multiple overloads of the `ParseAsync` method to perform parsing of
 either a `TextReader` or a `string`. You must provide the `TextReader` (`StreamReader`, `StringReader` etc.)
 and load the file yourself.
@@ -292,11 +302,11 @@ Intel Core i5-6267U CPU 2.90GHz (Skylake), 1 CPU, 4 logical and 2 physical cores
   [Host]     : .NET Core 5.0.1 (CoreCLR 5.0.120.57516, CoreFX 5.0.120.57516), X64 RyuJIT
   DefaultJob : .NET Core 5.0.1 (CoreCLR 5.0.120.57516, CoreFX 5.0.120.57516), X64 RyuJIT
 ```
-
-|         Method |     Mean |    Error |   StdDev | Ratio |    Gen 0 | Gen 1 | Gen 2 | Allocated |
-|--------------- |---------:|---------:|---------:|------:|---------:|------:|------:|----------:|
-|     ParseAsync | 783.3 μs | 15.35 μs | 14.36 μs |  1.00 | 333.0078 |     - |     - | 681.77 KB |
-| ParseAsyncSpan | 362.9 μs |  2.84 μs |  2.66 μs |  0.46 |  81.0547 |     - |     - | 165.88 KB |
+|                   Method |     Mean |    Error |   StdDev | Ratio |    Gen 0 |  Gen 1 | Gen 2 | Allocated |
+|------------------------- |---------:|---------:|---------:|------:|---------:|-------:|------:|----------:|
+|               ParseAsync | 865.2 μs | 17.01 μs | 15.08 μs |  1.00 | 333.0078 | 0.9766 |     - | 681.77 KB |
+|     ParseAsyncSpanString | 300.5 μs |  3.37 μs |  3.15 μs |  0.35 |  81.0547 |      - |     - |  165.7 KB |
+| ParseAsyncSpanTextReader | 313.6 μs |  4.63 μs |  3.87 μs |  0.36 |  81.0547 |      - |     - | 165.87 KB |
 
 As shown by the results above, the `EscapeRoute.SpanEngine` is more than twice as fast,
 allocates considerably less memory, and performs far less GC events for the same given
