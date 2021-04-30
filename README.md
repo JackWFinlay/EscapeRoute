@@ -301,6 +301,16 @@ Intel Core i5-6267U CPU 2.90GHz (Skylake), 1 CPU, 4 logical and 2 physical cores
 .NET Core SDK=5.0.101
   [Host]     : .NET Core 5.0.1 (CoreCLR 5.0.120.57516, CoreFX 5.0.120.57516), X64 RyuJIT
   DefaultJob : .NET Core 5.0.1 (CoreCLR 5.0.120.57516, CoreFX 5.0.120.57516), X64 RyuJIT
+  
+Mean      : Arithmetic mean of all measurements
+Error     : Half of 99.9% confidence interval
+StdDev    : Standard deviation of all measurements
+Ratio     : Mean of the ratio distribution ([Current]/[Baseline])
+Gen 0     : GC Generation 0 collects per 1000 operations
+Gen 1     : GC Generation 1 collects per 1000 operations
+Gen 2     : GC Generation 2 collects per 1000 operations
+Allocated : Allocated memory per single operation (managed only, inclusive, 1KB = 1024B)
+1 μs      : 1 Microsecond (0.000001 sec)
 ```
 |                        Method |     Mean |   Error |  StdDev | Ratio |    Gen 0 | Gen 1 | Gen 2 | Allocated |
 |------------------------------ |---------:|--------:|--------:|------:|---------:|------:|------:|----------:|
@@ -315,7 +325,7 @@ Intel Core i5-6267U CPU 2.90GHz (Skylake), 1 CPU, 4 logical and 2 physical cores
 | AsciiUnicodeParseAsyncSpanTextReader | 233.5 μs |  1.45 μs |  1.21 μs |  0.30 |  55.4199 |     - |     - |  113.7 KB |
 
 
-As shown by the results above, the `EscapeRoute.SpanEngine` is more than twice as fast,
+As shown by the results above, the `EscapeRoute.SpanEngine` is more than three times as fast,
 allocates considerably less memory, and performs far less GC events for the same given
 [test data](EscapeRoute.Benchmarks/ReplacementEngine/Constants.cs).
 
