@@ -295,12 +295,12 @@ by supplying a class using the [`IEscapeRouteEscapeHandler`](EscapeRoute.SpanEng
 See the [EscapeHandlers](EscapeRoute.SpanEngine/EscapeHandlers) for examples.
 
 ## Benchmarks
-``` ini
+```
 BenchmarkDotNet=v0.12.1, OS=macOS 11.2.1 (20D74) [Darwin 20.3.0]
 Intel Core i5-6267U CPU 2.90GHz (Skylake), 1 CPU, 4 logical and 2 physical cores
 .NET Core SDK=5.0.101
-  [Host]     : .NET Core 5.0.1 (CoreCLR 5.0.120.57516, CoreFX 5.0.120.57516), X64 RyuJIT
-  DefaultJob : .NET Core 5.0.1 (CoreCLR 5.0.120.57516, CoreFX 5.0.120.57516), X64 RyuJIT
+[Host]     : .NET Core 5.0.1 (CoreCLR 5.0.120.57516, CoreFX 5.0.120.57516), X64 RyuJIT
+DefaultJob : .NET Core 5.0.1 (CoreCLR 5.0.120.57516, CoreFX 5.0.120.57516), X64 RyuJIT
   
 Mean      : Arithmetic mean of all measurements
 Error     : Half of 99.9% confidence interval
