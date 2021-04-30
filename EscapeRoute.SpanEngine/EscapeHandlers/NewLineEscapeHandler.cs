@@ -13,15 +13,15 @@ namespace EscapeRoute.SpanEngine.EscapeHandlers
 
         public char GetPattern() => _pattern;
 
-        public Func<char, ReadOnlyMemory<char>> GetReplacement(NewLineType behavior)
+        public ReadOnlyMemory<char> GetReplacement(NewLineType behavior)
         {
             var escaped = behavior switch
             {
-                NewLineType.Space => new Func<char, ReadOnlyMemory<char>>(c => _replaceSpacePattern),
-                NewLineType.Escape => c => _replacePattern,
-                NewLineType.Strip => c => _stripPattern,
-                NewLineType.Windows => c => _replacePattern,
-                NewLineType.Unix => c => _replacePattern,
+                NewLineType.Space => _replaceSpacePattern,
+                NewLineType.Escape => _replacePattern,
+                NewLineType.Strip => _stripPattern,
+                NewLineType.Windows => _replacePattern,
+                NewLineType.Unix => _replacePattern,
                 _ => throw new ArgumentException($"Not a valid {nameof(NewLineType)}", nameof(behavior))
             };
 

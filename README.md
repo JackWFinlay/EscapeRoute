@@ -302,11 +302,18 @@ Intel Core i5-6267U CPU 2.90GHz (Skylake), 1 CPU, 4 logical and 2 physical cores
   [Host]     : .NET Core 5.0.1 (CoreCLR 5.0.120.57516, CoreFX 5.0.120.57516), X64 RyuJIT
   DefaultJob : .NET Core 5.0.1 (CoreCLR 5.0.120.57516, CoreFX 5.0.120.57516), X64 RyuJIT
 ```
-|                   Method |     Mean |    Error |   StdDev | Ratio |    Gen 0 |  Gen 1 | Gen 2 | Allocated |
-|------------------------- |---------:|---------:|---------:|------:|---------:|-------:|------:|----------:|
-|               ParseAsync | 865.2 μs | 17.01 μs | 15.08 μs |  1.00 | 333.0078 | 0.9766 |     - | 681.77 KB |
-|     ParseAsyncSpanString | 300.5 μs |  3.37 μs |  3.15 μs |  0.35 |  81.0547 |      - |     - |  165.7 KB |
-| ParseAsyncSpanTextReader | 313.6 μs |  4.63 μs |  3.87 μs |  0.36 |  81.0547 |      - |     - | 165.87 KB |
+|                        Method |     Mean |   Error |  StdDev | Ratio |    Gen 0 | Gen 1 | Gen 2 | Allocated |
+|------------------------------ |---------:|--------:|--------:|------:|---------:|------:|------:|----------:|
+|               AsciiParseAsync | 419.3 μs | 3.43 μs | 2.87 μs |  1.00 | 195.8008 |     - |     - | 399.93 KB |
+|     AsciiParseAsyncSpanString | 129.0 μs | 0.48 μs | 0.40 μs |  0.31 |  20.5078 |     - |     - |  42.42 KB |
+| AsciiParseAsyncSpanTextReader | 133.6 μs | 1.46 μs | 1.22 μs |  0.32 |  20.7520 |     - |     - |  42.59 KB |
+
+|                               Method |     Mean |    Error |   StdDev | Ratio |    Gen 0 | Gen 1 | Gen 2 | Allocated |
+|------------------------------------- |---------:|---------:|---------:|------:|---------:|------:|------:|----------:|
+|               AsciiUnicodeParseAsync | 781.2 μs | 15.26 μs | 20.37 μs |  1.00 | 333.0078 |     - |     - | 681.77 KB |
+|     AsciiUnicodeParseAsyncSpanString | 230.8 μs |  4.44 μs |  4.16 μs |  0.30 |  55.4199 |     - |     - | 113.53 KB |
+| AsciiUnicodeParseAsyncSpanTextReader | 233.5 μs |  1.45 μs |  1.21 μs |  0.30 |  55.4199 |     - |     - |  113.7 KB |
+
 
 As shown by the results above, the `EscapeRoute.SpanEngine` is more than twice as fast,
 allocates considerably less memory, and performs far less GC events for the same given

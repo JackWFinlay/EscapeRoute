@@ -58,9 +58,9 @@ namespace EscapeRoute.SpanEngine.ReplacementEngines
             return combinedMemory;
         }
 
-        private static Dictionary<char, Func<char, ReadOnlyMemory<char>>> CreateReplacementMap(IEscapeRouteConfiguration config)
+        private static Dictionary<char, ReadOnlyMemory<char>> CreateReplacementMap(IEscapeRouteConfiguration config)
         {
-            return new Dictionary<char, Func<char, ReadOnlyMemory<char>>>()
+            return new Dictionary<char, ReadOnlyMemory<char>>()
             {
                 {config.BackspaceEscapeHandler.GetPattern(),
                     config.BackspaceEscapeHandler.GetReplacement(config.BackspaceBehavior)},
@@ -81,7 +81,7 @@ namespace EscapeRoute.SpanEngine.ReplacementEngines
             };
         }
 
-        private HashSet<char> GetPattern(IEscapeRouteConfiguration config)
+        private static HashSet<char> GetPattern(IEscapeRouteConfiguration config)
         {
             var pattern = new HashSet<char>()
             {
@@ -147,27 +147,29 @@ namespace EscapeRoute.SpanEngine.ReplacementEngines
                     break;
                 }
 
-                var patternMatched = raw.Span.Slice(prevIndex + matchIndex, 1)[0];
-                if (replacementMap.TryGetValue(patternMatched, out var replace))
+                var patternMatched = raw.Span.Slice(prevIndex + matchIndex, 1);
+
+                if (replacementMap.TryGetValue(patternMatched[0], out var replacement))
                 {
-                    var replacement = replace(patternMatched);
-                    
-                    if(!replacement.IsEmpty)
-                    {
-                        memoryList.Add(replacement);
-                    }
-                } else if (patternMatched > 127)
-                {
-                    var replacer = config.UnicodeEscapeHandler
-                                                                   .GetReplacement(config.UnicodeBehavior);
-                    
-                    var replacement = replacer(patternMatched);
-                    
-                    if(!replacement.IsEmpty)
+                    if (!replacement.IsEmpty)
                     {
                         memoryList.Add(replacement);
                     }
                 }
+                else if (patternMatched[0] > 127)
+                {
+                    var replacer = config.UnicodeEscapeHandler
+                                            .GetReplacement(config.UnicodeBehavior);
+                    
+                    var unicodeReplacement = replacer(patternMatched[0]);
+                    
+                    if(!unicodeReplacement.IsEmpty)
+                    {
+                        memoryList.Add(unicodeReplacement);
+                    }
+                    
+                    replacementMap.Add(patternMatched[0], unicodeReplacement);
+                } 
 
                 if (prevIndex == 0)
                 {

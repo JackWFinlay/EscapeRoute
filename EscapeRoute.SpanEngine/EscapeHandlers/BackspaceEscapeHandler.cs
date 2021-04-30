@@ -12,13 +12,13 @@ namespace EscapeRoute.SpanEngine.EscapeHandlers
 
         public char GetPattern() => _pattern;
         
-        public Func<char, ReadOnlyMemory<char>> GetReplacement(BackspaceBehavior behavior)
+        public ReadOnlyMemory<char> GetReplacement(BackspaceBehavior behavior)
         {
             var escaped = behavior switch
             {
                 // Replace backspace characters with \b.
-                BackspaceBehavior.Escape => new Func<char, ReadOnlyMemory<char>>(c => _replacePattern),
-                BackspaceBehavior.Strip => c => _stripPattern,
+                BackspaceBehavior.Escape => _replacePattern,
+                BackspaceBehavior.Strip => _stripPattern,
                 _ => throw new ArgumentException($"Not a valid {nameof(BackspaceBehavior)}", nameof(behavior))
             };
 

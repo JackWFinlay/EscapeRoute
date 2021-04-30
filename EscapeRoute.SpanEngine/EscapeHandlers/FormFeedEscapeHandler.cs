@@ -12,12 +12,12 @@ namespace EscapeRoute.SpanEngine.EscapeHandlers
 
         public char GetPattern() => _pattern;
 
-        public Func<char, ReadOnlyMemory<char>> GetReplacement(FormFeedBehavior behavior)
+        public ReadOnlyMemory<char> GetReplacement(FormFeedBehavior behavior)
         {
             var escaped = behavior switch
             {
-                FormFeedBehavior.Escape => new Func<char, ReadOnlyMemory<char>>(c => _replacePattern),
-                FormFeedBehavior.Strip => c => _stripPattern,
+                FormFeedBehavior.Escape => _replacePattern,
+                FormFeedBehavior.Strip => _stripPattern,
                 _ => throw new ArgumentException($"Not a valid {nameof(FormFeedBehavior)}", nameof(behavior))
             };
 

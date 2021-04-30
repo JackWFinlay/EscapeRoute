@@ -1,4 +1,5 @@
-﻿using BenchmarkDotNet.Running;
+﻿using System.Reflection;
+using BenchmarkDotNet.Running;
 using EscapeRoute.Benchmarks.ReplacementEngine;
 
 namespace EscapeRoute.Benchmarks
@@ -7,7 +8,7 @@ namespace EscapeRoute.Benchmarks
     {
         static void Main()
         {
-            BenchmarkRunner.Run<ReplacementEngineBenchmarks>();
+            BenchmarkRunner.Run(Assembly.GetExecutingAssembly());
         }
     }
 }

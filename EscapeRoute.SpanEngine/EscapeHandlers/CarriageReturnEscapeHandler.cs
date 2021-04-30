@@ -11,12 +11,12 @@ namespace EscapeRoute.SpanEngine.EscapeHandlers
         private readonly ReadOnlyMemory<char> _stripPattern = new char[] {};
         public char GetPattern() => _pattern;
 
-        public Func<char, ReadOnlyMemory<char>> GetReplacement(CarriageReturnBehavior behavior)
+        public ReadOnlyMemory<char> GetReplacement(CarriageReturnBehavior behavior)
         {
             var replacement = behavior switch
             {
-                CarriageReturnBehavior.Strip => new Func<char, ReadOnlyMemory<char>>(c => _stripPattern),
-                CarriageReturnBehavior.Replace => c => _replacePattern,
+                CarriageReturnBehavior.Strip => _stripPattern,
+                CarriageReturnBehavior.Replace => _replacePattern,
                 _ => throw new ArgumentException($"Not a valid {nameof(CarriageReturnBehavior)}", nameof(behavior))
             };
 

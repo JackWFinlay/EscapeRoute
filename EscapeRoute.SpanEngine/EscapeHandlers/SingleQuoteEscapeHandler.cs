@@ -12,13 +12,12 @@ namespace EscapeRoute.SpanEngine.EscapeHandlers
 
         public char GetPattern() => _pattern;
 
-        public Func<char, ReadOnlyMemory<char>> GetReplacement(SingleQuoteBehavior behavior)
+        public ReadOnlyMemory<char> GetReplacement(SingleQuoteBehavior behavior)
         {
             var escaped = behavior switch
             {
-                SingleQuoteBehavior.Single => 
-                    new Func<char, ReadOnlyMemory<char>>(c => _replaceSinglePattern),
-                SingleQuoteBehavior.Double => c => _replaceDoublePattern,
+                SingleQuoteBehavior.Single =>  _replaceSinglePattern,
+                SingleQuoteBehavior.Double => _replaceDoublePattern,
                 _ => throw new ArgumentException($"Not a valid {nameof(SingleQuoteBehavior)}", nameof(behavior))
             };
 

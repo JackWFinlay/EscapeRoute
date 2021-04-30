@@ -6,27 +6,27 @@ using EscapeRoute.Abstractions.Interfaces;
 namespace EscapeRoute.Benchmarks.ReplacementEngine
 {
     [MemoryDiagnoser]
-    public class ReplacementEngineBenchmarks
+    public class ReplacementEngineAsciiBenchmarks
     {
         private static readonly IEscapeRouter BaseEscapeRouter = new EscapeRouter();
         private static readonly IEscapeRouter SpanEscapeRouter = new EscapeRoute.SpanEngine.EscapeRouter();
 
         [Benchmark(Baseline = true)]
-        public async Task ParseAsync()
+        public async Task AsciiParseAsync()
         {
-            await BaseEscapeRouter.ParseAsync(Constants.BenchmarkString);
+            await BaseEscapeRouter.ParseAsync(Constants.BenchmarkStringAscii);
         }
         
         [Benchmark]
-        public async Task ParseAsyncSpanString()
+        public async Task AsciiParseAsyncSpanString()
         {
-            await SpanEscapeRouter.ParseAsync(Constants.BenchmarkString);
+            await SpanEscapeRouter.ParseAsync(Constants.BenchmarkStringAscii);
         }
         
         [Benchmark]
-        public async Task ParseAsyncSpanTextReader()
+        public async Task AsciiParseAsyncSpanTextReader()
         {
-            var stringReader = new StringReader(Constants.BenchmarkString);
+            var stringReader = new StringReader(Constants.BenchmarkStringAscii);
             await SpanEscapeRouter.ParseAsync(stringReader);
         }
     }

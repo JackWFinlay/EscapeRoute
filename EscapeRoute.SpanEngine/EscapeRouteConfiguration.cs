@@ -48,7 +48,7 @@ namespace EscapeRoute.SpanEngine
         private IEscapeRouteEscapeHandler<SingleQuoteBehavior> _singleQuoteEscapeHandler;
         private IEscapeRouteEscapeHandler<NewLineType> _newLineEscapeHandler;
         private IEscapeRouteEscapeHandler<CarriageReturnBehavior> _carriageReturnEscapeHandler;
-        private IEscapeRouteEscapeHandler<UnicodeBehavior> _unicodeEscapeHandler;
+        private IEscapeRouteEscapeFunctionHandler<UnicodeBehavior> _unicodeEscapeHandler;
 
         private IReplacementEngine _replacementEngine;
 
@@ -142,7 +142,7 @@ namespace EscapeRoute.SpanEngine
         /// <summary>
         /// Gets or sets the handler for handling non-ASCII characters.
         /// </summary>
-        public IEscapeRouteEscapeHandler<UnicodeBehavior> UnicodeEscapeHandler
+        public IEscapeRouteEscapeFunctionHandler<UnicodeBehavior> UnicodeEscapeHandler
         {
             get => _unicodeEscapeHandler ?? _defaultUnicodeEscapeHandler.Value;
             set => _unicodeEscapeHandler = value;

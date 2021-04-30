@@ -23,7 +23,7 @@ namespace EscapeRoute.SpanEngine.Abstractions.Interfaces
         public IEscapeRouteEscapeHandler<SingleQuoteBehavior> SingleQuoteEscapeHandler { get; set; }
         public IEscapeRouteEscapeHandler<NewLineType> NewLineEscapeHandler { get; set; }
         public IEscapeRouteEscapeHandler<CarriageReturnBehavior> CarriageReturnEscapeHandler { get; set; }
-        public IEscapeRouteEscapeHandler<UnicodeBehavior> UnicodeEscapeHandler { get; set; }
+        public IEscapeRouteEscapeFunctionHandler<UnicodeBehavior> UnicodeEscapeHandler { get; set; }
         public IReplacementEngine ReplacementEngine { get; set; }
     }
 }
