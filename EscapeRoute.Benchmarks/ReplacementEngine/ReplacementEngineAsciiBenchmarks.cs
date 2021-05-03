@@ -9,7 +9,7 @@ namespace EscapeRoute.Benchmarks.ReplacementEngine
     public class ReplacementEngineAsciiBenchmarks
     {
         private static readonly IEscapeRouter BaseEscapeRouter = new EscapeRouter();
-        private static readonly IEscapeRouter SpanEscapeRouter = new EscapeRoute.SpanEngine.EscapeRouter();
+        private static readonly SpanEngine.Abstractions.Interfaces.IEscapeRouter SpanEscapeRouter = new EscapeRoute.SpanEngine.EscapeRouter();
 
         [Benchmark(Baseline = true)]
         public async Task AsciiParseAsync()

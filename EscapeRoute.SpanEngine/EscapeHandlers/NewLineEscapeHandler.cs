@@ -1,5 +1,5 @@
 using System;
-using EscapeRoute.Abstractions.Enums;
+using EscapeRoute.SpanEngine.Abstractions.Enums;
 using EscapeRoute.SpanEngine.Abstractions.Interfaces;
 
 namespace EscapeRoute.SpanEngine.EscapeHandlers
@@ -20,8 +20,6 @@ namespace EscapeRoute.SpanEngine.EscapeHandlers
                 NewLineType.Space => _replaceSpacePattern,
                 NewLineType.Escape => _replacePattern,
                 NewLineType.Strip => _stripPattern,
-                NewLineType.Windows => _replacePattern,
-                NewLineType.Unix => _replacePattern,
                 _ => throw new ArgumentException($"Not a valid {nameof(NewLineType)}", nameof(behavior))
             };
 

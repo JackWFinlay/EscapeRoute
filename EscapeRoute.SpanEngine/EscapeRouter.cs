@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
-using EscapeRoute.Abstractions.Interfaces;
+using EscapeRoute.SpanEngine.Abstractions.Interfaces;
 
 namespace EscapeRoute.SpanEngine
 {
@@ -26,46 +26,6 @@ namespace EscapeRoute.SpanEngine
         }
 
         /// <summary>
-        /// Parses a <see cref="String"/> into a JSON friendly string synchronously.
-        /// </summary>
-        /// <param name="inputString">The string to parse.</param>
-        /// <returns>A JSON friendly <see cref="string"/>.</returns>
-        public string ParseString(string inputString)
-        {
-            return ReadStringAsync(inputString).GetAwaiter().GetResult();
-        }
-
-        /// <summary>
-        /// Parses a <see cref="String"/> into a JSON friendly string asynchronously.
-        /// </summary>
-        /// <param name="inputString">The string to parse.</param>
-        /// <returns>A JSON friendly <see cref="string"/>.</returns>
-        public async Task<string> ParseStringAsync(string inputString)
-        {
-            return await ReadStringAsync(inputString);
-        }
-
-        /// <summary>
-        /// Parses a file into a JSON friendly string synchronously.
-        /// </summary>
-        /// <param name="fileLocation">The string to parse.</param>
-        /// <returns>A JSON friendly <see cref="string"/>.</returns>
-        public string ParseFile(string fileLocation)
-        {
-            return ReadFileAsync(fileLocation).GetAwaiter().GetResult();
-        }
-
-        /// <summary>
-        /// Parses a file into a JSON friendly string asynchronously.
-        /// </summary>
-        /// <param name="fileLocation">The string to parse.</param>
-        /// <returns>A JSON friendly <see cref="string"/>.</returns>
-        public async Task<string> ParseFileAsync(string fileLocation)
-        {
-            return await ReadFileAsync(fileLocation);
-        }
-
-        /// <summary>
         /// Parses content of any <see cref="TextReader"/> or equivalent into a JSON friendly string asynchronously.
         /// </summary>
         /// <param name="textReader"><see cref="TextReader"/> containing content to escape.</param>
@@ -77,21 +37,6 @@ namespace EscapeRoute.SpanEngine
         private void ApplyConfiguration(EscapeRouteConfiguration escapeRouteConfiguration)
         {
             _configuration = escapeRouteConfiguration;
-        }
-
-        private async Task<string> ReadStringAsync(string inputString)
-        {
-            var escaped = await EscapeAsync(inputString);
-            
-            return escaped;
-        }
-
-        private async Task<string> ReadFileAsync(string fileLocation)
-        {
-            using StreamReader streamReader = new StreamReader(fileLocation);
-            var escaped = await EscapeAsync(streamReader);
-
-            return escaped;
         }
 
         private async Task<string> EscapeAsync(string text)

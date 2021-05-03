@@ -1,22 +1,18 @@
-namespace EscapeRoute.Abstractions.Enums
+namespace EscapeRoute.SpanEngine.Abstractions.Enums
 {
     public enum NewLineType
     {
         /// <summary>
         /// Do not join lines with a separator.
         /// </summary>
-        None = 0,
+        Strip = 0,
         /// <summary>
         /// Separates new lines with a space character (' ').
         /// </summary>
         Space = 1,
         /// <summary>
-        /// Separates new lines with the carriage return and newline character ('\r\n').
-        /// </summary>
-        Windows = 2,
-        /// <summary>
         /// Separates new lines with the newline character ('\n').
         /// </summary>
-        Unix = 3
+        Escape = 2
     }
 }

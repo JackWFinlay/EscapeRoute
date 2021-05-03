@@ -82,11 +82,9 @@ The `EscapeRoute.SpanEngine` `EscapeRouter` currently supports the following beh
     - ***Strip***
     - Escape
 - New line (\n):
-    - None
-    - ***Escape*** (\n)
+    - Strip
     - Space
-    - Unix (\n) - present for compatibility
-    - Windows (\n) - present for compatibility
+    - ***Escape***
 - Backspace (\b):
     - ***Strip***
     - Escape
@@ -105,7 +103,11 @@ The `EscapeRoute.SpanEngine` `EscapeRouter` currently supports the following beh
 - Double quotes "":
     - ***Double***
     - Single
-    
+- Unicode Null (\0):
+    - ***Strip***
+    - Escape
+    - EscapeHex
+
 Note that for New Line type, the default is different (***Strip***) for `EscapeRoute.SpanEngine`.
 Also note that the trim behaviour is not available for `EscapeRoute.SpanEngine`, this may change in future -
 feel free to request this under [issues](https://github.com/JackWFinlay/EscapeRoute/issues).

@@ -9,11 +9,10 @@ namespace EscapeRoute.Extensions
         {
             string delimiter = newLineType switch
             {
-                NewLineType.Strip => "",
+                NewLineType.None => "",
                 NewLineType.Space => " ",
                 NewLineType.Unix => @"\n",
                 NewLineType.Windows => @"\r\n",
-                NewLineType.Escape => @"\n",
                 _ => throw new ArgumentException($"Not a valid {nameof(NewLineType)}", nameof(newLineType))
             };
 

@@ -1,5 +1,5 @@
 using System;
-using EscapeRoute.Abstractions.Enums;
+using EscapeRoute.SpanEngine.Abstractions.Enums;
 using EscapeRoute.SpanEngine.Abstractions.Interfaces;
 using EscapeRoute.SpanEngine.EscapeHandlers;
 using EscapeRoute.SpanEngine.ReplacementEngines;
@@ -17,6 +17,7 @@ namespace EscapeRoute.SpanEngine
         private const DoubleQuoteBehavior _defaultDoubleQuoteBehavior = DoubleQuoteBehavior.Double;
         private const SingleQuoteBehavior _defaultSingleQuoteBehavior = SingleQuoteBehavior.Single;
         private const CarriageReturnBehavior _defaultCarriageReturnBehavior = CarriageReturnBehavior.Strip;
+        private const UnicodeNullBehavior _defaultUnicodeNullBehavior = UnicodeNullBehavior.Strip;
 
         private readonly Lazy<BackslashEscapeHandler> _defaultBackslashEscapeHandler = new Lazy<BackslashEscapeHandler>();
         private readonly Lazy<BackspaceEscapeHandler> _defaultBackspaceEscapeHandler = new Lazy<BackspaceEscapeHandler>();
@@ -27,6 +28,7 @@ namespace EscapeRoute.SpanEngine
         private readonly Lazy<NewLineEscapeHandler> _defaultNewLineEscapeHandler = new Lazy<NewLineEscapeHandler>();
         private readonly Lazy<CarriageReturnEscapeHandler> _defaultCarriageReturnEscapeHandler = new Lazy<CarriageReturnEscapeHandler>();
         private readonly Lazy<UnicodeEscapeHandler> _defaultUnicodeEscapeHandler = new Lazy<UnicodeEscapeHandler>();
+        private readonly Lazy<UnicodeNullEscapeHandler> _defaultUnicodeNullEscapeHandler = new Lazy<UnicodeNullEscapeHandler>();
 
         private readonly Lazy<SpanReplacementEngine> _defaultReplacementEngine = new Lazy<SpanReplacementEngine>();
 
@@ -39,6 +41,7 @@ namespace EscapeRoute.SpanEngine
         private DoubleQuoteBehavior? _doubleQuoteBehavior;
         private SingleQuoteBehavior? _singleQuoteBehavior;
         private CarriageReturnBehavior? _carriageReturnBehavior;
+        private UnicodeNullBehavior? _unicodeNullBehavior;
 
         private IEscapeRouteEscapeHandler<BackslashBehavior> _backslashEscapeHandler;
         private IEscapeRouteEscapeHandler<BackspaceBehavior> _backspaceEscapeHandler;
@@ -48,6 +51,7 @@ namespace EscapeRoute.SpanEngine
         private IEscapeRouteEscapeHandler<SingleQuoteBehavior> _singleQuoteEscapeHandler;
         private IEscapeRouteEscapeHandler<NewLineType> _newLineEscapeHandler;
         private IEscapeRouteEscapeHandler<CarriageReturnBehavior> _carriageReturnEscapeHandler;
+        private IEscapeRouteEscapeHandler<UnicodeNullBehavior> _unicodeNullEscapeHandler;
         private IEscapeRouteEscapeFunctionHandler<UnicodeBehavior> _unicodeEscapeHandler;
 
         private IReplacementEngine _replacementEngine;
@@ -125,6 +129,15 @@ namespace EscapeRoute.SpanEngine
         }
 
         /// <summary>
+        /// Gets or sets how Unicode Null (\0) characters are handled.
+        /// </summary>
+        public UnicodeNullBehavior UnicodeNullBehavior 
+        { 
+            get => _unicodeNullBehavior ?? _defaultUnicodeNullBehavior;
+            set => _unicodeNullBehavior = value; 
+        }
+
+        /// <summary>
         /// Gets or sets how Unicode characters are handled.
         /// </summary>
         public UnicodeBehavior UnicodeBehavior 
@@ -137,6 +150,12 @@ namespace EscapeRoute.SpanEngine
         { 
             get => _newLineEscapeHandler ?? _defaultNewLineEscapeHandler.Value; 
             set => _newLineEscapeHandler = value; 
+        }
+
+        public IEscapeRouteEscapeHandler<UnicodeNullBehavior> UnicodeNullEscapeHandler
+        {
+            get => _unicodeNullEscapeHandler ?? _defaultUnicodeNullEscapeHandler.Value;
+            set => _unicodeNullEscapeHandler = value;
         }
 
         /// <summary>

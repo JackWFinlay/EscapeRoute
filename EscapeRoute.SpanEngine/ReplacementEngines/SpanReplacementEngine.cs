@@ -62,22 +62,50 @@ namespace EscapeRoute.SpanEngine.ReplacementEngines
         {
             return new Dictionary<char, ReadOnlyMemory<char>>()
             {
-                {config.BackspaceEscapeHandler.GetPattern(),
-                    config.BackspaceEscapeHandler.GetReplacement(config.BackspaceBehavior)},
-                {config.BackslashEscapeHandler.GetPattern(),
-                    config.BackslashEscapeHandler.GetReplacement(config.BackslashBehavior)},
-                {config.DoubleQuoteEscapeHandler.GetPattern(),
-                    config.DoubleQuoteEscapeHandler.GetReplacement(config.DoubleQuoteBehavior)},
-                {config.FormFeedEscapeHandler.GetPattern(),
-                    config.FormFeedEscapeHandler.GetReplacement(config.FormFeedBehavior)},
-                {config.SingleQuoteEscapeHandler.GetPattern(),
-                    config.SingleQuoteEscapeHandler.GetReplacement(config.SingleQuoteBehavior)},
-                {config.TabEscapeHandler.GetPattern(),
-                    config.TabEscapeHandler.GetReplacement(config.TabBehavior)},
-                {config.NewLineEscapeHandler.GetPattern(),
-                    config.NewLineEscapeHandler.GetReplacement(config.NewLineType)},
-                {config.CarriageReturnEscapeHandler.GetPattern(),
-                    config.CarriageReturnEscapeHandler.GetReplacement(config.CarriageReturnBehavior)}
+                {
+                    config.BackspaceEscapeHandler.GetPattern(),
+                    config.BackspaceEscapeHandler.GetReplacement(config.BackspaceBehavior)
+                    
+                },
+                {
+                    config.BackslashEscapeHandler.GetPattern(),
+                    config.BackslashEscapeHandler.GetReplacement(config.BackslashBehavior)
+                    
+                },
+                {
+                    config.DoubleQuoteEscapeHandler.GetPattern(),
+                    config.DoubleQuoteEscapeHandler.GetReplacement(config.DoubleQuoteBehavior)
+                    
+                },
+                {
+                    config.FormFeedEscapeHandler.GetPattern(),
+                    config.FormFeedEscapeHandler.GetReplacement(config.FormFeedBehavior)
+                    
+                },
+                {
+                    config.SingleQuoteEscapeHandler.GetPattern(),
+                    config.SingleQuoteEscapeHandler.GetReplacement(config.SingleQuoteBehavior)
+                    
+                },
+                {
+                    config.TabEscapeHandler.GetPattern(),
+                    config.TabEscapeHandler.GetReplacement(config.TabBehavior)
+                    
+                },
+                {
+                    config.NewLineEscapeHandler.GetPattern(),
+                    config.NewLineEscapeHandler.GetReplacement(config.NewLineType)
+                    
+                },
+                {
+                    config.CarriageReturnEscapeHandler.GetPattern(),
+                    config.CarriageReturnEscapeHandler.GetReplacement(config.CarriageReturnBehavior)
+                    
+                },
+                {
+                    config.UnicodeNullEscapeHandler.GetPattern(),
+                    config.UnicodeNullEscapeHandler.GetReplacement(config.UnicodeNullBehavior)
+                }
             };
         }
 
@@ -92,7 +120,8 @@ namespace EscapeRoute.SpanEngine.ReplacementEngines
                 config.FormFeedEscapeHandler.GetPattern(),
                 config.NewLineEscapeHandler.GetPattern(),
                 config.SingleQuoteEscapeHandler.GetPattern(),
-                config.TabEscapeHandler.GetPattern()
+                config.TabEscapeHandler.GetPattern(),
+                config.UnicodeNullEscapeHandler.GetPattern()
             };
 
             return pattern;

@@ -1,6 +1,5 @@
 using System;
-using System.Collections.Generic;
-using EscapeRoute.Abstractions.Enums;
+using EscapeRoute.SpanEngine.Abstractions.Enums;
 using EscapeRoute.SpanEngine.Abstractions.Interfaces;
 
 namespace EscapeRoute.SpanEngine.EscapeHandlers
