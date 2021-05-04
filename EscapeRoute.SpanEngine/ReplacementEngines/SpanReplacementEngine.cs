@@ -185,12 +185,14 @@ namespace EscapeRoute.SpanEngine.ReplacementEngines
                         memoryList.Add(replacement);
                     }
                 }
-                else if (patternMatched[0] > 127)
+                else if (patternMatched[0] > 127 && patternMatched[0] < 0xd800)
                 {
                     var replacer = config.UnicodeEscapeHandler
                                             .GetReplacement(config.UnicodeBehavior);
+
+                    var mem = raw.Slice(prevIndex + matchIndex, 1); 
                     
-                    var unicodeReplacement = replacer(patternMatched[0]);
+                    var unicodeReplacement = replacer(mem);
                     
                     if(!unicodeReplacement.IsEmpty)
                     {
@@ -198,7 +200,25 @@ namespace EscapeRoute.SpanEngine.ReplacementEngines
                     }
                     
                     replacementMap.Add(patternMatched[0], unicodeReplacement);
-                } 
+                }
+                else if (patternMatched[0] >= 0xd800 && patternMatched[0] <= 0xdfff)
+                {
+                    var replacer = config.UnicodeSurrogateEscapeHandler
+                        .GetReplacement(config.UnicodeSurrogateBehavior);
+
+                    var mem = raw.Slice(prevIndex + matchIndex, 2);
+
+                    var unicodeSurrogateReplacement = replacer(mem);
+
+                    if (!unicodeSurrogateReplacement.IsEmpty)
+                    {
+                        memoryList.Add(unicodeSurrogateReplacement);
+                    }
+                    
+                    replacementMap.Add(patternMatched[0], unicodeSurrogateReplacement);
+
+                    prevIndex++;
+                }
 
                 if (prevIndex == 0)
                 {

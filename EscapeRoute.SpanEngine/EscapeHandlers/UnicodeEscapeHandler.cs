@@ -8,12 +8,12 @@ namespace EscapeRoute.SpanEngine.EscapeHandlers
     {
         private readonly ReadOnlyMemory<char> _stripPattern = new char[] {};
 
-        public Func<char, ReadOnlyMemory<char>> GetReplacement(UnicodeBehavior behavior)
+        public Func<ReadOnlyMemory<char>, ReadOnlyMemory<char>> GetReplacement(UnicodeBehavior behavior)
         {
             var escaped = behavior switch
             {
                 UnicodeBehavior.Escape => 
-                    new Func<char, ReadOnlyMemory<char>>(c => ($"\\u{(int) c:x4}").AsMemory()),
+                    new Func<ReadOnlyMemory<char>, ReadOnlyMemory<char>>(c => ($"\\u{(int)c.Span[0]:x4}").AsMemory()),
                 // Strip out non-ASCII characters.
                 UnicodeBehavior.Strip => c => _stripPattern,
                 _ => throw new ArgumentException($"Not a valid {nameof(UnicodeBehavior)}", nameof(behavior))

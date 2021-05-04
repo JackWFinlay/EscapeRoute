@@ -11,7 +11,7 @@ namespace EscapeRoute.SpanEngine.Extensions
             {
                 var slice = span.Slice(i, 1);
                 
-                if (pattern.Contains(slice.Span[0]) || slice.Span[0] > 127) 
+                if (pattern.Contains(slice.Span[0]) || (slice.Span[0] > 127 && slice.Span[0] <= 0xdfff)) 
                 {
                     return i;
                 }

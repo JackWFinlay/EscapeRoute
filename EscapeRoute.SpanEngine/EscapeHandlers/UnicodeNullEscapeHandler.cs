@@ -20,7 +20,7 @@ namespace EscapeRoute.SpanEngine.EscapeHandlers
                 UnicodeNullBehavior.Strip => _stripPattern,
                 UnicodeNullBehavior.Escape => _escapePattern,
                 UnicodeNullBehavior.EscapeHex => _escapeHexPattern,
-                _ => throw new ArgumentException($"Not a valid {nameof(TabBehavior)}", nameof(behavior))
+                _ => throw new ArgumentException($"Not a valid {nameof(UnicodeNullBehavior)}", nameof(behavior))
             };
 
             return escaped;

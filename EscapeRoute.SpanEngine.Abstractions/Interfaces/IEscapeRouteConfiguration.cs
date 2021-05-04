@@ -17,6 +17,7 @@ namespace EscapeRoute.SpanEngine.Abstractions.Interfaces
         public UnicodeNullBehavior UnicodeNullBehavior { get; set; }
         
         public UnicodeBehavior UnicodeBehavior { get; set; }
+        public UnicodeSurrogateBehavior UnicodeSurrogateBehavior { get; set; }
         
         public IEscapeRouteEscapeHandler<TabBehavior> TabEscapeHandler { get; set; }
         public IEscapeRouteEscapeHandler<BackspaceBehavior> BackspaceEscapeHandler { get; set; }
@@ -29,6 +30,7 @@ namespace EscapeRoute.SpanEngine.Abstractions.Interfaces
         public IEscapeRouteEscapeHandler<UnicodeNullBehavior> UnicodeNullEscapeHandler { get; set; }
 
         public IEscapeRouteEscapeFunctionHandler<UnicodeBehavior> UnicodeEscapeHandler { get; set; }
+        public IEscapeRouteEscapeFunctionHandler<UnicodeSurrogateBehavior> UnicodeSurrogateEscapeHandler { get; set; }
         public IReplacementEngine ReplacementEngine { get; set; }
     }
 }

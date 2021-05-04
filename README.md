@@ -256,7 +256,8 @@ namespace Example
 }
 ```
 
-A limitation of this is that characters beyond U+FFFF cannot be escaped properly.
+A limitation of standard JSON is that characters represented as surrogate pairs must be represented as two consecutive escaped unicode characters.
+e.g. `😍` becomes `\ud83d\ude0d`.
 
 ### Behavior Handlers
 
@@ -325,6 +326,12 @@ Allocated : Allocated memory per single operation (managed only, inclusive, 1KB 
 |               AsciiUnicodeParseAsync | 781.2 μs | 15.26 μs | 20.37 μs |  1.00 | 333.0078 |     - |     - | 681.77 KB |
 |     AsciiUnicodeParseAsyncSpanString | 230.8 μs |  4.44 μs |  4.16 μs |  0.30 |  55.4199 |     - |     - | 113.53 KB |
 | AsciiUnicodeParseAsyncSpanTextReader | 233.5 μs |  1.45 μs |  1.21 μs |  0.30 |  55.4199 |     - |     - |  113.7 KB |
+
+|                    Method |     Mean |    Error |   StdDev | Ratio |   Gen 0 | Gen 1 | Gen 2 | Allocated |
+|-------------------------- |---------:|---------:|---------:|------:|--------:|------:|------:|----------:|
+|           EmojiParseAsync | 92.25 μs | 0.737 μs | 0.653 μs |  1.00 | 34.3018 |     - |     - |  70.12 KB |
+| EmojiParseAsyncSpanString | 28.19 μs | 0.225 μs | 0.199 μs |  0.31 |  9.0027 |     - |     - |  18.39 KB |
+|  EmojiAsyncSpanTextReader | 28.37 μs | 0.284 μs | 0.252 μs |  0.31 |  9.0637 |     - |     - |  18.56 KB |
 
 
 As shown by the results above, the `EscapeRoute.SpanEngine` is more than three times as fast,

@@ -18,6 +18,7 @@ namespace EscapeRoute.SpanEngine
         private const SingleQuoteBehavior _defaultSingleQuoteBehavior = SingleQuoteBehavior.Single;
         private const CarriageReturnBehavior _defaultCarriageReturnBehavior = CarriageReturnBehavior.Strip;
         private const UnicodeNullBehavior _defaultUnicodeNullBehavior = UnicodeNullBehavior.Strip;
+        private const UnicodeSurrogateBehavior _defaultUnicodeSurrogateBehavior = UnicodeSurrogateBehavior.Escape;
 
         private readonly Lazy<BackslashEscapeHandler> _defaultBackslashEscapeHandler = new Lazy<BackslashEscapeHandler>();
         private readonly Lazy<BackspaceEscapeHandler> _defaultBackspaceEscapeHandler = new Lazy<BackspaceEscapeHandler>();
@@ -29,6 +30,7 @@ namespace EscapeRoute.SpanEngine
         private readonly Lazy<CarriageReturnEscapeHandler> _defaultCarriageReturnEscapeHandler = new Lazy<CarriageReturnEscapeHandler>();
         private readonly Lazy<UnicodeEscapeHandler> _defaultUnicodeEscapeHandler = new Lazy<UnicodeEscapeHandler>();
         private readonly Lazy<UnicodeNullEscapeHandler> _defaultUnicodeNullEscapeHandler = new Lazy<UnicodeNullEscapeHandler>();
+        private readonly Lazy<UnicodeSurrogateEscapeHandler> _defaultUnicodeSurrogateEscapeHandler = new Lazy<UnicodeSurrogateEscapeHandler>();
 
         private readonly Lazy<SpanReplacementEngine> _defaultReplacementEngine = new Lazy<SpanReplacementEngine>();
 
@@ -42,6 +44,7 @@ namespace EscapeRoute.SpanEngine
         private SingleQuoteBehavior? _singleQuoteBehavior;
         private CarriageReturnBehavior? _carriageReturnBehavior;
         private UnicodeNullBehavior? _unicodeNullBehavior;
+        private UnicodeSurrogateBehavior? _unicodeSurrogateBehavior;
 
         private IEscapeRouteEscapeHandler<BackslashBehavior> _backslashEscapeHandler;
         private IEscapeRouteEscapeHandler<BackspaceBehavior> _backspaceEscapeHandler;
@@ -53,6 +56,7 @@ namespace EscapeRoute.SpanEngine
         private IEscapeRouteEscapeHandler<CarriageReturnBehavior> _carriageReturnEscapeHandler;
         private IEscapeRouteEscapeHandler<UnicodeNullBehavior> _unicodeNullEscapeHandler;
         private IEscapeRouteEscapeFunctionHandler<UnicodeBehavior> _unicodeEscapeHandler;
+        private IEscapeRouteEscapeFunctionHandler<UnicodeSurrogateBehavior> _unicodeSurrogateEscapeHandler;
 
         private IReplacementEngine _replacementEngine;
 
@@ -165,6 +169,18 @@ namespace EscapeRoute.SpanEngine
         {
             get => _unicodeEscapeHandler ?? _defaultUnicodeEscapeHandler.Value;
             set => _unicodeEscapeHandler = value;
+        }
+
+        public UnicodeSurrogateBehavior UnicodeSurrogateBehavior
+        {
+            get => _unicodeSurrogateBehavior ?? _defaultUnicodeSurrogateBehavior; 
+            set => _unicodeSurrogateBehavior = value;
+        }
+        
+        public IEscapeRouteEscapeFunctionHandler<UnicodeSurrogateBehavior> UnicodeSurrogateEscapeHandler
+        {
+            get => _unicodeSurrogateEscapeHandler ?? _defaultUnicodeSurrogateEscapeHandler.Value;
+            set => _unicodeSurrogateEscapeHandler = value;
         }
 
         /// <summary>
