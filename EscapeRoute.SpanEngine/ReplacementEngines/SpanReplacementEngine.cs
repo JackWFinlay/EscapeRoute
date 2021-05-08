@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EscapeRoute.SpanEngine.Abstractions.Exceptions;
 using EscapeRoute.SpanEngine.Abstractions.Interfaces;
 using EscapeRoute.SpanEngine.Extensions;
 
@@ -25,7 +26,15 @@ namespace EscapeRoute.SpanEngine.ReplacementEngines
                 return Task.FromResult(raw);
             }
 
-            var memoryList = CreateEscapedTextList(raw, matchIndexes, config);
+            var memoryList = new List<ReadOnlyMemory<char>>();
+            try
+            {
+                memoryList.AddRange(CreateEscapedTextList(raw, matchIndexes, config));
+            }
+            catch (Exception e)
+            {
+                throw new EscapeRouteParseException($"Cannot Parse the string {raw.ToString()}", e);
+            }
 
             if (!memoryList.Any())
             {
@@ -37,6 +46,120 @@ namespace EscapeRoute.SpanEngine.ReplacementEngines
             return Task.FromResult((ReadOnlyMemory<char>)combinedMemory);
         }
 
+        private static IEnumerable<int> GetMatches(ReadOnlyMemory<char> memory, HashSet<char> pattern)
+        {
+
+            while (memory.Length > 0)
+            {
+                var index = memory.IndexOfAnyInPattern(pattern);
+                
+                if (index == -1)
+                {
+                    yield return memory.Length;
+                    yield break;
+                }
+                
+                yield return index;
+
+                // Skip the second character in the surrogate pair.
+                //if (memory.Span[0] >= 0xd800 && memory.Span[0] <= 0xdfff)
+                //{
+                //    index++;
+                //}
+
+                memory = memory.Slice(index + 1);
+
+            }
+        }
+
+        private static List<ReadOnlyMemory<char>> CreateEscapedTextList(ReadOnlyMemory<char> raw, 
+            IEnumerable<int> matchIndexes, IEscapeRouteConfiguration config)
+        {
+            var memoryList = new List<ReadOnlyMemory<char>>();
+
+            var replacementMap = CreateReplacementMap(config);
+            
+            var prevIndex = 0;
+
+            foreach (var matchIndex in matchIndexes)
+            {
+                if (prevIndex >= raw.Length || matchIndex >= raw.Length)
+                {
+                    break;
+                }
+
+                if (matchIndex > 0)
+                {
+                    var memorySlice = raw.Slice(prevIndex, matchIndex);
+                    if (!memorySlice.IsEmpty)
+                    {
+                        memoryList.Add(memorySlice);
+                    }
+                }
+
+                if (prevIndex + matchIndex >= raw.Length)
+                {
+                    break;
+                }
+
+                var patternMatched = raw.Span.Slice(prevIndex + matchIndex, 1);
+
+                if (replacementMap.TryGetValue(patternMatched[0], out var replacement))
+                {
+                    if (!replacement.IsEmpty)
+                    {
+                        memoryList.Add(replacement);
+                    }
+                }
+                // Surrogate Pair First Byte
+                else if (patternMatched[0] >= 0xd800 && patternMatched[0] <= 0xdfff)
+                {
+                    var replacer = config.UnicodeSurrogateEscapeHandler
+                        .GetReplacement(config.UnicodeSurrogateBehavior);
+                    
+                    // Pair of characters, so take 2 chars.
+                    var mem = raw.Slice(prevIndex + matchIndex, 2);
+
+                    var unicodeSurrogateReplacement = replacer(mem);
+
+                    if (!unicodeSurrogateReplacement.IsEmpty)
+                    {
+                        memoryList.Add(unicodeSurrogateReplacement);
+                    }
+
+                    prevIndex++;
+                }
+                // Standard Unicode Character
+                else if (patternMatched[0] > 127)
+                {
+                    var replacer = config.UnicodeEscapeHandler
+                        .GetReplacement(config.UnicodeBehavior);
+
+                    var mem = raw.Slice(prevIndex + matchIndex, 1); 
+                    
+                    var unicodeReplacement = replacer(mem);
+                    
+                    if(!unicodeReplacement.IsEmpty)
+                    {
+                        memoryList.Add(unicodeReplacement);
+                    }
+                    
+                    replacementMap.Add(patternMatched[0], unicodeReplacement);
+                }
+
+                if (prevIndex == 0)
+                {
+                    prevIndex = matchIndex + 1;
+                }
+                else
+                {
+                    prevIndex += (matchIndex + 1);
+                }
+            }
+
+            return memoryList;
+        }
+        
         private static Memory<char> CombinedMemory(List<ReadOnlyMemory<char>> memoryList)
         {
             var memoryListTotalLength = memoryList.Sum(m => m.Length);
@@ -57,7 +180,25 @@ namespace EscapeRoute.SpanEngine.ReplacementEngines
 
             return combinedMemory;
         }
+        
+        private static HashSet<char> GetPattern(IEscapeRouteConfiguration config)
+        {
+            var pattern = new HashSet<char>()
+            {
+                config.BackspaceEscapeHandler.GetPattern(),
+                config.BackslashEscapeHandler.GetPattern(),
+                config.CarriageReturnEscapeHandler.GetPattern(),
+                config.DoubleQuoteEscapeHandler.GetPattern(),
+                config.FormFeedEscapeHandler.GetPattern(),
+                config.NewLineEscapeHandler.GetPattern(),
+                config.SingleQuoteEscapeHandler.GetPattern(),
+                config.TabEscapeHandler.GetPattern(),
+                config.UnicodeNullEscapeHandler.GetPattern()
+            };
 
+            return pattern;
+        }
+        
         private static Dictionary<char, ReadOnlyMemory<char>> CreateReplacementMap(IEscapeRouteConfiguration config)
         {
             return new Dictionary<char, ReadOnlyMemory<char>>()
@@ -107,130 +248,6 @@ namespace EscapeRoute.SpanEngine.ReplacementEngines
                     config.UnicodeNullEscapeHandler.GetReplacement(config.UnicodeNullBehavior)
                 }
             };
-        }
-
-        private static HashSet<char> GetPattern(IEscapeRouteConfiguration config)
-        {
-            var pattern = new HashSet<char>()
-            {
-                config.BackspaceEscapeHandler.GetPattern(),
-                config.BackslashEscapeHandler.GetPattern(),
-                config.CarriageReturnEscapeHandler.GetPattern(),
-                config.DoubleQuoteEscapeHandler.GetPattern(),
-                config.FormFeedEscapeHandler.GetPattern(),
-                config.NewLineEscapeHandler.GetPattern(),
-                config.SingleQuoteEscapeHandler.GetPattern(),
-                config.TabEscapeHandler.GetPattern(),
-                config.UnicodeNullEscapeHandler.GetPattern()
-            };
-
-            return pattern;
-        }
-
-        private static IEnumerable<int> GetMatches(ReadOnlyMemory<char> memory, HashSet<char> pattern)
-        {
-
-            while (memory.Length > 0)
-            {
-                var index = memory.IndexOfAnyInPattern(pattern);
-                
-                if (index == -1)
-                {
-                    yield return memory.Length;
-                    yield break;
-                }
-                
-                yield return index;
-                memory = memory.Slice(index + 1);
-
-            }
-        }
-
-        private static List<ReadOnlyMemory<char>> CreateEscapedTextList(ReadOnlyMemory<char> raw, 
-            IEnumerable<int> matchIndexes, IEscapeRouteConfiguration config)
-        {
-            var memoryList = new List<ReadOnlyMemory<char>>();
-
-            var replacementMap = CreateReplacementMap(config);
-            
-            var prevIndex = 0;
-
-            foreach (var matchIndex in matchIndexes)
-            {
-                if (prevIndex > raw.Length)
-                {
-                    break;
-                }
-
-                if (matchIndex > 0)
-                {
-                    var memorySlice = raw.Slice(prevIndex, matchIndex);
-                    if (!memorySlice.IsEmpty)
-                    {
-                        memoryList.Add(memorySlice);
-                    }
-                }
-
-                if (prevIndex + matchIndex >= raw.Length)
-                {
-                    break;
-                }
-
-                var patternMatched = raw.Span.Slice(prevIndex + matchIndex, 1);
-
-                if (replacementMap.TryGetValue(patternMatched[0], out var replacement))
-                {
-                    if (!replacement.IsEmpty)
-                    {
-                        memoryList.Add(replacement);
-                    }
-                }
-                else if (patternMatched[0] > 127 && patternMatched[0] < 0xd800)
-                {
-                    var replacer = config.UnicodeEscapeHandler
-                                            .GetReplacement(config.UnicodeBehavior);
-
-                    var mem = raw.Slice(prevIndex + matchIndex, 1); 
-                    
-                    var unicodeReplacement = replacer(mem);
-                    
-                    if(!unicodeReplacement.IsEmpty)
-                    {
-                        memoryList.Add(unicodeReplacement);
-                    }
-                    
-                    replacementMap.Add(patternMatched[0], unicodeReplacement);
-                }
-                else if (patternMatched[0] >= 0xd800 && patternMatched[0] <= 0xdfff)
-                {
-                    var replacer = config.UnicodeSurrogateEscapeHandler
-                        .GetReplacement(config.UnicodeSurrogateBehavior);
-
-                    var mem = raw.Slice(prevIndex + matchIndex, 2);
-
-                    var unicodeSurrogateReplacement = replacer(mem);
-
-                    if (!unicodeSurrogateReplacement.IsEmpty)
-                    {
-                        memoryList.Add(unicodeSurrogateReplacement);
-                    }
-                    
-                    replacementMap.Add(patternMatched[0], unicodeSurrogateReplacement);
-
-                    prevIndex++;
-                }
-
-                if (prevIndex == 0)
-                {
-                    prevIndex = matchIndex + 1;
-                }
-                else
-                {
-                    prevIndex += (matchIndex + 1);    
-                }
-            }
-
-            return memoryList;
         }
     }
 }

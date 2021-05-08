@@ -8,6 +8,16 @@ namespace EscapeRoute.Test
     public class SpanEngineTests
     {
         [Fact]
+        public async Task TestSpanReplacementEngineNoReplacement()
+        {
+            SpanEngine.Abstractions.Interfaces.IEscapeRouter escapeRouter = new SpanEngine.EscapeRouter();
+            const string inputString = "The quick brown fox jumps over the lazy dog.";
+            const string expected = @"The quick brown fox jumps over the lazy dog.";
+            string result = await escapeRouter.ParseAsync(inputString);
+            Assert.Equal(expected, result);
+        }
+        
+        [Fact]
         public async Task TestSpanReplacementEngineBasic()
         {
             SpanEngine.Abstractions.Interfaces.IEscapeRouter escapeRouter = new SpanEngine.EscapeRouter();
@@ -59,8 +69,8 @@ namespace EscapeRoute.Test
         public async Task TestSpanReplacementEngineUnicodeSurrogateEscape()
         {
             SpanEngine.Abstractions.Interfaces.IEscapeRouter escapeRouter = new SpanEngine.EscapeRouter();
-            const string inputString = "The quick brown fox jumps over the lazy dog. ( ͡° ͜ʖ ͡°)😍";
-            const string expected = @"The quick brown fox jumps over the lazy dog. ( \u0361\u00b0 \u035c\u0296 \u0361\u00b0)\ud83d\ude0d";
+            const string inputString = "The quick brown fox jumps over the lazy dog. ( ͡° ͜ʖ ͡°)😍. Something else.";
+            const string expected = @"The quick brown fox jumps over the lazy dog. ( \u0361\u00b0 \u035c\u0296 \u0361\u00b0)\ud83d\ude0d. Something else.";
             string result = await escapeRouter.ParseAsync(inputString);
             Assert.Equal(expected, result);
         }
@@ -73,8 +83,8 @@ namespace EscapeRoute.Test
                 UnicodeSurrogateBehavior = UnicodeSurrogateBehavior.Strip
             };
             SpanEngine.Abstractions.Interfaces.IEscapeRouter escapeRouter = new SpanEngine.EscapeRouter(config);
-            const string inputString = "The quick brown fox jumps over the lazy dog. ( ͡° ͜ʖ ͡°)😍";
-            const string expected = @"The quick brown fox jumps over the lazy dog. ( \u0361\u00b0 \u035c\u0296 \u0361\u00b0)";
+            const string inputString = "The quick brown fox jumps over the lazy dog. ( ͡° ͜ʖ ͡°)😍. Something else.";
+            const string expected = @"The quick brown fox jumps over the lazy dog. ( \u0361\u00b0 \u035c\u0296 \u0361\u00b0). Something else.";
             string result = await escapeRouter.ParseAsync(inputString);
             Assert.Equal(expected, result);
         }
@@ -87,8 +97,8 @@ namespace EscapeRoute.Test
                 UnicodeSurrogateBehavior = UnicodeSurrogateBehavior.Ignore
             };
             SpanEngine.Abstractions.Interfaces.IEscapeRouter escapeRouter = new SpanEngine.EscapeRouter(config);
-            const string inputString = "The quick brown fox jumps over the lazy dog. ( ͡° ͜ʖ ͡°)😍";
-            const string expected = @"The quick brown fox jumps over the lazy dog. ( \u0361\u00b0 \u035c\u0296 \u0361\u00b0)😍";
+            const string inputString = "The quick brown fox jumps over the lazy dog. ( ͡° ͜ʖ ͡°)😍. Something else.";
+            const string expected = @"The quick brown fox jumps over the lazy dog. ( \u0361\u00b0 \u035c\u0296 \u0361\u00b0)😍. Something else.";
             string result = await escapeRouter.ParseAsync(inputString);
             Assert.Equal(expected, result);
         }
