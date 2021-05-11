@@ -9,6 +9,6 @@ namespace EscapeRoute.Abstractions.Enums
         /// <summary>
         /// Replace double quotes '...' with escaped double quotes \"...\".
         /// </summary>
-        Double = 1,
+        Double = 1
     }
 }

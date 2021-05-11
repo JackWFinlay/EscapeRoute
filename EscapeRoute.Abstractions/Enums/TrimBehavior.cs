@@ -23,6 +23,6 @@ namespace EscapeRoute.Abstractions.Enums
         /// <summary>
         /// Trims both start and end of string.
         /// </summary>
-        Both = 3,
+        Both = 3
     }
 }

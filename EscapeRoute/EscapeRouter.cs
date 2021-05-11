@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using EscapeRoute.Abstractions.Enums;
 using EscapeRoute.Abstractions.Interfaces;
 using EscapeRoute.Extensions;
 
@@ -70,6 +67,15 @@ namespace EscapeRoute
             return await ReadFileAsync(fileLocation);
         }
 
+        /// <summary>
+        /// Parses content of any <see cref="TextReader"/> or equivalent into a JSON friendly string asynchronously.
+        /// </summary>
+        /// <param name="textReader"><see cref="TextReader"/> containing content to escape.</param>
+        /// <returns>A JSON friendly <see cref="string"/>.</returns>
+        public async Task<string> ParseAsync(TextReader textReader) => await EscapeAsync(textReader);
+
+        public async Task<string> ParseAsync(string inputString) => await ReadStringAsync(inputString);
+
         private void ApplyConfiguration(EscapeRouteConfiguration escapeRouteConfiguration)
         {
             _configuration = escapeRouteConfiguration;
@@ -78,7 +84,7 @@ namespace EscapeRoute
         private async Task<string> ReadStringAsync(string inputString)
         {
             using var stringReader = new StringReader(inputString);
-            var escaped = await Escape(stringReader);
+            var escaped = await EscapeAsync(stringReader);
             
             return escaped;
         }
@@ -86,12 +92,12 @@ namespace EscapeRoute
         private async Task<string> ReadFileAsync(string fileLocation)
         {
             using StreamReader streamReader = new StreamReader(fileLocation);
-            var escaped = await Escape(streamReader);
+            var escaped = await EscapeAsync(streamReader);
 
             return escaped;
         }
 
-        private async Task<string> Escape(TextReader textReader)
+        private async Task<string> EscapeAsync(TextReader textReader)
         {
             var escapeTaskList = new List<Task<string>>();
             var lines = textReader.ToLines();

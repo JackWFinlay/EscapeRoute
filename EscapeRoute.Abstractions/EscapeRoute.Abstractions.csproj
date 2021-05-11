@@ -3,20 +3,20 @@
         <TargetFramework>netstandard2.0</TargetFramework>
         <Description>Abstractions for the package EscapeRoute.</Description>
         <Summary>Abstractions for the package EscapeRoute.</Summary>
-        <Copyright>Copyright Jack Witbrock Finlay 2017-2020</Copyright>
+        <Copyright>Copyright Jack Witbrock Finlay 2017-2021</Copyright>
         <Title>EscapeRoute.Abstractions</Title>
         <AssemblyTitle>EscapeRoute.Abstractions</AssemblyTitle>
         <Authors>Jack Witbrock Finlay</Authors>
         <PackageId>EscapeRoute.Abstractions</PackageId>
-        <PackageLicenseUrl>https://github.com/JackWFinlay/EscapeRoute/blob/master/LICENSE</PackageLicenseUrl>
+        <PackageLicense>https://github.com/JackWFinlay/EscapeRoute/blob/master/LICENSE</PackageLicense>
         <PackageProjectUrl>https://github.com/JackWFinlay/EscapeRoute</PackageProjectUrl>
-        <PackageReleaseNotes>Initial version, see project site for details.</PackageReleaseNotes>
+        <PackageReleaseNotes>See project site for details.</PackageReleaseNotes>
         <PackageTags>JSON;Convert;Escape;EscapeRoute;String;Unicode</PackageTags>
         <IncludeSymbols>true</IncludeSymbols>
         <IncludeSource>true</IncludeSource>
         <RepositoryUrl>https://github.com/JackWFinlay/EscapeRoute</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
-        <VersionPrefix>0.0.2</VersionPrefix>
+        <VersionPrefix>0.0.3-alpha.1</VersionPrefix>
         <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
         <LangVersion>8</LangVersion>
     </PropertyGroup>

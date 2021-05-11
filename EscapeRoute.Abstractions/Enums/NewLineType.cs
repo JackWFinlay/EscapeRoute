@@ -11,12 +11,12 @@ namespace EscapeRoute.Abstractions.Enums
         /// </summary>
         Space = 1,
         /// <summary>
+        /// Separates new lines with the carriage return and newline character ('\r\n').
+        /// </summary>
+        Windows = 2,
+        /// <summary>
         /// Separates new lines with the newline character ('\n').
         /// </summary>
-        Unix = 2,
-        /// <summary>
-        /// Separates new lines with the carriage return and newline character combination ('\r\n').
-        /// </summary>
-        Windows = 3
+        Unix = 3
     }
 }

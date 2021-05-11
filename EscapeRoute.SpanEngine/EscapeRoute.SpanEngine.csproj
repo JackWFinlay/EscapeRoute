@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <Description>Convert strings and files into JSON friendly strings.</Description>
+    <Summary>Convert strings and files into JSON friendly strings.</Summary>
+    <Copyright>Copyright Jack Witbrock Finlay 2017-2021</Copyright>
+    <Title>EscapeRoute.SpanEngine</Title>
+    <AssemblyTitle>EscapeRoute.SpanEngine</AssemblyTitle>
+    <Authors>Jack Witbrock Finlay</Authors>
+    <PackageId>EscapeRoute.SpanEngine</PackageId>
+    <PackageLicense>https://github.com/JackWFinlay/EscapeRoute/blob/master/LICENSE</PackageLicense>
+    <PackageProjectUrl>https://github.com/JackWFinlay/EscapeRoute</PackageProjectUrl>
+    <PackageReleaseNotes>See project site for details.</PackageReleaseNotes>
+    <PackageTags>JSON;Convert;Escape;EscapeRoute;String;Unicode</PackageTags>
+    <IncludeSymbols>true</IncludeSymbols>
+    <IncludeSource>true</IncludeSource>
+    <RepositoryUrl>https://github.com/JackWFinlay/EscapeRoute</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <VersionPrefix>0.0.3-alpha.1</VersionPrefix>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <LangVersion>8</LangVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\EscapeRoute.SpanEngine.Abstractions\EscapeRoute.SpanEngine.Abstractions.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="readme.txt">
+      <Pack>true</Pack>
+      <PackagePath>\</PackagePath>
+    </Content>
+  </ItemGroup>
+</Project>
