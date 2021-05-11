@@ -23,11 +23,11 @@ namespace EscapeRoute.Benchmarks.ReplacementEngine
             await SpanEscapeRouter.ParseAsync(Constants.BenchmarkStringAscii);
         }
         
-        [Benchmark]
-        public async Task AsciiParseAsyncSpanTextReader()
-        {
-            var stringReader = new StringReader(Constants.BenchmarkStringAscii);
-            await SpanEscapeRouter.ParseAsync(stringReader);
-        }
+        // [Benchmark]
+        // public async Task AsciiParseAsyncSpanTextReader()
+        // {
+        //     var stringReader = new StringReader(Constants.BenchmarkStringAscii);
+        //     await SpanEscapeRouter.ParseAsync(stringReader);
+        // }
     }
 }

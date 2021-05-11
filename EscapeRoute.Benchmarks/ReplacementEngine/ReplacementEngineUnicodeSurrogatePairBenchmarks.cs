@@ -23,11 +23,11 @@ namespace EscapeRoute.Benchmarks.ReplacementEngine
             await SpanEscapeRouter.ParseAsync(Constants.BenchmarkStringEmoji);
         }
         
-        [Benchmark]
-        public async Task EmojiAsyncSpanTextReader()
-        {
-            var stringReader = new StringReader(Constants.BenchmarkStringEmoji);
-            await SpanEscapeRouter.ParseAsync(stringReader);
-        }
+        // [Benchmark]
+        // public async Task EmojiAsyncSpanTextReader()
+        // {
+        //     var stringReader = new StringReader(Constants.BenchmarkStringEmoji);
+        //     await SpanEscapeRouter.ParseAsync(stringReader);
+        // }
     }
 }

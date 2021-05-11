@@ -8,11 +8,16 @@ namespace EscapeRoute.SpanEngine.Abstractions.Enums
         /// <summary>
         /// Strips backslash \\ characters.
         /// </summary>
-        Strip = 0,
+        Strip,
 
         /// <summary>
         /// Escapes backslash \\ characters.
         /// </summary>
-        Escape = 1
+        Escape,
+        
+        /// <summary>
+        /// Ignore backslash \\ characters. Leave them as-is.
+        /// </summary>
+        Ignore
     }
 }

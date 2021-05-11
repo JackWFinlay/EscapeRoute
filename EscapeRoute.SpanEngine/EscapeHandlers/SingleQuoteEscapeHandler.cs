@@ -9,6 +9,7 @@ namespace EscapeRoute.SpanEngine.EscapeHandlers
         private const char _pattern = '\'';
         private readonly ReadOnlyMemory<char> _replaceSinglePattern = new[] {'\\', '\''};
         private readonly ReadOnlyMemory<char> _replaceDoublePattern = new[] {'\\','"'};
+        private readonly ReadOnlyMemory<char> _ignorePattern = new[] { _pattern };
 
         public char GetPattern() => _pattern;
 
@@ -18,6 +19,7 @@ namespace EscapeRoute.SpanEngine.EscapeHandlers
             {
                 SingleQuoteBehavior.Single =>  _replaceSinglePattern,
                 SingleQuoteBehavior.Double => _replaceDoublePattern,
+                SingleQuoteBehavior.Ignore => _ignorePattern,
                 _ => throw new ArgumentException($"Not a valid {nameof(SingleQuoteBehavior)}", nameof(behavior))
             };
 

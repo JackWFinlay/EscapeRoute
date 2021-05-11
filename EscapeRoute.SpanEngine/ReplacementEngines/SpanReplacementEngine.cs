@@ -10,16 +10,31 @@ namespace EscapeRoute.SpanEngine.ReplacementEngines
 {
     public class SpanReplacementEngine : IReplacementEngine
     {
-        public Task<ReadOnlyMemory<char>> ReplaceAsync(ReadOnlyMemory<char> raw, IEscapeRouteConfiguration config)
+        private readonly IEscapeRouteConfiguration _config;
+        private readonly HashSet<char> _pattern;
+        private readonly Dictionary<char, ReadOnlyMemory<char>> _replacementMap;
+        private readonly Func<ReadOnlyMemory<char>, ReadOnlyMemory<char>> _unicodeReplacer;
+        private readonly Func<ReadOnlyMemory<char>, ReadOnlyMemory<char>> _unicodeSurrogateReplacer;
+
+        public SpanReplacementEngine(IEscapeRouteConfiguration config)
+        {
+            _config = config;
+            _pattern = GetPattern(config);
+            _replacementMap = CreateReplacementMap(config);
+            _unicodeReplacer = _config.UnicodeEscapeHandler
+                                      .GetReplacement(_config.UnicodeBehavior);
+            _unicodeSurrogateReplacer = _config.UnicodeSurrogateEscapeHandler
+                                               .GetReplacement(_config.UnicodeSurrogateBehavior);
+        }
+
+        public Task<ReadOnlyMemory<char>> ReplaceAsync(ReadOnlyMemory<char> raw)
         {
             if (raw.IsEmpty)
             {
                 return Task.FromResult(raw);
             }
 
-            var pattern = GetPattern(config);
-
-            var matchIndexes = GetMatches(raw, pattern);
+            var matchIndexes = GetMatches(raw).ToList();
 
             if (!matchIndexes.Any())
             {
@@ -29,11 +44,11 @@ namespace EscapeRoute.SpanEngine.ReplacementEngines
             var memoryList = new List<ReadOnlyMemory<char>>();
             try
             {
-                memoryList.AddRange(CreateEscapedTextList(raw, matchIndexes, config));
+                memoryList.AddRange(CreateEscapedTextList(raw, matchIndexes));
             }
             catch (Exception e)
             {
-                throw new EscapeRouteParseException($"Cannot Parse the string {raw.ToString()}", e);
+                throw new EscapeRouteParseException($"Cannot parse the string '{raw.ToString()}'", e);
             }
 
             if (!memoryList.Any())
@@ -41,17 +56,17 @@ namespace EscapeRoute.SpanEngine.ReplacementEngines
                 return Task.FromResult(raw);
             }
 
-            var combinedMemory = CombinedMemory(memoryList);
+            var combinedMemory = memoryList.CombineMemory();
 
             return Task.FromResult((ReadOnlyMemory<char>)combinedMemory);
         }
 
-        private static IEnumerable<int> GetMatches(ReadOnlyMemory<char> memory, HashSet<char> pattern)
+        private IEnumerable<int> GetMatches(ReadOnlyMemory<char> memory)
         {
 
             while (memory.Length > 0)
             {
-                var index = memory.IndexOfAnyInPattern(pattern);
+                var index = memory.IndexOfAnyInPattern(_pattern);
                 
                 if (index == -1)
                 {
@@ -62,22 +77,20 @@ namespace EscapeRoute.SpanEngine.ReplacementEngines
                 yield return index;
 
                 // Skip the second character in the surrogate pair.
-                //if (memory.Span[0] >= 0xd800 && memory.Span[0] <= 0xdfff)
-                //{
-                //    index++;
-                //}
+                if (memory.Span[index] >= 0xd800 && memory.Span[index] <= 0xdfff)
+                {
+                    index++;
+                }
 
                 memory = memory.Slice(index + 1);
 
             }
         }
 
-        private static List<ReadOnlyMemory<char>> CreateEscapedTextList(ReadOnlyMemory<char> raw, 
-            IEnumerable<int> matchIndexes, IEscapeRouteConfiguration config)
+        private List<ReadOnlyMemory<char>> CreateEscapedTextList(ReadOnlyMemory<char> raw, 
+            IEnumerable<int> matchIndexes)
         {
             var memoryList = new List<ReadOnlyMemory<char>>();
-
-            var replacementMap = CreateReplacementMap(config);
             
             var prevIndex = 0;
 
@@ -104,47 +117,38 @@ namespace EscapeRoute.SpanEngine.ReplacementEngines
 
                 var patternMatched = raw.Span.Slice(prevIndex + matchIndex, 1);
 
-                if (replacementMap.TryGetValue(patternMatched[0], out var replacement))
+                
+                // Surrogate Pair First Byte
+                if (patternMatched[0] >= 0xd800 && patternMatched[0] <= 0xdfff)
+                {
+                    var mem = raw.Slice(prevIndex + matchIndex, 2);
+                    
+                    HandleUnicodeSurrogate(mem, 0, memoryList);
+                    HandleUnicodeSurrogate(mem, 1, memoryList);
+
+                    // Increment as we took two chars.
+                    prevIndex++;
+                }
+                else if (_replacementMap.TryGetValue(patternMatched[0], out var replacement))
                 {
                     if (!replacement.IsEmpty)
                     {
                         memoryList.Add(replacement);
                     }
                 }
-                // Surrogate Pair First Byte
-                else if (patternMatched[0] >= 0xd800 && patternMatched[0] <= 0xdfff)
-                {
-                    var replacer = config.UnicodeSurrogateEscapeHandler
-                        .GetReplacement(config.UnicodeSurrogateBehavior);
-                    
-                    // Pair of characters, so take 2 chars.
-                    var mem = raw.Slice(prevIndex + matchIndex, 2);
-
-                    var unicodeSurrogateReplacement = replacer(mem);
-
-                    if (!unicodeSurrogateReplacement.IsEmpty)
-                    {
-                        memoryList.Add(unicodeSurrogateReplacement);
-                    }
-
-                    prevIndex++;
-                }
                 // Standard Unicode Character
                 else if (patternMatched[0] > 127)
                 {
-                    var replacer = config.UnicodeEscapeHandler
-                        .GetReplacement(config.UnicodeBehavior);
-
                     var mem = raw.Slice(prevIndex + matchIndex, 1); 
                     
-                    var unicodeReplacement = replacer(mem);
+                    var unicodeReplacement = _unicodeReplacer(mem);
                     
                     if(!unicodeReplacement.IsEmpty)
                     {
                         memoryList.Add(unicodeReplacement);
                     }
                     
-                    replacementMap.Add(patternMatched[0], unicodeReplacement);
+                    _replacementMap.Add(patternMatched[0], unicodeReplacement);
                 }
 
                 if (prevIndex == 0)
@@ -159,28 +163,27 @@ namespace EscapeRoute.SpanEngine.ReplacementEngines
 
             return memoryList;
         }
-        
-        private static Memory<char> CombinedMemory(List<ReadOnlyMemory<char>> memoryList)
+
+        private void HandleUnicodeSurrogate(ReadOnlyMemory<char> mem, int index, IList<ReadOnlyMemory<char>> memoryList)
         {
-            var memoryListTotalLength = memoryList.Sum(m => m.Length);
-
-            Memory<char> combinedMemory = new char[memoryListTotalLength];
-
-            var prevLength = 0;
-            foreach (var mem in memoryList)
+            if (_replacementMap.TryGetValue(mem.Span[index], out var replacement))
             {
-                if (prevLength > combinedMemory.Length)
-                {
-                    break;
-                }
-
-                mem.CopyTo(combinedMemory.Slice(prevLength));
-                prevLength += mem.Length;
+                memoryList.Add(replacement);
             }
+            else
+            {
+                var slice = mem.Slice(index, 1);
+                var unicodeSurrogateReplacement = _unicodeSurrogateReplacer(slice);
 
-            return combinedMemory;
+                if (!unicodeSurrogateReplacement.IsEmpty)
+                {
+                    memoryList.Add(unicodeSurrogateReplacement);
+                }
+                
+                _replacementMap.Add(mem.Span[index], replacement);
+            }
         }
-        
+
         private static HashSet<char> GetPattern(IEscapeRouteConfiguration config)
         {
             var pattern = new HashSet<char>()
@@ -235,7 +238,7 @@ namespace EscapeRoute.SpanEngine.ReplacementEngines
                 },
                 {
                     config.NewLineEscapeHandler.GetPattern(),
-                    config.NewLineEscapeHandler.GetReplacement(config.NewLineType)
+                    config.NewLineEscapeHandler.GetReplacement(config.NewLineBehavior)
                     
                 },
                 {

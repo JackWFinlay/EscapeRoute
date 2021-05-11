@@ -13,7 +13,7 @@ namespace EscapeRoute.SpanEngine
         private const FormFeedBehavior _defaultFormFeedBehavior = FormFeedBehavior.Strip;
         private const BackslashBehavior _defaultBackslashBehavior = BackslashBehavior.Escape;
         private const UnicodeBehavior _defaultUnicodeBehavior = UnicodeBehavior.Escape;
-        private const NewLineType _defaultNewLineType = NewLineType.Strip;
+        private const NewLineBehavior _defaultNewLineType = NewLineBehavior.Strip;
         private const DoubleQuoteBehavior _defaultDoubleQuoteBehavior = DoubleQuoteBehavior.Double;
         private const SingleQuoteBehavior _defaultSingleQuoteBehavior = SingleQuoteBehavior.Single;
         private const CarriageReturnBehavior _defaultCarriageReturnBehavior = CarriageReturnBehavior.Strip;
@@ -31,15 +31,14 @@ namespace EscapeRoute.SpanEngine
         private readonly Lazy<UnicodeEscapeHandler> _defaultUnicodeEscapeHandler = new Lazy<UnicodeEscapeHandler>();
         private readonly Lazy<UnicodeNullEscapeHandler> _defaultUnicodeNullEscapeHandler = new Lazy<UnicodeNullEscapeHandler>();
         private readonly Lazy<UnicodeSurrogateEscapeHandler> _defaultUnicodeSurrogateEscapeHandler = new Lazy<UnicodeSurrogateEscapeHandler>();
-
-        private readonly Lazy<SpanReplacementEngine> _defaultReplacementEngine = new Lazy<SpanReplacementEngine>();
+        
 
         private TabBehavior? _tabBehavior;
         private BackspaceBehavior? _backspaceBehavior;
         private FormFeedBehavior? _formFeedBehavior;
         private BackslashBehavior? _backslashBehavior;
         private UnicodeBehavior? _unicodeBehavior;
-        private NewLineType? _newLineType;
+        private NewLineBehavior? _newLineType;
         private DoubleQuoteBehavior? _doubleQuoteBehavior;
         private SingleQuoteBehavior? _singleQuoteBehavior;
         private CarriageReturnBehavior? _carriageReturnBehavior;
@@ -52,13 +51,11 @@ namespace EscapeRoute.SpanEngine
         private IEscapeRouteEscapeHandler<TabBehavior> _tabEscapeHandler;
         private IEscapeRouteEscapeHandler<DoubleQuoteBehavior> _doubleQuoteEscapeHandler;
         private IEscapeRouteEscapeHandler<SingleQuoteBehavior> _singleQuoteEscapeHandler;
-        private IEscapeRouteEscapeHandler<NewLineType> _newLineEscapeHandler;
+        private IEscapeRouteEscapeHandler<NewLineBehavior> _newLineEscapeHandler;
         private IEscapeRouteEscapeHandler<CarriageReturnBehavior> _carriageReturnEscapeHandler;
         private IEscapeRouteEscapeHandler<UnicodeNullBehavior> _unicodeNullEscapeHandler;
         private IEscapeRouteEscapeFunctionHandler<UnicodeBehavior> _unicodeEscapeHandler;
         private IEscapeRouteEscapeFunctionHandler<UnicodeSurrogateBehavior> _unicodeSurrogateEscapeHandler;
-
-        private IReplacementEngine _replacementEngine;
 
         /// <summary>
         /// Gets or sets how tab \t characters are handled.
@@ -150,7 +147,7 @@ namespace EscapeRoute.SpanEngine
             set => _unicodeBehavior = value;
         }
 
-        public IEscapeRouteEscapeHandler<NewLineType> NewLineEscapeHandler 
+        public IEscapeRouteEscapeHandler<NewLineBehavior> NewLineEscapeHandler 
         { 
             get => _newLineEscapeHandler ?? _defaultNewLineEscapeHandler.Value; 
             set => _newLineEscapeHandler = value; 
@@ -186,7 +183,7 @@ namespace EscapeRoute.SpanEngine
         /// <summary>
         /// Gets or sets the new line type for the output.
         /// </summary>
-        public NewLineType NewLineType
+        public NewLineBehavior NewLineBehavior
         {
             get => _newLineType ?? _defaultNewLineType;
             set => _newLineType = value;
@@ -238,15 +235,6 @@ namespace EscapeRoute.SpanEngine
         {
             get => _carriageReturnEscapeHandler ?? _defaultCarriageReturnEscapeHandler.Value;
             set => _carriageReturnEscapeHandler = value;
-        }
-
-        /// <summary>
-        /// Gets or sets the replacement engine for handling text replacements.
-        /// </summary>
-        public IReplacementEngine ReplacementEngine
-        {
-            get => _replacementEngine ?? _defaultReplacementEngine.Value;
-            set => _replacementEngine = value;
         }
     }
 }

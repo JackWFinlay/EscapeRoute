@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace EscapeRoute.SpanEngine.Extensions
 {
@@ -18,6 +19,27 @@ namespace EscapeRoute.SpanEngine.Extensions
             }
 
             return -1;
+        }
+        
+        public static Memory<char> CombineMemory(this IReadOnlyCollection<ReadOnlyMemory<char>> memoryList)
+        {
+            var memoryListTotalLength = memoryList.Sum(m => m.Length);
+
+            Memory<char> combinedMemory = new char[memoryListTotalLength];
+
+            var prevLength = 0;
+            foreach (var mem in memoryList)
+            {
+                if (prevLength > combinedMemory.Length)
+                {
+                    break;
+                }
+
+                mem.CopyTo(combinedMemory.Slice(prevLength));
+                prevLength += mem.Length;
+            }
+
+            return combinedMemory;
         }
     }
 }

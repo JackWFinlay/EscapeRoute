@@ -9,6 +9,7 @@ namespace EscapeRoute.SpanEngine.EscapeHandlers
         private const char _pattern = '\\';
         private readonly ReadOnlyMemory<char> _replacePattern = new[] {'\\', '\\'};
         private readonly ReadOnlyMemory<char> _stripPattern = new char[] {};
+        private readonly ReadOnlyMemory<char> _ignorePattern = new[] { _pattern };
 
         public char GetPattern() => _pattern;
         
@@ -19,6 +20,7 @@ namespace EscapeRoute.SpanEngine.EscapeHandlers
                 // Replace backspace characters with \b.
                 BackslashBehavior.Escape => _replacePattern,
                 BackslashBehavior.Strip => _stripPattern,
+                BackslashBehavior.Ignore => _ignorePattern,
                 _ => throw new ArgumentException($"Not a valid {nameof(BackslashBehavior)}", nameof(behavior))
             };
 

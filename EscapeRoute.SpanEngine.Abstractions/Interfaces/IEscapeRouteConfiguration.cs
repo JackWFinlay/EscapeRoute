@@ -11,7 +11,7 @@ namespace EscapeRoute.SpanEngine.Abstractions.Interfaces
         public BackspaceBehavior BackspaceBehavior { get; set; }
         public FormFeedBehavior FormFeedBehavior { get; set; }
         public BackslashBehavior BackslashBehavior { get; set; }
-        public NewLineType NewLineType { get; set; }
+        public NewLineBehavior NewLineBehavior { get; set; }
         public DoubleQuoteBehavior DoubleQuoteBehavior { get; set; }
         public CarriageReturnBehavior CarriageReturnBehavior { get; set; }
         public UnicodeNullBehavior UnicodeNullBehavior { get; set; }
@@ -25,12 +25,11 @@ namespace EscapeRoute.SpanEngine.Abstractions.Interfaces
         public IEscapeRouteEscapeHandler<BackslashBehavior> BackslashEscapeHandler { get; set; }
         public IEscapeRouteEscapeHandler<DoubleQuoteBehavior> DoubleQuoteEscapeHandler { get; set; }
         public IEscapeRouteEscapeHandler<SingleQuoteBehavior> SingleQuoteEscapeHandler { get; set; }
-        public IEscapeRouteEscapeHandler<NewLineType> NewLineEscapeHandler { get; set; }
+        public IEscapeRouteEscapeHandler<NewLineBehavior> NewLineEscapeHandler { get; set; }
         public IEscapeRouteEscapeHandler<CarriageReturnBehavior> CarriageReturnEscapeHandler { get; set; }
         public IEscapeRouteEscapeHandler<UnicodeNullBehavior> UnicodeNullEscapeHandler { get; set; }
 
         public IEscapeRouteEscapeFunctionHandler<UnicodeBehavior> UnicodeEscapeHandler { get; set; }
         public IEscapeRouteEscapeFunctionHandler<UnicodeSurrogateBehavior> UnicodeSurrogateEscapeHandler { get; set; }
-        public IReplacementEngine ReplacementEngine { get; set; }
     }
 }

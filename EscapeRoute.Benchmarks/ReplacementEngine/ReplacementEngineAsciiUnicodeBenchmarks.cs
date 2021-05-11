@@ -23,11 +23,11 @@ namespace EscapeRoute.Benchmarks.ReplacementEngine
             await SpanEscapeRouter.ParseAsync(Constants.BenchmarkStringUnicode);
         }
         
-        [Benchmark]
-        public async Task AsciiUnicodeParseAsyncSpanTextReader()
-        {
-            var stringReader = new StringReader(Constants.BenchmarkStringUnicode);
-            await SpanEscapeRouter.ParseAsync(stringReader);
-        }
+        // [Benchmark]
+        // public async Task AsciiUnicodeParseAsyncSpanTextReader()
+        // {
+        //     var stringReader = new StringReader(Constants.BenchmarkStringUnicode);
+        //     await SpanEscapeRouter.ParseAsync(stringReader);
+        // }
     }
 }

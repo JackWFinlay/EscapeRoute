@@ -2,12 +2,14 @@
 using System.IO;
 using System.Threading.Tasks;
 using EscapeRoute.SpanEngine.Abstractions.Interfaces;
+using EscapeRoute.SpanEngine.ReplacementEngines;
 
 namespace EscapeRoute.SpanEngine
 {
     public class EscapeRouter : IEscapeRouter
     {
-        private EscapeRouteConfiguration _configuration;
+        private readonly EscapeRouteConfiguration _configuration;
+        private readonly SpanReplacementEngine _replacementEngine;
 
         /// <summary>
         /// Creates a new <see cref="EscapeRouter"/> object.
@@ -15,6 +17,7 @@ namespace EscapeRoute.SpanEngine
         public EscapeRouter()
         {
             _configuration = new EscapeRouteConfiguration();
+            _replacementEngine = new SpanReplacementEngine(_configuration);
         }
 
         /// <summary>
@@ -22,7 +25,8 @@ namespace EscapeRoute.SpanEngine
         /// </summary>
         public EscapeRouter(EscapeRouteConfiguration escapeRouteConfiguration)
         {
-            ApplyConfiguration(escapeRouteConfiguration);
+            _configuration = escapeRouteConfiguration;
+            _replacementEngine = new SpanReplacementEngine(_configuration);
         }
 
         /// <summary>
@@ -33,11 +37,6 @@ namespace EscapeRoute.SpanEngine
         public async Task<string> ParseAsync(TextReader textReader) => await EscapeAsync(textReader);
 
         public async Task<string> ParseAsync(string inputString) => await EscapeAsync(inputString);
-
-        private void ApplyConfiguration(EscapeRouteConfiguration escapeRouteConfiguration)
-        {
-            _configuration = escapeRouteConfiguration;
-        }
 
         private async Task<string> EscapeAsync(string text)
         {
@@ -57,7 +56,7 @@ namespace EscapeRoute.SpanEngine
 
         private async Task<string> EscapeAsync(ReadOnlyMemory<char> input)
         {
-            var escapedMemory = await _configuration.ReplacementEngine.ReplaceAsync(input, _configuration);
+            var escapedMemory = await _replacementEngine.ReplaceAsync(input);
 
             var escaped = string.Create(escapedMemory.Length, escapedMemory,
                 (destination, state) => state.Span.CopyTo(destination));

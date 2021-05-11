@@ -5,10 +5,16 @@ namespace EscapeRoute.SpanEngine.Abstractions.Enums
         /// <summary>
         /// Replace double quotes "..." with escaped double quotes \"...\".
         /// </summary>
-        Double = 0,
+        Double,
+        
         /// <summary>
         /// Replace double quotes "..." with escaped single quotes \'...\'.
         /// </summary>
-        Single = 1
+        Single,
+
+        /// <summary>
+        /// Ignore double quote characters "...". Leave them as-is.
+        /// </summary>
+        Ignore
     }
 }

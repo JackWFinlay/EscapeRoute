@@ -412,6 +412,16 @@ namespace EscapeRoute.Test
             string result = escapeRouter.ParseString(_inputString1);
             Assert.Equal(expected, result);
         }
+        
+        [Obsolete]
+        [Fact]
+        public void TestDefaultBehaviourFromStringWithEmoji()
+        {
+            IEscapeRouter escapeRouter = new EscapeRouter();
+            const string expected = @"\ud83d\ude0d";
+            string result = escapeRouter.ParseString("😍");
+            Assert.Equal(expected, result);
+        }
 
         [Obsolete]
         [Fact]
