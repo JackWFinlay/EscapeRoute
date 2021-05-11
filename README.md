@@ -23,16 +23,9 @@ Please be aware of the following changes:
   You can use the NuGet package `EscapeRoute.SpanEngine` in place of the original `EscapeRoute` package,
   but there are changes to the `EscapeRouteConfiguration` that must be used. 
   See [EscapeRoute.SpanEngine configuration](#escaperoutespanengine-configuration) for details.
-
-- Addition of the `Escape` value to the `NewLineType` Enum.
-  This is the same as using the value `Unix` in previous versions. 
-  It is there for the `EscapeRoute.SpanEngine` project which uses a different method of substitution.
-   
-- Addition of `CarriageReturnbehavior` and different `NewLineType` default for `EscapeRoute.SpanEngine`.
-  See [EscapeRoute.SpanEngine behaviors](#escaperoutespanengine-behaviors) for details.
   
 - The current characters that `EscapeRoute.SpanEngine` can escape is limited to the same that the original version `EscapeRoute`
-can handle. There are plans to expand this to some of the other special characters, please raise an 
+can handle, with the addition of `\r` Carriage Return characters. There are plans to expand this to some of the other special characters, please raise an 
   [issue](https://github.com/JackWFinlay/EscapeRoute/issues) for any requests.
 
 ## Supported behaviors
