@@ -8,11 +8,16 @@ namespace EscapeRoute.Abstractions.Enums
         /// <summary>
         /// Strips unicode \uXXXX characters.
         /// </summary>
-        Strip = 0,
+        Strip,
 
         /// <summary>
         /// Escapes unicode \uXXXX characters.
         /// </summary>
-        Escape = 1
+        Escape,
+        
+        /// <summary>
+        /// Ignore unicode characters and leaves them as-is.
+        /// </summary>
+        Ignore
     }
 }

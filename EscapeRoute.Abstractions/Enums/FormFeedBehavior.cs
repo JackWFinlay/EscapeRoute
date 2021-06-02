@@ -8,11 +8,16 @@ namespace EscapeRoute.Abstractions.Enums
         /// <summary>
         /// Strips form feed \f characters.
         /// </summary>
-        Strip = 0,
+        Strip,
 
         /// <summary>
         /// Escapes form feed \f characters.
         /// </summary>
-        Escape = 1
+        Escape,
+        
+        /// <summary>
+        /// Ignore form feed \f characters.
+        /// </summary>
+        Ignore
     }
 }

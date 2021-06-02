@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
     <Description>Convert strings and files into JSON friendly strings.</Description>
     <Summary>Convert strings and files into JSON friendly strings.</Summary>
     <Copyright>Copyright Jack Witbrock Finlay 2017-2021</Copyright>
@@ -16,7 +16,7 @@
     <IncludeSource>true</IncludeSource>
     <RepositoryUrl>https://github.com/JackWFinlay/EscapeRoute</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <VersionPrefix>0.0.3-alpha.1</VersionPrefix>
+    <VersionPrefix>0.0.3-alpha.2</VersionPrefix>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <LangVersion>8</LangVersion>
   </PropertyGroup>
@@ -28,5 +28,8 @@
       <Pack>true</Pack>
       <PackagePath>\</PackagePath>
     </Content>
+  </ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
+    <PackageReference Include="System.Memory" Version="4.5.4" />
   </ItemGroup>
 </Project>

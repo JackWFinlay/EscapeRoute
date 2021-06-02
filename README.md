@@ -19,55 +19,17 @@ Please be aware of the following changes for version `0.0.2`:
 
 ## Version `0.0.3` Notes
 Please be aware of the following changes:
-- Addition of the `EscapeRoute.SpanEngine` project. 
-  This project uses `Span<T>` under the hood to [speed up execution time and lower allocations and GC events](#benchmarks).
-  You can use the NuGet package `EscapeRoute.SpanEngine` in place of the original `EscapeRoute` package,
+- This project uses `Span<T>` under the hood to [speed up execution time and lower allocations and GC events](#benchmarks).
   but there are changes to the `EscapeRouteConfiguration` that must be used. 
-  See [EscapeRoute.SpanEngine configuration](#escaperoutespanengine-configuration) for details.
+  See [EscapeRoute configuration](#escaperoute-configuration) for details.
   
-- The current characters that `EscapeRoute.SpanEngine` can escape is limited to the same that the original version `EscapeRoute`
+- The current characters that version `0.0.3` can escape is limited to the same that the version `0.0.2`
 can handle, with the addition of `\r` Carriage Return characters. There are plans to expand this to some of the other special characters, please raise an 
   [issue](https://github.com/JackWFinlay/EscapeRoute/issues) for any requests.
 
 ## Supported behaviors
-### EscapeRoute Behaviors
-The original `EscapeRoute` `EscapeRouter` currently supports the following behaviors/special characters (***Default***):
-
- - Tab (\t):
-   - ***Strip***
-   - Escape
- - New line (\n | \r\n):
-   - None
-   - Escape (\n)
-   - ***Space***
-   - Unix (\n)
-   - Windows (\r\n)
- - Backspace (\b):
-   - ***Strip***
-   - Escape
- - Form feed (\f):
-   - ***Strip***
-   - Escape
- - Backslash (\\\\):
-   - Strip
-   - ***Escape***
- - Unicode (\u1234):
-   - Strip
-   - ***Escape***
- - Single quotes '':
-   - ***Single***
-   - Double
- - Double quotes "":
-   - ***Double***
-   - Single
- - Trim
-   - None
-   - Start
-   - End
-   - ***Both***
-
-### EscapeRoute.SpanEngine Behaviors
-The `EscapeRoute.SpanEngine` `EscapeRouter` currently supports the following behaviors/special characters (***Default***):
+### EscapeRoute `0.0.3` Behaviors
+The version `0.0.3` `EscapeRouter` currently supports the following behaviors/special characters (***Default***):
 
 - Tab (\t):
     - ***Strip***
@@ -116,11 +78,11 @@ The `EscapeRoute.SpanEngine` `EscapeRouter` currently supports the following beh
     - Strip
     - Ignore
 
-Note that for New Line type, the default is different (***Strip***) for `EscapeRoute.SpanEngine`.
+Note that for New Line type, the default is different (***Strip***) for version `0.0.3`.
 The `NewLineBehavior` enum now controls the handling of New Line characters `\n`.
 This is due to the addition of a behavior handler for Carriage Return `\r` characters separately.
 
-Also note that the trim behaviour is not available for `EscapeRoute.SpanEngine`, this may change in future -
+Also note that the trim behaviour is not available for version `0.0.3`, this may change in future -
 feel free to request this under [issues](https://github.com/JackWFinlay/EscapeRoute/issues).
 
 ## Usage
@@ -132,48 +94,16 @@ using EscapeRoute;
 ```
 
 ### Parsing
-#### EscapeRoute
-EscapeRoute allows the use of Files or Strings to load in the data to be escaped and trimmed. These can be called synchronously or asynchronously. 
 
-E.g. `ParseFile` and `ParseStringAsync`
-
-Note: The `ParseFile`, `ParseFileAsync`, `ParseString`, `ParseStringAsync` methods have been marked obsolete from version `0.0.3`.
-See section [EscapeRoute.SpanEngine](#escaperoutespanengine-and-escaperoute--003) below.
-
-test file: [test1.txt](EscapeRoute.Test/test-files/test1.txt)
-```C#
-using EscapeRoute;
-
-namespace Example
-{
-    public class ExampleProgram
-    {
-        public void TestDefaultBehaviorFromFile()
-        {
-            string fileLocation = $"{workspaceFolder}/test-files/test1.txt";
-            IEscapeRouter escapeRouter = new EscapeRouter();
-            const string expected = "The quick brown fox jumps over the lazy dog.";
-            string result = escapeRouter.ParseFile(fileLocation);
-            
-            string areEqual = expected.Equals(result) ? "" : " not";
-            Console.WriteLine($"The strings are{areEqual} equal"); 
-            // "The strings are equal"
-        }
-    }
-}
-```
-
-#### EscapeRoute.SpanEngine and EscapeRoute >= `0.0.3`)
 `EscapeRoute.SpanEngine` uses multiple overloads of the `ParseAsync` method to perform parsing of
 either a `TextReader` or a `string`. You must provide the `TextReader` (`StreamReader`, `StringReader` etc.)
 and load the file yourself.
 
-`EscapeRoute.SpanEngine` doesn't accept file paths - 
-this is also marked obsolete in version `0.0.3` of the vanilla `EscapeRoute`.
+Version `0.0.3` doesn't accept file paths.
 
 test file: [unicode1.txt](EscapeRoute.Test/test-files/unicode1.txt)
 ```c#
-using EscapeRoute.SpanEngine;
+using EscapeRoute;
 
 namespace Example
 {
@@ -271,40 +201,8 @@ namespace Example
 A limitation of standard JSON is that characters represented as surrogate pairs must be represented as two consecutive escaped unicode characters.
 e.g. `😍` becomes `\ud83d\ude0d`.
 
-### Behavior Handlers
-
-#### EscapeRoute
-You can override the default behavior handling of any of the default behaviors 
-by supplying a class using the [`IEscapeRouteBehaviorHandler`](EscapeRoute.Abstractions/Interfaces/IEscapeRouteBehaviorHandler.cs) interface.
-See the [BehaviorHandlers](EscapeRoute/BehaviorHandlers) for examples.
-
-You can also add custom behavior handlers that are evaluated sequentially after the built-in handlers,
-just create a class using the [`IEscapeRouteCustomBehaviorHandler`](EscapeRoute.Abstractions/Interfaces/IEscapeRouteCustomBehaviorHandler.cs) interface, 
-and pass them in a list through the [`EscapeRouteConfiguration`](EscapeRoute/EscapeRouteConfiguration.cs). e.g:
-```c#
-public class ExampleCustomBehaviorHandler : IEscapeRouteCustomBehaviorHandler
-{
-    public Task<string> EscapeAsync(string raw)
-    {
-        // Replace occurrences of string "dog" with string "cat", in string raw.
-        string escaped = Regex.Replace(raw, "dog", "cat");
-
-        return Task.FromResult(escaped);
-    }
-}
-```
-```c#
-EscapeRouteConfiguration config = new EscapeRouteConfiguration
-{
-    CustomBehaviorHandlers = new List<IEscapeRouteCustomBehaviorHandler>()
-    {
-        new ExampleCustomBehaviorHandler()
-    }
-};
-```
-
-#### EscapeRoute.SpanEngine Configuration
-The configuration for the `EscapeRoute.SpanEngine` `EscapeRouter` is a bit different to that of the basic `EscapeRoute` `EscapeRouter`.
+#### EscapeRoute Configuration
+The configuration for the version `0.0.3` `EscapeRouter` is a bit different to that of the basic `0.0.2` `EscapeRouter`.
 You can override the default behavior handling of any of the default behaviors
 by supplying a class using the [`IEscapeRouteEscapeHandler`](EscapeRoute.SpanEngine.Abstractions/Interfaces/IEscapeRouteEscapeHandler.cs) interface.
 See the [EscapeHandlers](EscapeRoute.SpanEngine/EscapeHandlers) for examples.
@@ -328,25 +226,24 @@ Allocated : Allocated memory per single operation (managed only, inclusive, 1KB 
 1 μs      : 1 Microsecond (0.000001 sec)
 ```
 
-|                    Method |     Mean |   Error |  StdDev | Ratio |    Gen 0 | Gen 1 | Gen 2 | Allocated |
-|-------------------------- |---------:|--------:|--------:|------:|---------:|------:|------:|----------:|
-|           AsciiParseAsync | 320.7 μs | 6.32 μs | 6.76 μs |  1.00 | 130.3711 |     - |     - | 399.92 KB |
-| AsciiParseAsyncSpanString | 110.2 μs | 1.23 μs | 1.09 μs |  0.34 |  20.6299 |     - |     - |  63.41 KB |
+|                            Method |     Mean |   Error |  StdDev | Ratio |    Gen 0 | Gen 1 | Gen 2 | Allocated |
+|---------------------------------- |---------:|--------:|--------:|------:|---------:|------:|------:|----------:|
+|           AsciiParseAsync (0.0.2) | 320.7 μs | 6.32 μs | 6.76 μs |  1.00 | 130.3711 |     - |     - | 399.92 KB |
+| AsciiParseAsyncSpanString (0.0.3) | 110.2 μs | 1.23 μs | 1.09 μs |  0.34 |  20.6299 |     - |     - |  63.41 KB |
 
-|                           Method |     Mean |   Error |  StdDev | Ratio |    Gen 0 | Gen 1 | Gen 2 | Allocated |
-|--------------------------------- |---------:|--------:|--------:|------:|---------:|------:|------:|----------:|
-|           AsciiUnicodeParseAsync | 608.6 μs | 8.11 μs | 7.19 μs |  1.00 | 221.6797 |     - |     - | 681.75 KB |
-| AsciiUnicodeParseAsyncSpanString | 197.7 μs | 2.09 μs | 1.63 μs |  0.32 |  55.1758 |     - |     - | 169.84 KB |
+|                                   Method |     Mean |   Error |  StdDev | Ratio |    Gen 0 | Gen 1 | Gen 2 | Allocated |
+|----------------------------------------- |---------:|--------:|--------:|------:|---------:|------:|------:|----------:|
+|           AsciiUnicodeParseAsync (0.0.2) | 608.6 μs | 8.11 μs | 7.19 μs |  1.00 | 221.6797 |     - |     - | 681.75 KB |
+| AsciiUnicodeParseAsyncSpanString (0.0.3) | 197.7 μs | 2.09 μs | 1.63 μs |  0.32 |  55.1758 |     - |     - | 169.84 KB |
 
-|                    Method |     Mean |    Error |   StdDev | Ratio |   Gen 0 | Gen 1 | Gen 2 | Allocated |
-|-------------------------- |---------:|---------:|---------:|------:|--------:|------:|------:|----------:|
-|           EmojiParseAsync | 69.13 μs | 0.253 μs | 0.212 μs |  1.00 | 22.8271 |     - |     - |  70.12 KB |
-| EmojiParseAsyncSpanString | 24.83 μs | 0.086 μs | 0.071 μs |  0.36 |  7.7515 |     - |     - |  23.82 KB |
+|                            Method |     Mean |    Error |   StdDev | Ratio |   Gen 0 | Gen 1 | Gen 2 | Allocated |
+|---------------------------------- |---------:|---------:|---------:|------:|--------:|------:|------:|----------:|
+|           EmojiParseAsync (0.0.2) | 69.13 μs | 0.253 μs | 0.212 μs |  1.00 | 22.8271 |     - |     - |  70.12 KB |
+| EmojiParseAsyncSpanString (0.0.3) | 24.83 μs | 0.086 μs | 0.071 μs |  0.36 |  7.7515 |     - |     - |  23.82 KB |
 
-
-As shown by the results above, the `EscapeRoute.SpanEngine` is more than twice as fast,
+As shown by the results above, version `0.0.3` using .NET Standard 2.1 and above (e.g. .NET Core 3.0 & 3.1, .NET5) is more than twice as fast,
 allocates considerably less memory, and performs far less GC events for the same given
-[test data](EscapeRoute.Benchmarks/ReplacementEngine/Constants.cs).
+[test data](EscapeRoute.Benchmarks.NET5/Benchmarks/Constants.cs).
 
 ## License
 MIT

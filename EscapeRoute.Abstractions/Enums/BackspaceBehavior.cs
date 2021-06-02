@@ -8,11 +8,16 @@ namespace EscapeRoute.Abstractions.Enums
         /// <summary>
         /// Strips backspace \b characters.
         /// </summary>
-        Strip = 0,
+        Strip,
 
         /// <summary>
         /// Escapes backspace \b characters.
         /// </summary>
-        Escape = 1
+        Escape,
+        
+        /// <summary>
+        /// Ignores backspace \b characters. Leave them as-is.
+        /// </summary>
+        Ignore
     }
 }
