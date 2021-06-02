@@ -8,11 +8,16 @@ namespace EscapeRoute.Abstractions.Enums
         /// <summary>
         /// Strips tab \t characters.
         /// </summary>
-        Strip = 0,
+        Strip,
 
         /// <summary>
         /// Escapes tab \t characters.
         /// </summary>
-        Escape = 1
+        Escape,
+        
+        /// <summary>
+        /// Ignore tab \t characters. Leave them as-is.
+        /// </summary>
+        Ignore
     }
 }

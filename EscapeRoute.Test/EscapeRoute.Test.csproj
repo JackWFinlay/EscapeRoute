@@ -15,7 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\EscapeRoute.SpanEngine\EscapeRoute.SpanEngine.csproj" />
     <ProjectReference Include="..\EscapeRoute\EscapeRoute.csproj" />
   </ItemGroup>
 
