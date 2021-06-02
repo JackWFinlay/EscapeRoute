@@ -74,7 +74,7 @@ namespace EscapeRoute
             }
 
             var escaped = stringBuilder.ToString();
-#elif NETSTANDARD2_1
+#else
             var escaped = string.Create(input.Length, input,
                 (destination, state) => state.Span.CopyTo(destination));
 #endif
