@@ -4,7 +4,7 @@ using EscapeRoute.Abstractions.Enums;
 
 namespace EscapeRoute.Abstractions.Interfaces
 {
-    public interface IEscapeRouteConfiguration
+    public interface IEscapeRouteCharReplacementConfiguration
     {
         public TabBehavior TabBehavior { get; set; }
         public SingleQuoteBehavior SingleQuoteBehavior { get; set; }

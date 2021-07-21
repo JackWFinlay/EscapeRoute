@@ -2,7 +2,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace EscapeRoute.Test.SpanEngineTests
+namespace EscapeRoute.Test.BehaviorTests
 {
     public class DefaultTests
     {

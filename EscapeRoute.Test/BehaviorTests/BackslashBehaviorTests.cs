@@ -1,15 +1,15 @@
-using EscapeRoute.Abstractions.Enums;
 using System.Threading.Tasks;
+using EscapeRoute.Abstractions.Enums;
 using Xunit;
 
-namespace EscapeRoute.Test.SpanEngineTests
+namespace EscapeRoute.Test.BehaviorTests
 {
     public class BackslashBehaviorTests
     {
         [Fact]
         public async Task TestSpanReplacementEngineBackslashEscape()
         {
-            var config = new EscapeRoute.EscapeRouteConfiguration
+            var config = new Configuration.CharReplacementConfiguration
             {
                 BackslashBehavior = BackslashBehavior.Escape
             };
@@ -24,7 +24,7 @@ namespace EscapeRoute.Test.SpanEngineTests
         [Fact]
         public async Task TestSpanReplacementEngineBackslashStrip()
         {
-            var config = new EscapeRoute.EscapeRouteConfiguration
+            var config = new Configuration.CharReplacementConfiguration
             {
                 BackslashBehavior = BackslashBehavior.Strip
             };
@@ -39,7 +39,7 @@ namespace EscapeRoute.Test.SpanEngineTests
         [Fact]
         public async Task TestSpanReplacementEngineBackslashIgnore()
         {
-            var config = new EscapeRoute.EscapeRouteConfiguration
+            var config = new Configuration.CharReplacementConfiguration
             {
                 BackslashBehavior = BackslashBehavior.Ignore
             };

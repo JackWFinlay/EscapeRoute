@@ -2,14 +2,14 @@ using System.Threading.Tasks;
 using EscapeRoute.Abstractions.Enums;
 using Xunit;
 
-namespace EscapeRoute.Test.SpanEngineTests
+namespace EscapeRoute.Test.BehaviorTests
 {
     public class BackspaceBehaviorTests
     {
         [Fact]
         public async Task TestSpanReplacementEngineBackspaceEscape()
         {
-            var config = new EscapeRoute.EscapeRouteConfiguration
+            var config = new Configuration.CharReplacementConfiguration
             {
                 BackspaceBehavior = BackspaceBehavior.Escape
             };
@@ -24,7 +24,7 @@ namespace EscapeRoute.Test.SpanEngineTests
         [Fact]
         public async Task TestSpanReplacementEngineBackspaceStrip()
         {
-            var config = new EscapeRoute.EscapeRouteConfiguration
+            var config = new Configuration.CharReplacementConfiguration
             {
                 BackspaceBehavior = BackspaceBehavior.Strip
             };
@@ -39,7 +39,7 @@ namespace EscapeRoute.Test.SpanEngineTests
         [Fact]
         public async Task TestSpanReplacementEngineBackspaceIgnore()
         {
-            var config = new EscapeRoute.EscapeRouteConfiguration
+            var config = new Configuration.CharReplacementConfiguration
             {
                 BackspaceBehavior = BackspaceBehavior.Ignore
             };

@@ -4,28 +4,37 @@ using System.Text;
 using System.Threading.Tasks;
 using EscapeRoute.ReplacementEngines;
 using EscapeRoute.Abstractions.Interfaces;
+using EscapeRoute.Configuration;
 
 namespace EscapeRoute
 {
     public class EscapeRouter : IEscapeRouter
     {
-        private readonly SpanReplacementEngine _replacementEngine;
+        private readonly IReplacementEngine _replacementEngine;
 
         /// <summary>
         /// Creates a new <see cref="EscapeRouter"/> object.
         /// </summary>
         public EscapeRouter()
         {
-            var configuration = new EscapeRouteConfiguration();
-            _replacementEngine = new SpanReplacementEngine(configuration);
+            var configuration = new CharReplacementConfiguration();
+            _replacementEngine = new CharReplacementEngine(configuration);
         }
 
         /// <summary>
-        /// Creates a new <see cref="EscapeRouter"/> object.
+        /// Creates a new <see cref="EscapeRouter"/> object with the specified configuration.
         /// </summary>
-        public EscapeRouter(EscapeRouteConfiguration escapeRouteConfiguration)
+        public EscapeRouter(CharReplacementConfiguration charReplacementConfiguration)
         {
-            _replacementEngine = new SpanReplacementEngine(escapeRouteConfiguration);
+            _replacementEngine = new CharReplacementEngine(charReplacementConfiguration);
+        }
+        
+        /// <summary>
+        /// Creates a new <see cref="EscapeRouter"/> object with the specified configuration.
+        /// </summary>
+        public EscapeRouter(TokenReplacementConfiguration config)
+        {
+            _replacementEngine = new TokenReplacementEngine(config);
         }
 
         /// <summary>

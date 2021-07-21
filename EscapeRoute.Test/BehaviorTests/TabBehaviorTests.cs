@@ -2,14 +2,14 @@ using System.Threading.Tasks;
 using EscapeRoute.Abstractions.Enums;
 using Xunit;
 
-namespace EscapeRoute.Test.SpanEngineTests
+namespace EscapeRoute.Test.BehaviorTests
 {
     public class TabBehaviorTests
     {
         [Fact]
         public async Task TestSpanReplacementEngineTabEscape()
         {
-            var config = new EscapeRoute.EscapeRouteConfiguration
+            var config = new Configuration.CharReplacementConfiguration
             {
                 TabBehavior = TabBehavior.Escape
             };
@@ -24,7 +24,7 @@ namespace EscapeRoute.Test.SpanEngineTests
         [Fact]
         public async Task TestSpanReplacementEngineTabStrip()
         {
-            var config = new EscapeRoute.EscapeRouteConfiguration
+            var config = new Configuration.CharReplacementConfiguration
             {
                 TabBehavior = TabBehavior.Strip
             };
@@ -39,7 +39,7 @@ namespace EscapeRoute.Test.SpanEngineTests
         [Fact]
         public async Task TestSpanReplacementEngineTabIgnore()
         {
-            var config = new EscapeRoute.EscapeRouteConfiguration
+            var config = new Configuration.CharReplacementConfiguration
             {
                 TabBehavior = TabBehavior.Ignore
             };

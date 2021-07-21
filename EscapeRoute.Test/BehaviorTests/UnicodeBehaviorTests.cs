@@ -2,14 +2,14 @@ using System.Threading.Tasks;
 using EscapeRoute.Abstractions.Enums;
 using Xunit;
 
-namespace EscapeRoute.Test.SpanEngineTests
+namespace EscapeRoute.Test.BehaviorTests
 {
     public class UnicodeBehaviorTests
     {
         [Fact]
         public async Task TestSpanReplacementEngineUnicodeEscape()
         {
-            var config = new EscapeRoute.EscapeRouteConfiguration()
+            var config = new Configuration.CharReplacementConfiguration
             {
                 UnicodeBehavior = UnicodeBehavior.Escape
             };
@@ -23,7 +23,7 @@ namespace EscapeRoute.Test.SpanEngineTests
         [Fact]
         public async Task TestSpanReplacementEngineUnicodeStrip()
         {
-            var config = new EscapeRoute.EscapeRouteConfiguration()
+            var config = new Configuration.CharReplacementConfiguration
             {
                 UnicodeBehavior = UnicodeBehavior.Strip
             };
@@ -37,7 +37,7 @@ namespace EscapeRoute.Test.SpanEngineTests
         [Fact]
         public async Task TestSpanReplacementEngineUnicodeIgnore()
         {
-            var config = new EscapeRoute.EscapeRouteConfiguration()
+            var config = new Configuration.CharReplacementConfiguration
             {
                 UnicodeBehavior = UnicodeBehavior.Ignore
             };

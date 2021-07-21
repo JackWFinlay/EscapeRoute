@@ -41,5 +41,53 @@ namespace EscapeRoute.Extensions
 
             return combinedMemory;
         }
+
+        public static int IndexOfTokenStart(this ReadOnlyMemory<char> span, ReadOnlyMemory<char> tokenStart)
+        {
+            var index = IndexOfToken(span, tokenStart);
+
+            return index;
+        }
+
+        public static int IndexOfTokenEnd(this ReadOnlyMemory<char> span, 
+            ReadOnlyMemory<char> tokenStart,
+            ReadOnlyMemory<char> tokenEnd)
+        {
+            var index = IndexOfToken(span, tokenEnd, true);
+
+            return index;
+        }
+
+        private static int IndexOfToken(ReadOnlyMemory<char> span, ReadOnlyMemory<char> token, bool getEnd = false)
+        {
+            for (var i = 0; i < span.Length; i++)
+            {
+                var slice = span.Slice(i, 1);
+
+                for (var j = 0; j < token.Length; j++)
+                {
+                    if (span.Length <= (i + j))
+                    {
+                        break;
+                    }
+
+                    if (slice.Span[0] != token.Slice(j, 1).Span[0])
+                    {
+                        break;
+                    }
+
+                    if (j == (token.Length - 1))
+                    {
+                        return getEnd
+                               ? (i + token.Length)
+                               : i;
+                    }
+
+                    slice = span.Slice(i + j, 1);
+                }
+            }
+
+            return -1;
+        }
     }
 }

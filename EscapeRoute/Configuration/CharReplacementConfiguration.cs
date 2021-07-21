@@ -1,12 +1,11 @@
 using System;
-using EscapeRoute.EscapeHandlers;
 using EscapeRoute.Abstractions.Enums;
 using EscapeRoute.Abstractions.Interfaces;
-using EscapeRoute.ReplacementEngines;
+using EscapeRoute.EscapeHandlers;
 
-namespace EscapeRoute
+namespace EscapeRoute.Configuration
 {
-    public class EscapeRouteConfiguration : IEscapeRouteConfiguration
+    public class CharReplacementConfiguration : IEscapeRouteCharReplacementConfiguration
     {
         private const TabBehavior _defaultTabBehavior = TabBehavior.Strip;
         private const BackspaceBehavior _defaultBackspaceBehavior = BackspaceBehavior.Strip;

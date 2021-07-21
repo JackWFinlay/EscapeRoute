@@ -4,19 +4,20 @@ using System.Linq;
 using System.Threading.Tasks;
 using EscapeRoute.Abstractions.Exceptions;
 using EscapeRoute.Abstractions.Interfaces;
+using EscapeRoute.Configuration;
 using EscapeRoute.Extensions;
 
 namespace EscapeRoute.ReplacementEngines
 {
-    public class SpanReplacementEngine : IReplacementEngine
+    public class CharReplacementEngine : IReplacementEngine
     {
-        private readonly IEscapeRouteConfiguration _config;
+        private readonly CharReplacementConfiguration _config;
         private readonly HashSet<char> _pattern;
         private readonly Dictionary<char, ReadOnlyMemory<char>> _replacementMap;
         private readonly Func<ReadOnlyMemory<char>, ReadOnlyMemory<char>> _unicodeReplacer;
         private readonly Func<ReadOnlyMemory<char>, ReadOnlyMemory<char>> _unicodeSurrogateReplacer;
 
-        public SpanReplacementEngine(IEscapeRouteConfiguration config)
+        public CharReplacementEngine(CharReplacementConfiguration config)
         {
             _config = config;
             _pattern = GetPattern(config);
@@ -87,7 +88,7 @@ namespace EscapeRoute.ReplacementEngines
             }
         }
 
-        private List<ReadOnlyMemory<char>> CreateEscapedTextList(ReadOnlyMemory<char> raw, 
+        private IEnumerable<ReadOnlyMemory<char>> CreateEscapedTextList(ReadOnlyMemory<char> raw, 
             IEnumerable<int> matchIndexes)
         {
             var memoryList = new List<ReadOnlyMemory<char>>();
@@ -184,7 +185,7 @@ namespace EscapeRoute.ReplacementEngines
             }
         }
 
-        private static HashSet<char> GetPattern(IEscapeRouteConfiguration config)
+        private static HashSet<char> GetPattern(CharReplacementConfiguration config)
         {
             var pattern = new HashSet<char>()
             {
@@ -202,7 +203,7 @@ namespace EscapeRoute.ReplacementEngines
             return pattern;
         }
         
-        private static Dictionary<char, ReadOnlyMemory<char>> CreateReplacementMap(IEscapeRouteConfiguration config)
+        private static Dictionary<char, ReadOnlyMemory<char>> CreateReplacementMap(CharReplacementConfiguration config)
         {
             return new Dictionary<char, ReadOnlyMemory<char>>()
             {

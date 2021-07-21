@@ -2,14 +2,14 @@ using System.Threading.Tasks;
 using EscapeRoute.Abstractions.Enums;
 using Xunit;
 
-namespace EscapeRoute.Test.SpanEngineTests
+namespace EscapeRoute.Test.BehaviorTests
 {
     public class NewLineBehaviorTests
     {
         [Fact]
         public async Task TestSpanReplacementEngineNewLineEscape()
         {
-            var config = new EscapeRoute.EscapeRouteConfiguration
+            var config = new Configuration.CharReplacementConfiguration
             {
                 NewLineBehavior = NewLineBehavior.Escape
             };
@@ -24,7 +24,7 @@ namespace EscapeRoute.Test.SpanEngineTests
         [Fact]
         public async Task TestSpanReplacementEngineNewLineSpace()
         {
-            var config = new EscapeRoute.EscapeRouteConfiguration
+            var config = new Configuration.CharReplacementConfiguration
             {
                 NewLineBehavior = NewLineBehavior.Space
             };
@@ -39,7 +39,7 @@ namespace EscapeRoute.Test.SpanEngineTests
         [Fact]
         public async Task TestSpanReplacementEngineNewLineStrip()
         {
-            var config = new EscapeRoute.EscapeRouteConfiguration
+            var config = new Configuration.CharReplacementConfiguration
             {
                 NewLineBehavior = NewLineBehavior.Strip
             };
@@ -54,7 +54,7 @@ namespace EscapeRoute.Test.SpanEngineTests
         [Fact]
         public async Task TestSpanReplacementEngineCarriageReturnIgnore()
         {
-            var config = new EscapeRoute.EscapeRouteConfiguration
+            var config = new Configuration.CharReplacementConfiguration
             {
                 NewLineBehavior = NewLineBehavior.Ignore
             };
