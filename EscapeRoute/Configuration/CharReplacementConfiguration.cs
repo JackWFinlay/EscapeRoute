@@ -5,7 +5,7 @@ using EscapeRoute.EscapeHandlers;
 
 namespace EscapeRoute.Configuration
 {
-    public class CharReplacementConfiguration : IEscapeRouteCharReplacementConfiguration
+    public class CharReplacementConfiguration
     {
         private const TabBehavior _defaultTabBehavior = TabBehavior.Strip;
         private const BackspaceBehavior _defaultBackspaceBehavior = BackspaceBehavior.Strip;

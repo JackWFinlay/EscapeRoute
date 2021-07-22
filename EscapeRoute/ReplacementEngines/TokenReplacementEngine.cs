@@ -118,7 +118,8 @@ namespace EscapeRoute.ReplacementEngines
                 
                 if (index == -1)
                 {
-                    yield return null;
+                    // TODO: PROBLEM HERE.
+                    yield return new TokenMatch() {Index = memory.Length - 1};
                     yield break;
                 }
 
@@ -136,7 +137,13 @@ namespace EscapeRoute.ReplacementEngines
 
                 // Skip past the entire token.
                 var newIndex = index + _config.TokenStart.Length + token.Length + _config.TokenEnd.Length + 1;
-                
+
+                // Token is at end of string.
+                if (newIndex >= memory.Length)
+                {
+                    break;
+                }
+
                 memory = memory.Slice(newIndex);
             }
         }

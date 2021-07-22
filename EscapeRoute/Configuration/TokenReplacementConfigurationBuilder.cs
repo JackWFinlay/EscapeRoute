@@ -5,15 +5,15 @@ using EscapeRoute.Abstractions.Interfaces;
 
 namespace EscapeRoute.Configuration
 {
-    public class TokenReplacementConfigurationBuilder : ITokenReplacementConfigurationBuilder
+    public class TokenReplacementConfigurationBuilder
     {
         private readonly IDictionary<ReadOnlyMemory<char>, ReadOnlyMemory<char>> _substitutionMap =
-            new Dictionary<ReadOnlyMemory<char>, ReadOnlyMemory<char>>();
+            new Dictionary<ReadOnlyMemory<char>, ReadOnlyMemory<char>>(new ReadOnlyMemoryComparer());
 
         private ReadOnlyMemory<char> _tokenStart;
         private ReadOnlyMemory<char> _tokenEnd;
         
-        public ITokenReplacementConfigurationBuilder AddMapping(string token, 
+        public TokenReplacementConfigurationBuilder AddMapping(string token, 
             string substitution)
         {
             if (_substitutionMap.ContainsKey(token.AsMemory()))
@@ -27,14 +27,14 @@ namespace EscapeRoute.Configuration
             return this;
         }
 
-        public ITokenReplacementConfigurationBuilder SetTokenStart(string tokenStart)
+        public TokenReplacementConfigurationBuilder SetTokenStart(string tokenStart)
         {
             _tokenStart = tokenStart.AsMemory();
 
             return this;
         }
 
-        public ITokenReplacementConfigurationBuilder SetTokenEnd(string tokenEnd)
+        public TokenReplacementConfigurationBuilder SetTokenEnd(string tokenEnd)
         {
             _tokenEnd = tokenEnd.AsMemory();
 
