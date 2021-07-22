@@ -26,7 +26,7 @@ namespace EscapeRoute.ReplacementEngines
                 return Task.FromResult(raw);
             }
 
-            var matchIndexes = GetMatches(raw);
+            var matchIndexes = GetMatches(raw).ToList();
             
             if (!matchIndexes.Any())
             {
@@ -98,11 +98,11 @@ namespace EscapeRoute.ReplacementEngines
                 var tokenLength = _config.TokenStart.Length + match.Token.Length + _config.TokenEnd.Length;
                 if (prevIndex == 0)
                 {
-                    prevIndex = (match.Index + tokenLength + 1);
+                    prevIndex = (match.Index + tokenLength);
                 }
                 else
                 {
-                    prevIndex += (match.Index + tokenLength + 1);
+                    prevIndex += (match.Index + tokenLength);
                 }
 
             }
@@ -118,8 +118,7 @@ namespace EscapeRoute.ReplacementEngines
                 
                 if (index == -1)
                 {
-                    // TODO: PROBLEM HERE.
-                    yield return new TokenMatch() {Index = memory.Length - 1};
+                    yield return new TokenMatch() { Index = memory.Length};
                     yield break;
                 }
 
@@ -136,12 +135,13 @@ namespace EscapeRoute.ReplacementEngines
                 yield return tokenMatch;
 
                 // Skip past the entire token.
-                var newIndex = index + _config.TokenStart.Length + token.Length + _config.TokenEnd.Length + 1;
+                var newIndex = index + _config.TokenStart.Length + token.Length + _config.TokenEnd.Length;
 
                 // Token is at end of string.
                 if (newIndex >= memory.Length)
                 {
-                    break;
+                    yield return new TokenMatch() { Index = memory.Length};
+                    yield break;
                 }
 
                 memory = memory.Slice(newIndex);

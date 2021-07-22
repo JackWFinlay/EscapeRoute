@@ -8,6 +8,7 @@
 
     <ItemGroup>
       <PackageReference Include="BenchmarkDotNet" Version="0.12.1" />
+      <PackageReference Include="StringTokenFormatter" Version="4.1.0" />
     </ItemGroup>
 
     <ItemGroup>

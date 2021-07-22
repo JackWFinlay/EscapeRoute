@@ -16,10 +16,10 @@ namespace EscapeRoute.Configuration
         public TokenReplacementConfigurationBuilder AddMapping(string token, 
             string substitution)
         {
-            if (_substitutionMap.ContainsKey(token.AsMemory()))
+            if (_substitutionMap.TryGetValue(token.AsMemory(), out var value))
             {
                 throw new ArgumentException(
-                    $"Token '{token}' is already mapped to substitution '{substitution}'", nameof(token));
+                    $"Token '{token}' is already mapped to substitution '{value}'");
             }
             
             _substitutionMap.Add(token.AsMemory(), substitution.AsMemory());
@@ -29,6 +29,12 @@ namespace EscapeRoute.Configuration
 
         public TokenReplacementConfigurationBuilder SetTokenStart(string tokenStart)
         {
+            if (!_tokenStart.IsEmpty)
+            {
+                throw new ArgumentException(
+                    $"TokenStart is already set to '{_tokenStart}'");
+            }
+
             _tokenStart = tokenStart.AsMemory();
 
             return this;
@@ -36,6 +42,12 @@ namespace EscapeRoute.Configuration
 
         public TokenReplacementConfigurationBuilder SetTokenEnd(string tokenEnd)
         {
+            if (!_tokenEnd.IsEmpty)
+            {
+                throw new ArgumentException(
+                    $"TokenEnd is already set to '{_tokenEnd}'");
+            }
+            
             _tokenEnd = tokenEnd.AsMemory();
 
             return this;
@@ -46,7 +58,7 @@ namespace EscapeRoute.Configuration
             if (!_substitutionMap.Any())
             {
                 throw new ArgumentException(
-                    $"No token substitution mappings have been added. Use {nameof(AddMapping)}() to add mapping.");
+                    $"No token substitution mappings have been added. Use {nameof(AddMapping)} to add mapping.");
             }
 
             if (_tokenStart.IsEmpty)

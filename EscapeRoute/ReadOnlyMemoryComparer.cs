@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace EscapeRoute
 {
-    internal class ReadOnlyMemoryComparer : IEqualityComparer<ReadOnlyMemory<char>>
+    public class ReadOnlyMemoryComparer : IEqualityComparer<ReadOnlyMemory<char>>
     {
         public bool Equals(ReadOnlyMemory<char> x, ReadOnlyMemory<char> y)
         {
