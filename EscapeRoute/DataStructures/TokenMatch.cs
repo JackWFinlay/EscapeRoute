@@ -1,8 +1,8 @@
 using System;
 
-namespace EscapeRoute.Models
+namespace EscapeRoute.DataStructures
 {
-    internal class TokenMatch
+    internal struct TokenMatch
     {
         public ReadOnlyMemory<char> Token { get; init; }
         public int Index { get; init; }

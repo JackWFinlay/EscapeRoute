@@ -51,5 +51,11 @@ namespace EscapeRoute.Benchmarks.NET5.Benchmarks
         {
             await _escapeRouter.ParseAsync(_testString);
         }
+        
+        [Benchmark]
+        public void NativeStringReplace()
+        {
+            _testString.Replace("{name}", _name);
+        }
     }
 }

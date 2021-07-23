@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using EscapeRoute.Abstractions.Exceptions;
 using EscapeRoute.Abstractions.Interfaces;
 using EscapeRoute.Configuration;
+using EscapeRoute.DataStructures;
 using EscapeRoute.Extensions;
-using EscapeRoute.Models;
 
 namespace EscapeRoute.ReplacementEngines
 {
@@ -19,44 +19,45 @@ namespace EscapeRoute.ReplacementEngines
             _config = config;
         }
 
-        public Task<ReadOnlyMemory<char>> ReplaceAsync(ReadOnlyMemory<char> raw)
+        public Task<ReadOnlyMemory<ReadOnlyMemory<char>>> ReplaceAsync(ReadOnlyMemory<char> raw, out int length)
         {
+            length = 0;
+            
             if (raw.IsEmpty)
             {
-                return Task.FromResult(raw);
+                return Task.FromResult<ReadOnlyMemory<ReadOnlyMemory<char>>>(null);
             }
 
-            var matchIndexes = GetMatches(raw).ToList();
+            var matchIndexes = GetMatches(raw);
             
-            if (!matchIndexes.Any())
+            if (matchIndexes.IsEmpty)
             {
-                return Task.FromResult(raw);
+                return Task.FromResult<ReadOnlyMemory<ReadOnlyMemory<char>>>(null);
             }
-
-            var memoryList = new List<ReadOnlyMemory<char>>();
+            
             try
             {
-                memoryList.AddRange(CreateEscapedTextList(raw, matchIndexes));
+                var (memory, totalLength) = CreateEscapedTextList(raw, matchIndexes);
+                
+                if (memory.IsEmpty)
+                {
+                    return Task.FromResult<ReadOnlyMemory<ReadOnlyMemory<char>>>(null);
+                }
+
+                length = totalLength;
+
+                return Task.FromResult(memory);
             }
             catch (Exception e)
             {
                 throw new EscapeRouteParseException($"Cannot parse the string '{raw.ToString()}'", e);
             }
-            
-            if (!memoryList.Any())
-            {
-                return Task.FromResult(raw);
-            }
-
-            var combinedMemory = memoryList.CombineMemory();
-
-            return Task.FromResult((ReadOnlyMemory<char>)combinedMemory);
         }
 
-        private IEnumerable<ReadOnlyMemory<char>> CreateEscapedTextList(ReadOnlyMemory<char> raw, IEnumerable<TokenMatch> matches)
+        private (ReadOnlyMemory<ReadOnlyMemory<char>> memorySpan, int length) CreateEscapedTextList(ReadOnlyMemory<char> raw, ReadOnlySpan<TokenMatch> matches)
         {
-            var result = new List<ReadOnlyMemory<char>>();
-            
+            var result = new ValueList<ReadOnlyMemory<char>>();
+            var length = 0;
             var prevIndex = 0;
 
             foreach (var match in matches)
@@ -72,6 +73,7 @@ namespace EscapeRoute.ReplacementEngines
                     if (!memorySlice.IsEmpty)
                     {
                         result.Add(memorySlice);
+                        length += memorySlice.Length;
                     }
                 }
                 
@@ -85,6 +87,7 @@ namespace EscapeRoute.ReplacementEngines
                     if (!substitution.IsEmpty)
                     {
                         result.Add(substitution);
+                        length += substitution.Length;
                     }
                 }
                 else
@@ -93,6 +96,7 @@ namespace EscapeRoute.ReplacementEngines
                     result.Add(_config.TokenStart);
                     result.Add(match.Token);
                     result.Add(_config.TokenEnd);
+                    length += (_config.TokenStart.Length + match.Token.Length + _config.TokenEnd.Length);
                 }
 
                 var tokenLength = _config.TokenStart.Length + match.Token.Length + _config.TokenEnd.Length;
@@ -107,19 +111,21 @@ namespace EscapeRoute.ReplacementEngines
 
             }
 
-            return result;
+            return (result.AsMemory(), length);
         }
 
-        private IEnumerable<TokenMatch> GetMatches(ReadOnlyMemory<char> memory)
+        private ReadOnlySpan<TokenMatch> GetMatches(ReadOnlyMemory<char> memory)
         {
+            var valueList = new ValueList<TokenMatch>();
+            
             while (memory.Length > 0)
             {
                 var index = memory.IndexOfTokenStart(_config.TokenStart);
                 
                 if (index == -1)
                 {
-                    yield return new TokenMatch() { Index = memory.Length};
-                    yield break;
+                    valueList.Add(new TokenMatch() { Index = memory.Length});
+                    break;
                 }
 
                 // Take a slice without the token start.
@@ -132,7 +138,7 @@ namespace EscapeRoute.ReplacementEngines
                     Token = token
                 };
                 
-                yield return tokenMatch;
+                valueList.Add(tokenMatch);
 
                 // Skip past the entire token.
                 var newIndex = index + _config.TokenStart.Length + token.Length + _config.TokenEnd.Length;
@@ -140,12 +146,14 @@ namespace EscapeRoute.ReplacementEngines
                 // Token is at end of string.
                 if (newIndex >= memory.Length)
                 {
-                    yield return new TokenMatch() { Index = memory.Length};
-                    yield break;
+                    valueList.Add(new TokenMatch() { Index = memory.Length});
+                    break;
                 }
 
                 memory = memory.Slice(newIndex);
             }
+
+            return valueList.AsSpan();
         }
 
         private ReadOnlyMemory<char> GetToken(ReadOnlyMemory<char> slice, ReadOnlyMemory<char> configTokenEnd)
@@ -155,7 +163,7 @@ namespace EscapeRoute.ReplacementEngines
             if (startOfTokenEndIndex < 0)
             {
                 // Malformed token. Return empty token.
-                return new char[] {};
+                return new char[0];
             }
 
             // We can just grab the slice of length startOfTokenEndIndex because of zero-based indexing.

@@ -64,14 +64,20 @@ namespace EscapeRoute
 
         private async Task<string> EscapeAsync(ReadOnlyMemory<char> input)
         {
-            var escapedMemory = await _replacementEngine.ReplaceAsync(input);
+            var escapedMemory = await _replacementEngine.ReplaceAsync(input, out var length);
 
-            var escaped = CreateString(escapedMemory);
+            if (escapedMemory.IsEmpty)
+            {
+                escapedMemory = new ReadOnlyMemory<ReadOnlyMemory<char>>(new[] { input });
+                length = input.Length;
+            }
+
+            var escaped = CreateString(escapedMemory, length);
 
             return escaped;
         }
 
-        private string CreateString(ReadOnlyMemory<char> input)
+        private string CreateString(ReadOnlyMemory<ReadOnlyMemory<char>> input, int length)
         {
 #if NETSTANDARD2_0
             var stringBuilder = new StringBuilder();
@@ -79,13 +85,23 @@ namespace EscapeRoute
             
             for (var i = 0; i < input.Length; i++)
             {
-                stringBuilder.Append(span[i]);
+                for (var j = 0; j < span[i].Length; i++)
+                {
+                    stringBuilder.Append(span[i].Span[j]);
+                }
             }
-
             var escaped = stringBuilder.ToString();
 #else
-            var escaped = string.Create(input.Length, input,
-                (destination, state) => state.Span.CopyTo(destination));
+                var escaped = string.Create(length, input,
+                (destination, state) =>
+                {
+                    int prevLength = 0;
+                    for (var i = 0; i < input.Length; i++)
+                    {
+                        state.Span[i].Span.CopyTo(destination.Slice(prevLength));
+                        prevLength += state.Span[i].Length;
+                    }
+                });
 #endif
             return escaped;
         }
