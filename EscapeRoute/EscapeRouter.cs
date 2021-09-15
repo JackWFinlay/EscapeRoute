@@ -17,16 +17,16 @@ namespace EscapeRoute
         /// </summary>
         public EscapeRouter()
         {
-            var configuration = new CharReplacementConfiguration();
-            _replacementEngine = new CharReplacementEngine(configuration);
+            // var configuration = new CharReplacementConfiguration();
+            // _replacementEngine = new CharReplacementEngine(configuration);
         }
-
+        
         /// <summary>
         /// Creates a new <see cref="EscapeRouter"/> object with the specified configuration.
         /// </summary>
         public EscapeRouter(CharReplacementConfiguration charReplacementConfiguration)
         {
-            _replacementEngine = new CharReplacementEngine(charReplacementConfiguration);
+            // _replacementEngine = new CharReplacementEngine(charReplacementConfiguration);
         }
         
         /// <summary>
@@ -44,11 +44,13 @@ namespace EscapeRoute
         /// <returns>A JSON friendly <see cref="string"/>.</returns>
         public async Task<string> ParseAsync(TextReader textReader) => await EscapeAsync(textReader);
 
-        public async Task<string> ParseAsync(string inputString) => await EscapeAsync(inputString);
+        public async Task<string> ParseAsync(string input) => await EscapeAsync(input);
+
+        public async Task<string> ParseAsync(ReadOnlyMemory<char> input) => await EscapeAsync(input);
 
         private async Task<string> EscapeAsync(string text)
         {
-            var escaped = await EscapeAsync(text.AsMemory());
+            var escaped = await ParseAsync(text.AsMemory());
             
             return escaped;
         }
@@ -61,7 +63,7 @@ namespace EscapeRoute
 
             return escaped;
         }
-
+        
         private async Task<string> EscapeAsync(ReadOnlyMemory<char> input)
         {
             var escapedMemory = await _replacementEngine.ReplaceAsync(input, out var length);

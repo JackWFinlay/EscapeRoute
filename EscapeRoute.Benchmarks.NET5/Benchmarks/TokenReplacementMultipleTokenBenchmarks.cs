@@ -1,3 +1,4 @@
+using System;
 using System.Text;
 using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
@@ -21,9 +22,7 @@ namespace EscapeRoute.Benchmarks.NET5.Benchmarks
             
         }
 
-        private static readonly IEscapeRouter _escapeRouter;
-        private static readonly string _testString;
-        private static readonly TestClass _tokenValues;
+        private const string _testString = Constants.ExampleMergeTemplate;
         private const int _iterations = 1;
         private const int _age = 99;
         private const int _rank = 1;
@@ -31,39 +30,6 @@ namespace EscapeRoute.Benchmarks.NET5.Benchmarks
         private const string _location = "Melbourne";
         private const string _state = "Victoria";
         private const string _country = "Australia";
-
-
-        static TokenReplacementMultipleTokenBenchmarks()
-        {
-            // var config = new TokenReplacementConfigurationBuilder().SetTokenStart("{")
-            //     .SetTokenEnd("}")
-            //     .AddMapping("name", _name)
-            //     .AddMapping("age", _age.ToString())
-            //     .AddMapping("rank", _rank.ToString())
-            //     .AddMapping("location", _location)
-            //     .AddMapping("state", _state)
-            //     .AddMapping("country", _country)
-            //     .Build();
-            //
-            // _escapeRouter = new EscapeRouter(config);
-
-            var stringBuilder = new StringBuilder();
-            for (var i = 0; i < _iterations; i++)
-            {
-                stringBuilder.AppendLine("{name} {age} {rank} {location} {state} {country}");
-            }
-
-            _testString = stringBuilder.ToString();
-            
-            // _tokenValues = new TestClass() { 
-            //     Name = _name,
-            //     Location = _location,
-            //     State = _state,
-            //     Country = _country,
-            //     Age = _age,
-            //     Rank = _rank
-            // };
-        }
 
         [Benchmark(Baseline = true)]
         public void StringTokenFormatter()
@@ -94,7 +60,7 @@ namespace EscapeRoute.Benchmarks.NET5.Benchmarks
                 .Build();
 
             var escapeRouter = new EscapeRouter(config);
-            await escapeRouter.ParseAsync(_testString);
+            await escapeRouter.ParseAsync(_testString.AsMemory());
         }
 
         [Benchmark]

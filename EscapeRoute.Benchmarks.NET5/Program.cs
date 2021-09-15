@@ -10,6 +10,7 @@ namespace EscapeRoute.Benchmarks.NET5
         {
             BenchmarkRunner.Run(typeof(TokenReplacementMultipleTokenBenchmarks));
             BenchmarkRunner.Run(typeof(TokenReplacementSingleTokenBenchmarks));
+            BenchmarkRunner.Run(typeof(TokenReplacementLoopBenchmarks));
             //BenchmarkRunner.Run(typeof(ReplacementEngineAsciiBenchmarks));
             //BenchmarkRunner.Run(typeof(ReplacementEngineAsciiUnicodeBenchmarks));
             //BenchmarkRunner.Run(typeof(ReplacementEngineUnicodeSurrogatePairBenchmarks));

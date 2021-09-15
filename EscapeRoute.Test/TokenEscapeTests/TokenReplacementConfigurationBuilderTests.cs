@@ -75,19 +75,6 @@ namespace EscapeRoute.Test.TokenEscapeTests
         }
 
         [Fact]
-        public void TokenConfigBuilder_NoMappings_ThrowsArgumentException()
-        {
-            Action action = () => new TokenReplacementConfigurationBuilder()
-                .SetTokenStart("{")
-                .SetTokenEnd("}")
-                .Build();
-
-            action.Should()
-                .Throw<ArgumentException>()
-                .WithMessage("No token substitution mappings have been added. Use AddMapping to add mapping.");
-        }
-
-        [Fact]
         public void TokenConfigBuilder_DuplicateTokenStart_ThrowsArgumentException()
         {
             Action action = () => new TokenReplacementConfigurationBuilder()

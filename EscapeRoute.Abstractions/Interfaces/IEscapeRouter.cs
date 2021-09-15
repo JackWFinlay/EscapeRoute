@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -7,6 +8,8 @@ namespace EscapeRoute.Abstractions.Interfaces
     {
         Task<string> ParseAsync(TextReader textReader);
 
-        Task<string> ParseAsync(string inputString);
+        Task<string> ParseAsync(ReadOnlyMemory<char> input);
+        
+        Task<string> ParseAsync(string input);
     }
 }

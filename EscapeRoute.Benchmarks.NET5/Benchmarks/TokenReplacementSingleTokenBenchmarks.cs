@@ -1,3 +1,4 @@
+using System;
 using System.Text;
 using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
@@ -15,30 +16,10 @@ namespace EscapeRoute.Benchmarks.NET5.Benchmarks
             public string Name { get; set; }
             public int Age { get; set; }
         }
-
-        private static readonly IEscapeRouter _escapeRouter;
-        private static readonly string _testString;
-        private const int _iterations = 100_000;
+        
+        private const string _testString = Constants.ExampleMergeTemplate;
         private const string _tokenValue = "name";
         private const string _name = "John";
-
-        static TokenReplacementSingleTokenBenchmarks()
-        {
-            var config = new TokenReplacementConfigurationBuilder().SetTokenStart("{")
-                .SetTokenEnd("}")
-                .AddMapping(_tokenValue, _name)
-                .Build();
-
-            _escapeRouter = new EscapeRouter(config);
-
-            var stringBuilder = new StringBuilder();
-            for (var i = 0; i < _iterations; i++)
-            {
-                stringBuilder.AppendLine("{name}");
-            }
-
-            _testString = stringBuilder.ToString();
-        }
 
         [Benchmark(Baseline = true)]
         public void StringTokenFormatter()
@@ -49,7 +30,13 @@ namespace EscapeRoute.Benchmarks.NET5.Benchmarks
         [Benchmark]
         public async Task EscapeRouteTokenReplacementEngine()
         {
-            await _escapeRouter.ParseAsync(_testString);
+            var config = new TokenReplacementConfigurationBuilder().SetTokenStart("{")
+                .SetTokenEnd("}")
+                .AddMapping(_tokenValue, _name)
+                .Build();
+
+            var escapeRouter = new EscapeRouter(config);
+            await escapeRouter.ParseAsync(_testString.AsMemory());
         }
         
         [Benchmark]

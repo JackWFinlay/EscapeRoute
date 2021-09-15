@@ -49,12 +49,6 @@ namespace EscapeRoute.Configuration
 
         public TokenReplacementConfiguration Build()
         {
-            if (!SubstitutionMap.Any())
-            {
-                throw new ArgumentException(
-                    $"No token substitution mappings have been added. Use {nameof(AddMapping)} to add mapping.");
-            }
-
             if (TokenStart.IsEmpty)
             {
                 throw new ArgumentException(

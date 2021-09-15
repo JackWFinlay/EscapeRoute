@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
 using EscapeRoute.Abstractions.Interfaces;
@@ -20,9 +21,9 @@ namespace EscapeRoute.Benchmarks.NET5.Benchmarks
             
         }
         
-        private const int _iterations = 10_000;
+        private const int _iterations = 1;
         private const int _age = 99;
-        private const string _testString = "{name} {age} {rank} {location} {state} {country}";
+        private const string _testString = Constants.ExampleMergeTemplate;
         private const string _name = "John";
         private const string _location = "Melbourne";
         private const string _state = "Victoria";
@@ -61,16 +62,16 @@ namespace EscapeRoute.Benchmarks.NET5.Benchmarks
         {
             var config = new TokenReplacementConfigurationBuilder().SetTokenStart("{")
                 .SetTokenEnd("}")
-                .UpdateOrAddFromObject(_testClasses[0])
                 .Build();
             
             var escapeRouter = new EscapeRouter(config);
+            var testMemory = _testString.AsMemory();
 
             for (var i = 0; i < _iterations; i++)
             {
                 config.UpdateOrAddFromObject(_testClasses[i]);
                 
-                await escapeRouter.ParseAsync(_testString);
+                await escapeRouter.ParseAsync(testMemory);
             }
         }
         
@@ -79,11 +80,11 @@ namespace EscapeRoute.Benchmarks.NET5.Benchmarks
         {
             var config = new TokenReplacementConfigurationBuilder().SetTokenStart("{")
                 .SetTokenEnd("}")
-                .UpdateOrAddFromObject(_testClasses[0])
                 .Build();
             
             var escapeRouter = new EscapeRouter(config);
-
+            var testMemory = _testString.AsMemory();
+            
             for (var i = 0; i < _iterations; i++)
             {
                 config.UpdateOrAddMapping("name", _testClasses[i].Name);
@@ -93,7 +94,7 @@ namespace EscapeRoute.Benchmarks.NET5.Benchmarks
                 config.UpdateOrAddMapping("state", _testClasses[i].State);
                 config.UpdateOrAddMapping("country", _testClasses[i].Country);
 
-                await escapeRouter.ParseAsync(_testString);
+                await escapeRouter.ParseAsync(testMemory);
             }
         }
 

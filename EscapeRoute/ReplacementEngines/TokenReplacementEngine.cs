@@ -28,16 +28,16 @@ namespace EscapeRoute.ReplacementEngines
                 return Task.FromResult<ReadOnlyMemory<ReadOnlyMemory<char>>>(null);
             }
 
-            var matchIndexes = GetMatches(raw);
-            
-            if (matchIndexes.IsEmpty)
-            {
-                return Task.FromResult<ReadOnlyMemory<ReadOnlyMemory<char>>>(null);
-            }
+            // var matchIndexes = GetMatches(raw);
+            //
+            // if (matchIndexes.IsEmpty)
+            // {
+            //     return Task.FromResult<ReadOnlyMemory<ReadOnlyMemory<char>>>(null);
+            // }
             
             try
             {
-                var (memory, totalLength) = CreateEscapedTextList(raw, matchIndexes);
+                var (memory, totalLength) = CreateEscapedTextList(raw);
                 
                 if (memory.IsEmpty)
                 {
@@ -54,35 +54,53 @@ namespace EscapeRoute.ReplacementEngines
             }
         }
 
-        private (ReadOnlyMemory<ReadOnlyMemory<char>> memorySpan, int length) CreateEscapedTextList(ReadOnlyMemory<char> raw, ReadOnlySpan<TokenMatch> matches)
+        private (ReadOnlyMemory<ReadOnlyMemory<char>> memorySpan, int length) CreateEscapedTextList(ReadOnlyMemory<char> raw)
         {
             var result = new ValueList<ReadOnlyMemory<char>>();
             var length = 0;
             var prevIndex = 0;
 
-            foreach (var match in matches)
+            while (prevIndex < raw.Length)
             {
-                if (prevIndex >= raw.Length || match.Index >= raw.Length)
+                var slice = raw.Slice(prevIndex);
+
+                var indexOfTokenStart = slice.IndexOfTokenStart(_config.TokenStart);
+
+                if (indexOfTokenStart < 0)
                 {
                     break;
                 }
 
-                if (match.Index > 0)
+                if (prevIndex + indexOfTokenStart >= raw.Length)
                 {
-                    var memorySlice = raw.Slice(prevIndex, match.Index);
+                    prevIndex = raw.Length;
+                    break;
+                }
+                
+                // Add chars preceding token.
+                if (indexOfTokenStart > 0)
+                {
+                    var memorySlice = raw.Slice(prevIndex, indexOfTokenStart);
                     if (!memorySlice.IsEmpty)
                     {
                         result.Add(memorySlice);
                         length += memorySlice.Length;
                     }
                 }
-                
-                if (prevIndex + match.Index >= raw.Length)
+
+                var startOfTokenEndIndex = raw.Slice(prevIndex + indexOfTokenStart + _config.TokenStart.Length).IndexOfTokenStart(_config.TokenEnd);
+
+                if (startOfTokenEndIndex < 0)
                 {
-                    break;
+                    // Malformed token. Return empty token.
+                    return (null, 0);
                 }
 
-                if (_config.SubstitutionMap.TryGetValue(match.Token, out var substitution))
+                // We can just grab the slice of length startOfTokenEndIndex because of zero-based indexing.
+                // e.g. where slice = 'abc|*...' with token end '|*' then index of token end is 3, so we take the first 3 chars.
+                var token = raw.Slice(prevIndex + indexOfTokenStart + _config.TokenStart.Length, startOfTokenEndIndex);
+
+                if (_config.SubstitutionMap.TryGetValue(token, out var substitution))
                 {
                     if (!substitution.IsEmpty)
                     {
@@ -94,23 +112,31 @@ namespace EscapeRoute.ReplacementEngines
                 {
                     // This is a substitution token that isn't registered. Don't replace it.
                     result.Add(_config.TokenStart);
-                    result.Add(match.Token);
+                    result.Add(token);
                     result.Add(_config.TokenEnd);
-                    length += (_config.TokenStart.Length + match.Token.Length + _config.TokenEnd.Length);
+                    length += (_config.TokenStart.Length + token.Length + _config.TokenEnd.Length);
                 }
 
-                var tokenLength = _config.TokenStart.Length + match.Token.Length + _config.TokenEnd.Length;
+                // Skip past what we know to be the token.
+                var tokenLength = _config.TokenStart.Length + token.Length + _config.TokenEnd.Length;
                 if (prevIndex == 0)
                 {
-                    prevIndex = (match.Index + tokenLength);
+                    prevIndex = (indexOfTokenStart + tokenLength);
                 }
                 else
                 {
-                    prevIndex += (match.Index + tokenLength);
+                    prevIndex += (indexOfTokenStart + tokenLength);
                 }
-
             }
-
+            
+            // Add on end of raw.
+            if (prevIndex < raw.Length)
+            {
+                var endSlice = raw.Slice(prevIndex);
+                result.Add(endSlice);
+                length += endSlice.Length;
+            }
+            
             return (result.AsMemory(), length);
         }
 

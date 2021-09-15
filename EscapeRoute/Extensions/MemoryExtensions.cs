@@ -21,14 +21,33 @@ namespace EscapeRoute.Extensions
             return -1;
         }
         
-        public static Memory<char> CombineMemory(this IReadOnlyCollection<ReadOnlyMemory<char>> memoryList)
+        public static ReadOnlyMemory<char> CombineMemory(this IReadOnlyCollection<ReadOnlyMemory<char>> memoryList)
         {
             var memoryListTotalLength = memoryList.Sum(m => m.Length);
 
             Memory<char> combinedMemory = new char[memoryListTotalLength];
-
+            
             var prevLength = 0;
             foreach (var mem in memoryList)
+            {
+                if (prevLength > combinedMemory.Length)
+                {
+                    break;
+                }
+
+                mem.CopyTo(combinedMemory.Slice(prevLength));
+                prevLength += mem.Length;
+            }
+
+            return combinedMemory;
+        }
+
+        public static ReadOnlyMemory<char> SelectMany(this ReadOnlyMemory<ReadOnlyMemory<char>> memory, int length)
+        {
+            Memory<char> combinedMemory = new char[length];
+
+            var prevLength = 0;
+            foreach (var mem in memory.Span)
             {
                 if (prevLength > combinedMemory.Length)
                 {
