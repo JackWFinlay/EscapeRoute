@@ -2,17 +2,17 @@ using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
 using EscapeRoute.Abstractions.Interfaces;
 
-namespace EscapeRoute.Benchmarks.NET5.Benchmarks
+namespace EscapeRoute.Benchmarks.Benchmarks
 {
     [MemoryDiagnoser]
-    public class ReplacementEngineUnicodeSurrogatePairBenchmarks
+    public class ReplacementEngineAsciiBenchmarks : EscapeRouteBenchmark
     {
         private static readonly IEscapeRouter _escapeRouter = new EscapeRouter();
 
         [Benchmark(Baseline = true)]
-        public async Task EmojiParseAsync()
+        public async Task AsciiParseAsync()
         {
-            await _escapeRouter.ParseAsync(Constants.BenchmarkStringEmoji);
+            await _escapeRouter.ParseAsync(Constants.BenchmarkStringAscii);
         }
     }
 }

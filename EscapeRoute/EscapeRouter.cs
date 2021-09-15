@@ -55,29 +55,8 @@ namespace EscapeRoute
 
         private async Task<string> EscapeAsync(ReadOnlyMemory<char> input)
         {
-            var escapedMemory = await _replacementEngine.ReplaceAsync(input);
+            var escaped = await _replacementEngine.ReplaceAsync(input);
 
-            var escaped = CreateString(escapedMemory);
-
-            return escaped;
-        }
-
-        private string CreateString(ReadOnlyMemory<char> input)
-        {
-#if NETSTANDARD2_0
-            var stringBuilder = new StringBuilder();
-            var span = input.Span;
-            
-            for (var i = 0; i < input.Length; i++)
-            {
-                stringBuilder.Append(span[i]);
-            }
-
-            var escaped = stringBuilder.ToString();
-#else
-            var escaped = string.Create(input.Length, input,
-                (destination, state) => state.Span.CopyTo(destination));
-#endif
             return escaped;
         }
     }

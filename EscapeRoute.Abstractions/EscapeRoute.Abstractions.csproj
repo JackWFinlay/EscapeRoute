@@ -15,7 +15,7 @@
         <IncludeSource>true</IncludeSource>
         <RepositoryUrl>https://github.com/JackWFinlay/EscapeRoute</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
-        <Version>0.0.3</Version>
+        <Version>0.0.4</Version>
         <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
         <LangVersion>8</LangVersion>
         <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>

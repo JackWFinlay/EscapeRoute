@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using EscapeRoute.Abstractions.DataStructures;
 using EscapeRoute.Abstractions.Exceptions;
 using EscapeRoute.Abstractions.Interfaces;
 using EscapeRoute.Extensions;
@@ -27,38 +29,36 @@ namespace EscapeRoute.ReplacementEngines
                                                .GetReplacement(_config.UnicodeSurrogateBehavior);
         }
 
-        public Task<ReadOnlyMemory<char>> ReplaceAsync(ReadOnlyMemory<char> raw)
+        public Task<string> ReplaceAsync(ReadOnlyMemory<char> raw)
         {
             if (raw.IsEmpty)
             {
-                return Task.FromResult(raw);
+                return Task.FromResult(raw.ToString());
             }
 
             var matchIndexes = GetMatches(raw).ToList();
 
             if (!matchIndexes.Any())
             {
-                return Task.FromResult(raw);
+                return Task.FromResult(raw.ToString());
             }
 
-            var memoryList = new List<ReadOnlyMemory<char>>();
+            string output = null;
             try
             {
-                memoryList.AddRange(CreateEscapedTextList(raw, matchIndexes));
+                output = CreateEscapedTextList(raw, matchIndexes);
             }
             catch (Exception e)
             {
                 throw new EscapeRouteParseException($"Cannot parse the string '{raw.ToString()}'", e);
             }
 
-            if (!memoryList.Any())
+            if (string.IsNullOrWhiteSpace(output))
             {
-                return Task.FromResult(raw);
+                return Task.FromResult(raw.ToString());
             }
 
-            var combinedMemory = memoryList.CombineMemory();
-
-            return Task.FromResult((ReadOnlyMemory<char>)combinedMemory);
+            return Task.FromResult(output);
         }
 
         private IEnumerable<int> GetMatches(ReadOnlyMemory<char> memory)
@@ -87,11 +87,11 @@ namespace EscapeRoute.ReplacementEngines
             }
         }
 
-        private List<ReadOnlyMemory<char>> CreateEscapedTextList(ReadOnlyMemory<char> raw, 
+        private string CreateEscapedTextList(ReadOnlyMemory<char> raw, 
             IEnumerable<int> matchIndexes)
         {
-            var memoryList = new List<ReadOnlyMemory<char>>();
-            
+            var memoryList = new StringValueList(raw.Length);
+
             var prevIndex = 0;
 
             foreach (var matchIndex in matchIndexes)
@@ -106,7 +106,7 @@ namespace EscapeRoute.ReplacementEngines
                     var memorySlice = raw.Slice(prevIndex, matchIndex);
                     if (!memorySlice.IsEmpty)
                     {
-                        memoryList.Add(memorySlice);
+                        memoryList.Add(memorySlice.Span);
                     }
                 }
 
@@ -123,8 +123,8 @@ namespace EscapeRoute.ReplacementEngines
                 {
                     var mem = raw.Slice(prevIndex + matchIndex, 2);
                     
-                    HandleUnicodeSurrogate(mem, 0, memoryList);
-                    HandleUnicodeSurrogate(mem, 1, memoryList);
+                    memoryList.Add(HandleUnicodeSurrogate(mem, 0).Span);
+                    memoryList.Add(HandleUnicodeSurrogate(mem, 1).Span);
 
                     // Increment as we took two chars.
                     prevIndex++;
@@ -133,7 +133,7 @@ namespace EscapeRoute.ReplacementEngines
                 {
                     if (!replacement.IsEmpty)
                     {
-                        memoryList.Add(replacement);
+                        memoryList.Add(replacement.Span);
                     }
                 }
                 // Standard Unicode Character
@@ -145,7 +145,7 @@ namespace EscapeRoute.ReplacementEngines
                     
                     if(!unicodeReplacement.IsEmpty)
                     {
-                        memoryList.Add(unicodeReplacement);
+                        memoryList.Add(unicodeReplacement.Span);
                     }
                     
                     _replacementMap.Add(patternMatched[0], unicodeReplacement);
@@ -161,27 +161,30 @@ namespace EscapeRoute.ReplacementEngines
                 }
             }
 
-            return memoryList;
+            return memoryList.ToString();
         }
 
-        private void HandleUnicodeSurrogate(ReadOnlyMemory<char> mem, int index, IList<ReadOnlyMemory<char>> memoryList)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private ReadOnlyMemory<char> HandleUnicodeSurrogate(ReadOnlyMemory<char> mem, int index)
         {
             if (_replacementMap.TryGetValue(mem.Span[index], out var replacement))
             {
-                memoryList.Add(replacement);
+                return replacement;
             }
             else
             {
                 var slice = mem.Slice(index, 1);
                 var unicodeSurrogateReplacement = _unicodeSurrogateReplacer(slice);
 
+                _replacementMap.Add(mem.Span[index], replacement);
+                
                 if (!unicodeSurrogateReplacement.IsEmpty)
                 {
-                    memoryList.Add(unicodeSurrogateReplacement);
+                    return unicodeSurrogateReplacement;
                 }
-                
-                _replacementMap.Add(mem.Span[index], replacement);
             }
+
+            return null;
         }
 
         private static HashSet<char> GetPattern(IEscapeRouteConfiguration config)

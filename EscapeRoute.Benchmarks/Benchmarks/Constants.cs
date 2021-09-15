@@ -1,4 +1,4 @@
-namespace EscapeRoute.Benchmarks.NET5.Benchmarks
+namespace EscapeRoute.Benchmarks.Benchmarks
 {
     public static class Constants
     {
